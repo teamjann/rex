@@ -6,7 +6,9 @@ const port = process.env.PORT || 5000;
 
 app.use(express.static(__dirname + '/client/build'));
 
-app.get('/hello', (req, res) => {
+app.get('/users/:username/:category', (req, res) => {
+  console.log('received');
+  console.log(req.params);
   res.send({ express: 'Hello From Express' });
 });
 
