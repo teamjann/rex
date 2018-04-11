@@ -1,18 +1,21 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Newrec from './Newrec.js';
+// import components
 
 class App extends Component {
+  componentDidMount() {
+    fetch('/hello')
+      .then(res => res.json())
+      .then(res => console.log(res))
+      .catch(err => console.log('server not working', err));
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div className="main">
+        <Newrec />
       </div>
     );
   }
