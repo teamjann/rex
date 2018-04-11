@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Newrec from './Newrec.js';
+import NewRec from './Home/NewRec.js';
+import FindRec from './Home/FindRec.js';
 // import components
 
 class App extends Component {
@@ -15,8 +16,10 @@ class App extends Component {
   render() {
     return (
       <div className="main">
-        <Newrec />
+        <NewRec />
+        <FindRec />
       </div>
+
     );
   }
 }
