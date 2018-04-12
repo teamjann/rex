@@ -1,19 +1,26 @@
 import React, { Component } from 'react';
+// import { Button, Icon, Label } from 'semantic-ui-react';
 import './App.css';
-import { Button, Icon, Label } from 'semantic-ui-react';
+// import components
+import BrowseView from './BrowseView';
 
 class App extends Component {
-  componentDidMount() {
-    fetch('/hello')
-      .then(res => res.json())
-      .then(res => console.log(res))
-      .catch(err => console.log('server not working', err));
-  }
+  state = {
+    showBooks: true,
+  };
 
   render() {
     return (
       <div>
-        <h1>Rex</h1>
+        <button
+          onClick={() => {
+            this.setState({ showBooks: !this.state.showBooks });
+          }}
+        >
+          Show books component
+        </button>
+
+        {this.state.showBooks && <BrowseView />}
       </div>
     );
   }
