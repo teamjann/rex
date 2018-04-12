@@ -2,7 +2,7 @@ import React from 'react';
 
 import { List } from 'semantic-ui-react';
 
-const ListItem = props => (
+const RecommendationListItem = props => (
   <div>
     <List horizontal>
       <List.Item>
@@ -29,4 +29,4 @@ const ListItem = props => (
   </div>
 );
 
-export default ListItem;
+export default RecommendationListItem;

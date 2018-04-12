@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class UserInput extends Component {
+class RecommendationEntry extends Component {
   render() {
     return (
       <form>
@@ -20,4 +20,4 @@ class UserInput extends Component {
   }
 }
 
-export default UserInput;
+export default RecommendationEntry;

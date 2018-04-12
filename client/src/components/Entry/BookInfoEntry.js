@@ -1,11 +1,11 @@
 import React from 'react';
 import BookDetail from './BookDetail';
-import UserInput from './UserInput';
+import RecommendationEntry from './RecommendationEntry';
 
 const BookInfoEntry = () => (
   <div>
     <BookDetail />
-    <UserInput />
+    <RecommendationEntry />
   </div>
 );
 

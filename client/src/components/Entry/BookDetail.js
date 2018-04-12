@@ -12,16 +12,16 @@ const GridImage = () => (
 const Ratings = () => <Rating defaultRating={3} maxRating={5} disabled />;
 
 const BookDetail = () => (
-  <div className="bookDetail">
-    <div className="bookTitle">Harry Porter</div>
-    <div className="bookImage">
+  <div className="book-detail">
+    <h1 className="book-title">Harry Porter</h1>
+    <div className="book-image">
       <GridImage />
     </div>
-    <div className="bookRating">
+    <div className="book-rating">
       <Ratings />
     </div>
-    <div className="bookIntro">
-      <p>It is a good book!</p>
+    <div className="book-description">
+      <h3>It is a good book!</h3>
     </div>
   </div>
 );

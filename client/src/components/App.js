@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Icon, Label } from 'semantic-ui-react';
-import styled from 'styled-components';
-import logo from './logo.svg';
 import './App.css';
 
 // import components
 import Home from './Home';
 import BookInfoEntry from './Entry/BookInfoEntry';
-import List from './Browse/List';
+import BrowseDetail from './Browse/BrowseDetail';
 
 // // Styled component example
 // const HomeSection = styled.section`
@@ -33,7 +30,7 @@ class App extends Component {
       <div onClick={() => this.setState({ clicked: this.state.clicked + 1 })}>
         {this.state.clicked === 0 && <Home />}
         {this.state.clicked === 1 && <BookInfoEntry />}
-        {this.state.clicked === 2 && <List />}
+        {this.state.clicked === 2 && <BrowseDetail />}
       </div>
     );
   }
