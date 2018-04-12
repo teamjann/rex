@@ -22,7 +22,7 @@ import BrowseView from './BrowseView';
 
 class App extends Component {
   state = {
-    showBooks: false,
+    showBooks: true,
   };
 
   componentDidMount() {
