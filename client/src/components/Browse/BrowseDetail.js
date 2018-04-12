@@ -12,13 +12,17 @@ const RemoveFromListButton = () => <Button>Remove from list</Button>;
 const AddRecommenderButton = () => <Button>Add Recommender</Button>;
 
 class BrowseDetail extends Component {
-  state = {
-    books: [
-      { date: '2/10/2018', recommender: 'Mike', comments: 'Like the story a lot!' },
-      { date: '3/02/2018', recommender: 'Shu', comments: 'Fun to read!' },
-      { date: '4/10/2018', recommender: 'Evan', comments: 'Interesting book!' },
-    ],
-  };
+  constructor() {
+    super();
+
+    this.state = {
+      books: [
+        { date: '2/10/2018', recommender: 'Mike', comments: 'Like the story a lot!' },
+        { date: '3/02/2018', recommender: 'Shu', comments: 'Fun to read!' },
+        { date: '4/10/2018', recommender: 'Evan', comments: 'Interesting book!' },
+      ],
+    };
+  }
 
   render() {
     return (
