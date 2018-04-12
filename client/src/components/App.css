@@ -23,36 +23,6 @@
 }
 
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* .ui.labeled.button :hover {
-  background-color: black;
-} */
-
-.ui.container {
-  border: 1px solid black;
-  margin: 20px;
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.ui.container * {
-  /* border: 1px solid black; */
-}
-
-.icon.center.header {
-  width: 100%;
-  padding: 10px;
-}
-
-.ui.text.menu {
-  margin: 0 7px;
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
