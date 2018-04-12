@@ -37,9 +37,12 @@ class App extends Component {
 }
 
 export default App;
+<<<<<<< HEAD
 
 /* <div onClick={() => this.setState({ clicked: this.state.clicked + 1 })}>
         {this.state.clicked === 0 && <Home />}
         {this.state.clicked === 1 && <BookInfoEntry />}
         {this.state.clicked === 2 && <BrowseDetail />}
       </div> */
+=======
+>>>>>>> d41bc09d416226092533d95f59c6565f4781a45d
