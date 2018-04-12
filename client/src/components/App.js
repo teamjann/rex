@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { Button, Icon, Label } from 'semantic-ui-react';
 import styled from 'styled-components';
 // import components
+import BrowseView from './BrowseView';
 
 // // Styled component example
 // const HomeSection = styled.section`
@@ -20,9 +20,11 @@ import styled from 'styled-components';
 //   border-radius: 50px;
 // `;
 
-
-
 class App extends Component {
+  state = {
+    showBooks: false,
+  };
+
   componentDidMount() {
     fetch('/hello')
       .then(res => res.json())
@@ -33,18 +35,18 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Button as="div" labelPosition="right">
-          <Button icon>
-            <Icon name="heart" />
-            Like
-          </Button>
-          <Label as="a" basic pointing="left">
-            2,048
-          </Label>
-        </Button>
+        <button
+          onClick={() => {
+            this.setState({ showBooks: !this.state.showBooks });
+          }}
+        >
+          Show books component
+        </button>
+
+        {this.state.showBooks && <BrowseView />}
       </div>
     );
   }
 }
 
-export default 
+export default App;
