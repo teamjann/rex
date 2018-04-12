@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, { Component } from "react";
+import { Route, Link, Router, Switch } from "react-router-dom";
+import "./App.css";
 
 // import components
-import Home from './Home';
-import BookInfoEntry from './Entry/BookInfoEntry';
-import BrowseDetail from './Browse/BrowseDetail';
+import Home from "./Home";
+import BookInfoEntry from "./Entry/BookInfoEntry";
+import BrowseDetail from "./Browse/BrowseDetail";
 
 // // Styled component example
 // const HomeSection = styled.section`
@@ -22,18 +23,23 @@ import BrowseDetail from './Browse/BrowseDetail';
 // `;
 
 class App extends Component {
-  state = {
-    clicked: 0,
-  };
   render() {
     return (
-      <div onClick={() => this.setState({ clicked: this.state.clicked + 1 })}>
-        {this.state.clicked === 0 && <Home />}
-        {this.state.clicked === 1 && <BookInfoEntry />}
-        {this.state.clicked === 2 && <BrowseDetail />}
+      <div>
+        <Router>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/bookentry" component={BookInfoEntry} />
+          <Route exact path="/bookbrowse" component={BrowseDetail} />
+        </Router>
       </div>
     );
   }
 }
 
 export default App;
+
+/* <div onClick={() => this.setState({ clicked: this.state.clicked + 1 })}>
+        {this.state.clicked === 0 && <Home />}
+        {this.state.clicked === 1 && <BookInfoEntry />}
+        {this.state.clicked === 2 && <BrowseDetail />}
+      </div> */
