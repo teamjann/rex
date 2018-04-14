@@ -1,5 +1,10 @@
 // Fetch decks, name, score, and cardcount
-exports.FETCH_BOOKS = `SELECT * FROM books`;
+exports.FETCH_BOOKS = (userId, category) => `
+  SELECT r.id AS rec_id, * from recommendations r
+    INNER JOIN books b on r.item_id = b.id
+    AND r.category = '${category}'
+    AND r.user_id = '${userId}';
+  `;
 
 // // Fetch Deck
 // exports.FETCH_DECK = deckname =>
