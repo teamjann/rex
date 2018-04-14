@@ -20,7 +20,7 @@ class App extends Component {
           Show books component
         </button>
 
-        {this.state.showBooks && <BrowseView />}
+        {this.state.showBooks && <BrowseView category="books" />}
       </div>
     );
   }

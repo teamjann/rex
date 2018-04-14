@@ -26,7 +26,29 @@ const BookItem = styled.div`
 `;
 
 class BrowseView extends Component {
-  state = { activeItem: 'Recommendations' };
+  state = {
+    userId: 3,
+    activeItem: 'Recommendations',
+    category: '',
+  };
+
+  componentDidMount() {
+    const { category } = this.props;
+    const { userId } = this.state;
+
+    fetch(`/u/${userId}/${category}`)
+      .then(res => res.json())
+      .then((categoryItems) => {
+        this.setState({
+          [category]: categoryItems,
+        });
+
+        console.log('current State = ', this.state);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  }
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
