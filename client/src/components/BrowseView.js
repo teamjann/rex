@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Container, Header, Icon, Menu } from 'semantic-ui-react';
 
+import BookItem from './BookItem.js';
+
 const BookList = styled.ul`
   width: 100%;
   padding: 5px;
@@ -14,22 +16,11 @@ const MenuBar = styled.div`
   justify-content: center;
   margin: 0;
 `;
-
-const BookItem = styled.div`
-  display: flex;
-  height: auto;
-  border: 1px solid grey;
-  border-width: hairline;
-  border-radius: 5px;
-  padding: 5px;
-  overflow: hidden;
-`;
-
 class BrowseView extends Component {
   state = {
     userId: 3,
     activeItem: 'Recommendations',
-    category: '',
+    [this.props.category]: {},
   };
 
   componentDidMount() {
@@ -42,8 +33,6 @@ class BrowseView extends Component {
         this.setState({
           [category]: categoryItems,
         });
-
-        console.log('current State = ', this.state);
       })
       .catch((err) => {
         throw err;
@@ -53,6 +42,7 @@ class BrowseView extends Component {
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
   render() {
+    const { category } = this.props;
     const { activeItem } = this.state;
 
     return (
@@ -84,47 +74,11 @@ class BrowseView extends Component {
         </MenuBar>
 
         <BookList>
-          <li>
-            <BookItem>
-              <div style={{ width: '20%' }}>Recommenders: 5</div>
-              <div
-                style={{
-                  width: '12%',
-                  padding: '5px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <img
-                  src="https://images.gr-assets.com/books/1392528568l/12067.jpg"
-                  alt=""
-                  style={{ height: '100px', borderRadius: '20px' }}
-                />
-              </div>
-              <div style={{ width: '58%', display: 'flex', flexWrap: 'wrap' }}>
-                <div style={{ width: '100%' }}>
-                  <h1>Title</h1>
-                  Description
-                </div>
-                <div style={{ width: '100%', alignSelf: 'flex-end' }}>
-                  <span style={{ fontWeight: 'bold' }}>Recommended By:</span> Mike{' '}
-                  <span style={{ fontWeight: 'bold' }}>Date:</span> 1/1/10
-                </div>
-              </div>
-              <div
-                style={{
-                  width: '10%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Icon name="check" size="big" />
-                <Icon name="trash" size="big" />
-              </div>
-            </BookItem>
-          </li>
+          {Object.entries(this.state[category]).map(([bookId, bookInfo]) => {
+            const { book, recommendations } = bookInfo;
+            // const recommendationCount = recommendations.length;
+            return <BookItem book={book} recommendations={recommendations} />;
+          })}
         </BookList>
       </Container>
     );
