@@ -1,16 +1,28 @@
 import React, { Component } from 'react';
-import { Route, Link, Router, Switch } from 'react-router-dom';
+import { Route, Link, BrowserRouter, Switch } from 'react-router-dom';
 import Home from './Home';
-import BookInfoEntry from './Entry/BookInfoEntry';
+import EntryDetail from './Entry/EntryDetail';
 import BrowseDetail from './Browse/BrowseDetail';
+import { Button } from 'semantic-ui-react';
+import { Dropdown, Menu } from 'semantic-ui-react';
+import EntryView from './EntryView';
+import BrowseView from './BrowseView';
+
+const Title = () => <h1> Rex </h1>;
+const NewRecommendationButton = () => <Button>Enter New Recommendation </Button>;
 
 class App extends Component {
   render() {
     return (
       <div>
-        <Router>
-          <Route path="/" component={Home} />
-        </Router>
+        <Title />
+        <Switch>
+          <Route exact path="/" component={Home} />
+          {/* <Route exact path="/browse/detail" component={BrowseDetail} />
+          <Route exact path="/entry/detail" component={EntryDetail} /> */}
+          <Route exact path="/entry" component={EntryView} />
+          <Route exact path="/browse" component={BrowseView} />
+        </Switch>
       </div>
     );
   }

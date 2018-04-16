@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'semantic-ui-react';
 import { Dropdown, Menu } from 'semantic-ui-react';
+import { Route, Link, BrowserRouter, Switch } from 'react-router-dom';
 
 const Category = () => {
   const options = [{ key: 1, text: 'Books', value: 1 }, { key: 2, text: 'Movies', value: 2 }];
@@ -12,16 +13,21 @@ const Category = () => {
 };
 
 const FindRecommendationButton = () => (
-  <Button>
-    Find Something from <Category />
-  </Button>
+  <Link to="/browse">
+    <Button>
+      Find Something from <Category />
+    </Button>
+  </Link>
 );
 
-const NewRecommendationButton = () => <Button>Enter New Recommendation </Button>;
+const NewRecommendationButton = () => (
+  <Link to="/entry">
+    <Button>Enter New Recommendation </Button>{' '}
+  </Link>
+);
 
 const Home = () => (
   <div>
-    <h1>Rex</h1>
     <div className="new-recommendation-button">
       <NewRecommendationButton />
     </div>
