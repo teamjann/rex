@@ -2,9 +2,9 @@ import React from "react";
 import BookDetail from "./BookDetail";
 import RecommendationEntry from "./RecommendationEntry";
 
-const EntryDetail = () => (
+const EntryDetail = props => (
   <div>
-    <BookDetail />
+    <BookDetail image={props.params} />
     <RecommendationEntry />
   </div>
 );

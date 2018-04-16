@@ -1,29 +1,22 @@
 import React from 'react';
-import { Grid, Image, Rating } from 'semantic-ui-react';
+import { Rating, Header, Container, Image } from 'semantic-ui-react';
 
-const GridImage = () => (
-  <Grid>
-    <Grid.Column width={6}>
-      <Image src="/assets/images/wireframe/image.png" />
-    </Grid.Column>
-  </Grid>
-);
-
-const Ratings = () => <Rating defaultRating={3} maxRating={5} disabled />;
-
-const BookDetail = () => (
-  <div className="book-detail">
-    <h1 className="book-title">Harry Porter</h1>
-    <div className="book-image">
-      <GridImage />
-    </div>
-    <div className="book-rating">
-      <Ratings />
-    </div>
-    <div className="book-description">
-      <h3>It is a good book!</h3>
-    </div>
-  </div>
-);
+const BookDetail = (props) => {
+  const {
+    title, authors, rating, imageUrl, description, yearPublished, link,
+  } = props.result;
+  return (
+    <Container>
+      <Header as="a" size="huge" href={link}>
+        {title}
+      </Header>
+      <Header size="small">{authors.join(', ')}</Header>
+      <Rating defaultRating={rating} icon="star" disabled maxRating={5} />
+      <Image as="a" href={link} src={imageUrl} size="small" floated="left" />
+      {description.map(paragraph => <p>{paragraph}</p>)}
+      <p>Year Published: {yearPublished}</p>
+    </Container>
+  );
+};
 
 export default BookDetail;
