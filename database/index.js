@@ -1,20 +1,25 @@
-var mysql = require('mysql');
+const Sequelize = require('sequelize');
 
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : '',
-  database : 'test'
-});
-
-var selectAll = function(callback) {
-  connection.query('SELECT * FROM items', function(err, results, fields) {
-    if(err) {
-      callback(err, null);
-    } else {
-      callback(null, results);
-    }
-  });
+const host = process.env.DATABASE_URL || {
+  database: 'rex',
+  username: 'Mike',
+  password: null,
+  dialect: 'postgres',
 };
 
-module.exports.selectAll = selectAll;
+const sequelize = new Sequelize(host);
+
+sequelize
+  .authenticate()
+  .then(() => console.log('connection made'))
+  .catch(() => console.log('cannot connect'));
+
+exports.promiseQuery = query => sequelize.query(query, { type: sequelize.QueryTypes.SELECT });
+
+exports.insertQuery = query => sequelize.query(query, { returning: true });
+
+exports.deleteQuery = query => sequelize.query(query, { returning: true });
+
+exports.updateQuery = query => sequelize.query(query, { type: sequelize.QueryTypes.UPDATE });
+
+exports.MODE_PRODUCTION = 'mode_production';
