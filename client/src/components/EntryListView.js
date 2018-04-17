@@ -1,9 +1,10 @@
 import React from "react";
 import axios from "axios";
 import { parseString } from "xml2js";
-import { Search, Dropdown, Rating } from "semantic-ui-react";
+import { Search, Dropdown, Rating, Container } from "semantic-ui-react";
 import "./EntryListView.css";
 import BookDetail from "./Entry/BookDetail";
+import EntryDetail from "./Entry/EntryDetail";
 
 class EntryListView extends React.Component {
   constructor() {
@@ -48,7 +49,11 @@ class EntryListView extends React.Component {
       .then(res => {
         parseString(res.data, (err, result) => {
           const book = result.GoodreadsResponse.book[0];
-          console.log(book.description[0].split("<br /><br />"));
+          console.log(
+            book.description[0]
+              .split("<br /><br />")
+              .map(p => p.replace(/<.*?>/gm, ""))
+          );
           entries.setState({
             resultDetail: {
               title: book.title[0],
@@ -56,12 +61,13 @@ class EntryListView extends React.Component {
               id: data.result.id,
               authors: book.authors[0].author.map(obj => obj.name[0]),
               yearPublished: book.publication_year[0],
-              description: book.description[0].split("<br /><br />"),
+              description: book.description[0]
+                .split("<br /><br />")
+                .map(paragraph => paragraph.replace(/<.*?>/gm, "")),
               imageUrl: book.image_url[0],
               link: book.link[0]
             }
           });
-          console.log(entries.state.resultDetail);
         });
       })
       .catch(err => {
@@ -110,13 +116,14 @@ class EntryListView extends React.Component {
 
   render() {
     if (this.state.resultDetail) {
-      return <BookDetail result={this.state.resultDetail} />;
+      return <EntryDetail result={this.state.resultDetail} />;
     } else {
       return (
-        <div>
+        <Container>
           <div className="page-title">
             <h1>Add Recommendations</h1>
           </div>
+
           <Dropdown
             placeholder="Select Category"
             selection
@@ -128,7 +135,7 @@ class EntryListView extends React.Component {
             resultRenderer={this.renderResult}
             onResultSelect={this.handleResultSelect}
           />
-        </div>
+        </Container>
       );
     }
   }

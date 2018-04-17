@@ -17,12 +17,16 @@ exports.FETCH_BOOKS = (userId, category) => `
 // 	WHERE d.deckname = '${deckName}';`;
 // };
 
-// // Add Deck
-// exports.ADD_DECK = deckName => `
-// 	INSERT INTO decks(id, deckname, score)
-// 		VALUES(DEFAULT, '${deckName}', 0)
-// 		RETURNING *
-// `;
+// Add Deck
+exports.ADD_BOOK = bookInfo => {
+  let { title, description, imageUrl, link, firstName, lastName } = bookInfo;
+  description = description.map(p => p.replace(/\'/gi, "''"));
+  return `
+    INSERT INTO books (id, title, thumbnail_url, description, url)
+		  VALUES (DEFAULT, '${title}', '${imageUrl}', '${description}', E${link}')
+    RETURNING *;
+    `;
+};
 
 // // Delete deck from db
 // exports.DELETE_DECK = id => `
