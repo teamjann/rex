@@ -32,12 +32,12 @@ class BrowseView extends Component {
 
     fetch(`/u/${userId}/${category}`)
       .then(res => res.json())
-      .then((categoryItems) => {
+      .then(categoryItems => {
         this.setState({
           [category]: categoryItems,
         });
       })
-      .catch((err) => {
+      .catch(err => {
         throw err;
       });
   }
