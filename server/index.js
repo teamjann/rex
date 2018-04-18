@@ -1,9 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const {
-  promiseQuery, insertQuery, updateQuery, deleteQuery,
+  promiseQuery,
+  insertQuery,
+  updateQuery,
+  deleteQuery
 } = require('../database/index');
-const { FETCH_BOOKS } = require('../database/queries');
+const { FETCH_BOOKS, ADD_BOOK, ADD_REC } = require('../database/queries');
 
 const app = express();
 
@@ -13,9 +17,8 @@ app.use(express.static(`${__dirname}/../client/dist`));
 
 app.get('/u/:userId/:category', (req, res) => {
   const { userId, category } = req.params;
-
   promiseQuery(FETCH_BOOKS(userId, category))
-    .then((books) => {
+    .then(books => {
       const parsedBooks = books.reduce((bookItems, recommendation) => {
         const {
           rec_id,
@@ -28,21 +31,21 @@ app.get('/u/:userId/:category', (req, res) => {
           title,
           thumbnail_url,
           description,
-          url,
+          url
         } = recommendation;
 
         const recEntry = {
           recommender_id,
           recommender_name,
           comment,
-          date_added,
+          date_added
         };
 
         const book = {
           title,
           thumbnail_url,
           description,
-          url,
+          url
         };
 
         console.log(bookItems);
@@ -52,7 +55,7 @@ app.get('/u/:userId/:category', (req, res) => {
         } else {
           bookItems[item_id] = {
             book,
-            recommendations: [recEntry],
+            recommendations: [recEntry]
           };
         }
 
@@ -67,8 +70,17 @@ app.get('/u/:userId/:category', (req, res) => {
     .catch(err => res.end('404', err));
 });
 
-app.get('/hello', (req, res) => {
-  res.json('hey');
+app.post('/u/:userId/:category', (req, res) => {
+  const { userId, category } = req.params;
+  console.log('req.body', req.body);
+
+  insertQuery(ADD_REC(req.body))
+    .then(sqlResponse => res.json({ inserted: 'success' }))
+    .catch(err => console.log(err));
+});
+
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
 app.listen(3000, () => {

@@ -20,19 +20,19 @@ class BrowseView extends Component {
   state = {
     userId: 3,
     activeItem: 'Recommendations',
-    [this.props.category]: {},
+    // [this.props.category]: {}
+    books: {},
   };
 
   componentDidMount() {
-    const { category } = this.props;
+    // const { category } = this.props;
+    const category = 'books';
     const { userId } = this.state;
+    console.log(userId, category);
 
     fetch(`/u/${userId}/${category}`)
       .then(res => res.json())
       .then((categoryItems) => {
-        console.log(JSON.stringify(categoryItems));
-        // For example, if category 'books', sets state to:
-        // { books: { id: { book: {}, recommendations: [ { rec1 }  ]}, id2 } }
         this.setState({
           [category]: categoryItems,
         });
@@ -45,7 +45,8 @@ class BrowseView extends Component {
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
   render() {
-    const { category } = this.props;
+    // const { category } = this.props;
+    const category = 'books';
     const { activeItem } = this.state;
 
     return (
@@ -79,7 +80,7 @@ class BrowseView extends Component {
         <BookList>
           {Object.entries(this.state[category]).map(([bookId, bookInfo]) => {
             const { book, recommendations } = bookInfo;
-            // const recommendationCount = recommendations.length;
+            const recommendationCount = recommendations.length;
             return <BookItem book={book} recommendations={recommendations} />;
           })}
         </BookList>

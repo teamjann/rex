@@ -1,26 +1,26 @@
 import React, { Component } from 'react';
-// import { Button, Icon, Label } from 'semantic-ui-react';
-import './App.css';
-// import components
+import { Route, Link, BrowserRouter, Switch } from 'react-router-dom';
+import Home from './Home';
+import EntryDetail from './Entry/EntryDetail';
+import BrowseDetail from './Browse/BrowseDetail';
+import { Button, Container } from 'semantic-ui-react';
+import { Dropdown, Menu } from 'semantic-ui-react';
+import EntryListView from './EntryListView';
 import BrowseView from './BrowseView';
 
-class App extends Component {
-  state = {
-    showBooks: true,
-  };
+const NewRecommendationButton = () => <Button>Enter New Recommendation </Button>;
 
+class App extends Component {
   render() {
     return (
       <div>
-        <button
-          onClick={() => {
-            this.setState({ showBooks: !this.state.showBooks });
-          }}
-        >
-          Show books component
-        </button>
-
-        {this.state.showBooks && <BrowseView category="books" />}
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/browsedetail" component={BrowseDetail} />
+          <Route exact path="/entrydetail" component={EntryDetail} />
+          <Route exact path="/entry" component={EntryListView} />
+          <Route exact path="/browse" component={BrowseView} />
+        </Switch>
       </div>
     );
   }
