@@ -1,9 +1,13 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+var express = require("express");
+var bodyParser = require("body-parser");
+var path = require("path");
 const {
-  promiseQuery, insertQuery, updateQuery, deleteQuery,
-} = require('../database/index');
-const { FETCH_BOOKS } = require('../database/queries');
+  promiseQuery,
+  insertQuery,
+  updateQuery,
+  deleteQuery
+} = require("../database/index");
+const { FETCH_BOOKS, ADD_BOOK } = require("../database/queries");
 
 const app = express();
 
@@ -11,11 +15,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(`${__dirname}/../client/dist`));
 
-app.get('/u/:userId/:category', (req, res) => {
+app.get("/u/:userId/:category", (req, res) => {
   const { userId, category } = req.params;
-
   promiseQuery(FETCH_BOOKS(userId, category))
-    .then((books) => {
+    .then(books => {
       const parsedBooks = books.reduce((bookItems, recommendation) => {
         const {
           rec_id,
@@ -28,21 +31,21 @@ app.get('/u/:userId/:category', (req, res) => {
           title,
           thumbnail_url,
           description,
-          url,
+          url
         } = recommendation;
 
         const recEntry = {
           recommender_id,
           recommender_name,
           comment,
-          date_added,
+          date_added
         };
 
         const book = {
           title,
           thumbnail_url,
           description,
-          url,
+          url
         };
 
         console.log(bookItems);
@@ -52,27 +55,36 @@ app.get('/u/:userId/:category', (req, res) => {
         } else {
           bookItems[item_id] = {
             book,
-            recommendations: [recEntry],
+            recommendations: [recEntry]
           };
         }
 
         return bookItems;
       }, {});
 
-      console.log('parsedBooks = ', parsedBooks);
+      console.log("parsedBooks = ", parsedBooks);
 
       res.json(parsedBooks);
       res.end();
     })
-    .catch(err => res.end('404', err));
+    .catch(err => res.end("404", err));
 });
 
-app.get('/hello', (req, res) => {
-  res.json('hey');
+app.post("/u/:userId/:category", (req, res) => {
+  const { userId, category } = req.params;
+  // console.log("request body: ", req.body);
+  insertQuery(ADD_BOOK(req.body))
+    .then(id => console.log("id", id))
+    .catch(err => console.log(err));
+  res.end();
+});
+
+app.get("*", function(req, res) {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
 app.listen(3000, () => {
-  console.log('listening on port 3000!');
+  console.log("listening on port 3000!");
 });
 
 // {
