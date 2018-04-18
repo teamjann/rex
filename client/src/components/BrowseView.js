@@ -30,6 +30,9 @@ class BrowseView extends Component {
     fetch(`/u/${userId}/${category}`)
       .then(res => res.json())
       .then((categoryItems) => {
+        console.log(JSON.stringify(categoryItems));
+        // For example, if category 'books', sets state to:
+        // { books: { id: { book: {}, recommendations: [ { rec1 }  ]}, id2 } }
         this.setState({
           [category]: categoryItems,
         });
