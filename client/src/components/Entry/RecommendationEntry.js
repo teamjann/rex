@@ -7,10 +7,10 @@ import {
   Container,
   Divider
 } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 class RecommendationEntry extends Component {
-  state = { firstName: "", lastName: "", comments: "" };
+  state = { firstName: "", lastName: "", comments: "", inserted: false };
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
 
@@ -53,14 +53,18 @@ class RecommendationEntry extends Component {
       headers: new Headers({
         "Content-Type": "application/json"
       })
-    })
-      .then(res => res.json())
-      .then(data => console.log("client-side", data));
+    }).then(res =>
+      this.setState({
+        inserted: true
+      })
+    );
     // render the browse view
   };
 
   render() {
-    return (
+    return this.state.inserted ? (
+      <Redirect to="/browse" />
+    ) : (
       <Container>
         <Divider />
         <Form onSubmit={this.handleSubmit}>
