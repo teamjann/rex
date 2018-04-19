@@ -30,7 +30,7 @@ exports.ADD_REC = bookInfo => {
     item_id,
     category,
     comments,
-    id
+    apiId
   } = bookInfo;
 
   let newDescription = description
@@ -45,7 +45,7 @@ exports.ADD_REC = bookInfo => {
 
   return `WITH book AS 
 ( INSERT INTO books(id, api_id, title, thumbnail_url, description, url) 
-VALUES(default, '${id}', '${newTitle}', '${imageUrl}', '${newDescription}', '${link}') RETURNING id )
+VALUES(default, '${apiId}', '${newTitle}', '${imageUrl}', '${newDescription}', '${link}') RETURNING id )
 INSERT INTO recommendations 
 (id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category) 
 VALUES(default, null, 3, '${recommender_name}', '${newComments}', 

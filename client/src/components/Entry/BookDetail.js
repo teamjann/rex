@@ -9,7 +9,8 @@ const BookDetail = props => {
     imageUrl,
     description,
     yearPublished,
-    link
+    link,
+    apiId
   } = props.result;
   return (
     <div>

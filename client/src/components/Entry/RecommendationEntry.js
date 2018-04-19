@@ -27,7 +27,7 @@ class RecommendationEntry extends Component {
       link,
       rating,
       yearPublished,
-      id
+      apiId
     } = this.props.entry;
 
     const category = "books";
@@ -46,7 +46,7 @@ class RecommendationEntry extends Component {
       comments,
       category,
       userId,
-      id
+      apiId
     };
 
     fetch(`/u/${userId}/${category}`, {
