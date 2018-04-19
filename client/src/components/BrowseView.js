@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Container, Header, Icon, Menu } from "semantic-ui-react";
-
-import BookItem from "./BookItem.js";
+import BookItem from "./BookItem";
+import BrowseDetail from "./Browse/BrowseDetail";
 
 const BookList = styled.ul`
   width: 100%;
@@ -21,7 +21,10 @@ class BrowseView extends Component {
     userId: 3,
     activeItem: "Recommendations",
     //[this.props.category]: {}
-    books: []
+    books: [],
+    clickedBook: {},
+    clickedRecommendations: [],
+    detailedView: false
   };
 
   componentDidMount() {
@@ -70,12 +73,26 @@ class BrowseView extends Component {
     });
   };
 
+  handleClick = props => {
+    console.log("handleClick props", props);
+    this.setState({
+      detailedView: true,
+      clickedBook: props.book,
+      clickedRecommendations: props.recommendations
+    });
+    //reroute the browsedetail view (bookdetails)
+  };
+
   render() {
     //const { category } = this.props;
     const category = "books";
     const { activeItem } = this.state;
-
-    return (
+    return this.state.detailedView ? (
+      <BrowseDetail
+        book={this.state.clickedBook}
+        recommendations={this.state.clickedRecommendations}
+      />
+    ) : (
       <Container>
         <Header as="h1" icon textAlign="center">
           <Icon name="book" circular />
@@ -107,7 +124,13 @@ class BrowseView extends Component {
           {this.state[category].map(([bookId, bookInfo]) => {
             const { book, recommendations } = bookInfo;
             // const recommendationCount = recommendations.length;
-            return <BookItem book={book} recommendations={recommendations} />;
+            return (
+              <BookItem
+                handleClick={props => this.handleClick(props)}
+                book={book}
+                recommendations={recommendations}
+              />
+            );
           })}
         </BookList>
       </Container>
