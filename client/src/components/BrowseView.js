@@ -22,19 +22,19 @@ class BrowseView extends Component {
     activeItem: 'Recommendations',
     // [this.props.category]: {}
     books: {},
+    showCompleted: false
   };
 
   componentDidMount() {
     // const { category } = this.props;
     const category = 'books';
     const { userId } = this.state;
-    console.log(userId, category);
 
     fetch(`/u/${userId}/${category}`)
       .then(res => res.json())
       .then(categoryItems => {
         this.setState({
-          [category]: categoryItems,
+          [category]: categoryItems
         });
       })
       .catch(err => {
@@ -43,6 +43,8 @@ class BrowseView extends Component {
   }
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+  handleCompletedClick = (e, { name }) =>
+    this.setState({ showCompleted: !this.state.showCompleted });
 
   render() {
     // const { category } = this.props;
@@ -73,6 +75,12 @@ class BrowseView extends Component {
               name="Newest"
               active={activeItem === 'Newest'}
               onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name="Show Completed"
+              className="completedOption"
+              active={this.state.showCompleted}
+              onClick={this.handleCompletedClick}
             />
           </Menu>
         </MenuBar>
