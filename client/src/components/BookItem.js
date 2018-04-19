@@ -12,7 +12,14 @@ const BookItemContainer = styled.div`
   overflow: hidden;
 `;
 
-const BookItem = ({ id, book, recommendations, deleteBook, category }) => {
+const BookItem = ({
+  id,
+  book,
+  recommendations,
+  markCompleted,
+  deleteBook,
+  category
+}) => {
   const { title, description, thumbnail_url } = book;
   const firstRecommender = recommendations[0];
 
@@ -57,7 +64,11 @@ const BookItem = ({ id, book, recommendations, deleteBook, category }) => {
             justifyContent: 'center'
           }}
         >
-          <Icon name="check" size="big" />
+          <Icon
+            name="check"
+            onClick={() => markCompleted({ category, id })}
+            size="big"
+          />
           <Icon
             name="trash"
             onClick={() => deleteBook({ category, id })}

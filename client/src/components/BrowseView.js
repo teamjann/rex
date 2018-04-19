@@ -26,6 +26,7 @@ class BrowseView extends Component {
     showCompleted: false
   };
 
+  // LOAD BOOKS INTO STATE FROM DB
   populateBooks() {
     const category = 'books';
     const { userId } = this.state;
@@ -42,12 +43,10 @@ class BrowseView extends Component {
       });
   }
 
+  // DELETES BOOK FROM DB AND STATE
+  // deletedInfo must have category and id
   deleteBook = deletedInfo => {
-    const { category, id } = deletedInfo;
-    const { userId } = this.state;
-
-    console.log(deletedInfo);
-
+    // Pop-up asking for delete confirmation
     swal({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -58,32 +57,63 @@ class BrowseView extends Component {
       confirmButtonText: 'Yes, delete it!'
     }).then(result => {
       if (result.value) {
-        // swal('Deleted!', 'Your file has been deleted.', 'success');
+        // On delete confirmation, sends DELETE request to server
+        const { category, id } = deletedInfo;
+        const { userId } = this.state;
 
         fetch(`/u/${userId}/${category}/${id}`, {
           method: 'DELETE'
         })
           .then(res => res.json())
           .then(data => {
+            // On server response, deletes item from React state
             const categoryItems = this.state[category];
-            console.log('before delete', categoryItems);
 
             delete categoryItems[id];
-
-            console.log('after delete', categoryItems);
 
             this.setState({
               [category]: categoryItems
             });
-
-            console.log('new state', this.state);
           })
           .catch(err => console.log('delete unsuccessful', err));
       }
     });
   };
 
-  updateBook() {}
+  // MARKS ITEM AS COMPLETED AND ASSIGNS RATING
+  markCompleted = itemInfo => {
+    const { userId } = this.state;
+    const { category, id } = itemInfo;
+
+    swal({
+      title: 'Rate the recommendation:',
+      showCancelButton: true,
+      type: 'question',
+      input: 'range',
+      inputAttributes: {
+        min: 0,
+        max: 5,
+        step: 0.5
+      },
+      inputValue: 2.5
+    }).then(result => {
+      if (result.value) {
+        fetch(`/u/${userId}/${category}/id`, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            status: 'completed',
+            rating: result.value
+          })
+        })
+          .then(res => console.log('success'))
+          .catch(err => console.log('insert failed'));
+      }
+    });
+  };
 
   componentDidMount() {
     this.populateBooks();
@@ -142,6 +172,7 @@ class BrowseView extends Component {
                 book={book}
                 recommendations={recommendations}
                 deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
+                markCompleted={this.markCompleted}
                 category={category}
               />
             );
