@@ -75,9 +75,9 @@ app.post("/u/:userId/:category", (req, res) => {
   const { userId, category } = req.params;
   //check if the book already exists (user_id + book_id)
   validateQuery(
-    `select exists(select 1 from recommendations where user_id=${
+    `select exists(select 1 from recommendations r inner join books b on b.id = r.item_id where r.user_id=${
       req.body.userId
-    } AND item_id=${req.body.id});`
+    } AND b.api_id=${req.body.id});`
   ).then(exist => {
     if (exist[0][0].exists) {
       res.json({ alreadyExist: true });
