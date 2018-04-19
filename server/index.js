@@ -7,7 +7,12 @@ const {
   updateQuery,
   deleteQuery
 } = require('../database/index');
-const { FETCH_BOOKS, ADD_BOOK, ADD_REC } = require('../database/queries');
+const {
+  FETCH_BOOKS,
+  ADD_BOOK,
+  DELETE_BOOK,
+  ADD_REC
+} = require('../database/queries');
 
 const app = express();
 
@@ -48,8 +53,6 @@ app.get('/u/:userId/:category', (req, res) => {
           url
         };
 
-        console.log(bookItems);
-
         if (item_id in bookItems) {
           bookItems[item_id].recommendations.push(recEntry);
         } else {
@@ -61,8 +64,6 @@ app.get('/u/:userId/:category', (req, res) => {
 
         return bookItems;
       }, {});
-
-      console.log('parsedBooks = ', parsedBooks);
 
       res.json(parsedBooks);
       res.end();
@@ -79,6 +80,16 @@ app.post('/u/:userId/:category', (req, res) => {
     .catch(err => console.log(err));
 });
 
+// DELETE RECOMMENDATIONS FOR A BOOK
+app.delete('/u/:userId/:category/:itemId', (req, res) => {
+  const { userId, category, itemId } = req.params;
+
+  deleteQuery(DELETE_BOOK({ userId, category, itemId }))
+    .then(sqlRes => res.json({ deleted: itemId }))
+    .catch(err => console.log(err));
+});
+
+// SERVE REACT INDEX.HTML FOR ALL UNHANDLED REQUESTS
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });

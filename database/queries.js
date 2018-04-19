@@ -18,7 +18,7 @@ exports.FETCH_BOOKS = (userId, category) => `
 // };
 
 exports.ADD_REC = bookInfo => {
-  console.log("bookInfo Database Side~~~~~~~~~", bookInfo);
+  console.log('bookInfo Database Side~~~~~~~~~', bookInfo);
   let {
     title,
     description,
@@ -34,23 +34,23 @@ exports.ADD_REC = bookInfo => {
   } = bookInfo;
 
   let newDescription = description
-    .join("\n")
-    .split(" ")
+    .join('\n')
+    .split(' ')
     .slice(0, 100);
-  newDescription.push("...");
-  newDescription = newDescription.join(" ").replace(/\'/gi, "''");
+  newDescription.push('...');
+  newDescription = newDescription.join(' ').replace(/\'/gi, "''");
   let newTitle = title.replace(/\'/gi, "''");
   let newComments = comments.replace(/\'/gi, "''");
-  let recommender_name = firstName + " " + lastName;
+  let recommender_name = firstName + ' ' + lastName;
   console.log(
-    "bookinfo after cleaning up~~~~~~~~~~~",
-    "description",
+    'bookinfo after cleaning up~~~~~~~~~~~',
+    'description',
     newDescription,
-    "title",
+    'title',
     newTitle,
-    "coments",
+    'coments',
     newComments,
-    "recommender_name",
+    'recommender_name',
     recommender_name
   );
   return `WITH book AS 
@@ -61,6 +61,14 @@ INSERT INTO recommendations
 VALUES(DEFAULT, null, 3, '${recommender_name}', '${newComments}', 
         ( SELECT id from book ), default, '${category}');`;
 };
+
+// Delete recommendations for a book
+exports.DELETE_BOOK = ({ userId, category, itemId }) => `
+  DELETE FROM recommendations r
+    WHERE r.user_id='${userId}'
+    AND r.category='${category}'
+    AND r.item_id='${itemId}';
+`;
 
 // 	DELETE FROM decks d WHERE d.id = '${id}'
 // 	RETURNING *

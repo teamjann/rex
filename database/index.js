@@ -22,6 +22,9 @@ exports.insertQuery = query => sequelize.query(query, { returning: true });
 exports.deleteQuery = query => sequelize.query(query, { returning: true });
 
 exports.updateQuery = query =>
-  sequelize.query(query, { type: sequelize.QueryTypes.UPDATE });
+  sequelize.query(query, {
+    type: sequelize.QueryTypes.UPDATE,
+    returning: true
+  });
 
 exports.MODE_PRODUCTION = 'mode_production';

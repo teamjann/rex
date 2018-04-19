@@ -25,8 +25,7 @@ class BrowseView extends Component {
     showCompleted: false
   };
 
-  componentDidMount() {
-    // const { category } = this.props;
+  populateBooks() {
     const category = 'books';
     const { userId } = this.state;
 
@@ -40,6 +39,14 @@ class BrowseView extends Component {
       .catch(err => {
         throw err;
       });
+  }
+
+  deleteBook() {}
+
+  updateBook() {}
+
+  componentDidMount() {
+    this.populateBooks();
   }
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
