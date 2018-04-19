@@ -50,7 +50,6 @@ class EntryListView extends React.Component {
     axios
       .get(url)
       .then(res => {
-        console.log(res.data);
         const book = res.data.query.results.GoodreadsResponse.book;
         entries.setState({
           resultDetail: {
