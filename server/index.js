@@ -37,7 +37,9 @@ app.get('/u/:userId/:category', (req, res) => {
           title,
           thumbnail_url,
           description,
-          url
+          url,
+          status,
+          user_rating
         } = recommendation;
 
         const recEntry = {
@@ -51,7 +53,9 @@ app.get('/u/:userId/:category', (req, res) => {
           title,
           thumbnail_url,
           description,
-          url
+          url,
+          status,
+          user_rating
         };
 
         if (item_id in bookItems) {

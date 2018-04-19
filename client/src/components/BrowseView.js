@@ -109,7 +109,21 @@ class BrowseView extends Component {
             rating: result.value
           })
         })
-          .then(res => console.log('success'))
+          .then(res =>
+            this.setState({
+              [category]: {
+                ...this.state[category],
+                [id]: {
+                  ...this.state[category][id],
+                  book: {
+                    ...this.state[category][id].book,
+                    status: 'completed',
+                    rating: result.value
+                  }
+                }
+              }
+            })
+          )
           .catch(err => console.log('insert failed'));
       }
     });
@@ -166,16 +180,20 @@ class BrowseView extends Component {
           {Object.entries(this.state[category]).map(([bookId, bookInfo]) => {
             const { book, recommendations } = bookInfo;
             const recommendationCount = recommendations.length;
-            return (
-              <BookItem
-                id={bookId}
-                book={book}
-                recommendations={recommendations}
-                deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
-                markCompleted={this.markCompleted}
-                category={category}
-              />
-            );
+            const { showCompleted } = this.state;
+
+            if (showCompleted || book.status === 'active') {
+              return (
+                <BookItem
+                  id={bookId}
+                  book={book}
+                  recommendations={recommendations}
+                  deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
+                  markCompleted={this.markCompleted}
+                  category={category}
+                />
+              );
+            }
           })}
         </BookList>
       </Container>
