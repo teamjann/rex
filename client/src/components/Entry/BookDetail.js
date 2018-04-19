@@ -5,7 +5,6 @@ const BookDetail = (props) => {
   const {
     title, authors, rating, imageUrl, description, yearPublished, link,
   } = props.result;
-  console.log('Detail description: ', description);
   return (
     <div>
       <Container>
