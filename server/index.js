@@ -11,7 +11,8 @@ const {
   FETCH_BOOKS,
   ADD_BOOK,
   DELETE_BOOK,
-  ADD_REC
+  ADD_REC,
+  UPDATE_RECOMMENDATION
 } = require('../database/queries');
 
 const app = express();
@@ -78,6 +79,27 @@ app.post('/u/:userId/:category', (req, res) => {
   insertQuery(ADD_REC(req.body))
     .then(sqlResponse => res.json({ inserted: 'success' }))
     .catch(err => console.log(err));
+});
+
+// UPDATE STATUS / RATING FOR RECOMMENDATION
+app.put('/u/:userId/:category/:itemId', (req, res) => {
+  const { userId, category, itemId } = req.params;
+  const { status, rating } = req.body;
+
+  updateQuery(
+    UPDATE_RECOMMENDATION({
+      userId,
+      category,
+      itemId,
+      status,
+      rating
+    })
+  )
+    .then(sqlRes => {
+      console.log(sqlRes);
+      res.send('success');
+    })
+    .catch(err => console.log('could not update'));
 });
 
 // DELETE RECOMMENDATIONS FOR A BOOK

@@ -98,12 +98,12 @@ class BrowseView extends Component {
       inputValue: 2.5
     }).then(result => {
       if (result.value) {
-        fetch(`/u/${userId}/${category}/id`, {
+        fetch(`/u/${userId}/${category}/${id}`, {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
           },
-          method: 'POST',
+          method: 'PUT',
           body: JSON.stringify({
             status: 'completed',
             rating: result.value

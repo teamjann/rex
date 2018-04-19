@@ -70,6 +70,21 @@ exports.DELETE_BOOK = ({ userId, category, itemId }) => `
     AND r.item_id='${itemId}';
 `;
 
+// Update Recommendation
+exports.UPDATE_RECOMMENDATION = ({
+  userId,
+  category,
+  itemId,
+  status,
+  rating
+}) => `
+  UPDATE recommendations r 
+  SET status = '${status}', user_rating='${rating}' 
+  WHERE r.user_id='${userId}'
+  AND r.category='${category}'
+  AND r.item_id='${itemId}';
+`;
+
 // 	DELETE FROM decks d WHERE d.id = '${id}'
 // 	RETURNING *
 // `;
@@ -79,9 +94,4 @@ exports.DELETE_BOOK = ({ userId, category, itemId }) => `
 // 	INSERT INTO cards(id, card_front, card_back, deck_id)
 // 		VALUES(DEFAULT, '${cardFront}', '${cardBack}', ${deckId})
 // 		RETURNING *
-// `;
-
-// // Update Deck Quiz score
-// exports.UPDATE_SCORE = ({ id, score }) => `
-// 	UPDATE decks SET score = '${score}' where id = '${id}'
 // `;
