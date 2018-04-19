@@ -14,25 +14,27 @@ export default class Home extends Component {
       <Container>
         <div className="background">
           <div className="transbox">
-            <h1 className="title">Rex: Friends' recommendation is alwasy better</h1>
+            <h1 className="title">
+              Rex: Friends' recommendation is alwasy better
+            </h1>
           </div>
         </div>
-        <div className="row">
-          <div className="logo">
+        <div className="IconRow">
+          <div className="homeMenuIcon">
             <div> BOOKS</div>
             <Link to="/entry">
               <img src={book} width="280px" height="250px" />
             </Link>
           </div>
-          <div className="logo">
+          <div className="homeMenuIcon">
             <div> MOVIES</div>
             <img src={movie} width="280px" height="250px" />
           </div>
-          <div className="logo">
+          <div className="homeMenuIcon">
             <div> HIKING ROUTS</div>
             <img src={hiking} width="280px" height="250px" />
           </div>
-          <div className="logo">
+          <div className="homeMenuIcon">
             <div> RESTAURANTS</div>
             <img src={food} width="280px" height="250px" />
           </div>

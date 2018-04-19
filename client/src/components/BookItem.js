@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Icon } from 'semantic-ui-react';
-import swal from 'sweetalert2';
 
 const BookItemContainer = styled.div`
   display: flex;
@@ -13,25 +12,9 @@ const BookItemContainer = styled.div`
   overflow: hidden;
 `;
 
-const BookItem = ({ book, recommendations }) => {
+const BookItem = ({ id, book, recommendations, deleteBook, category }) => {
   const { title, description, thumbnail_url } = book;
   const firstRecommender = recommendations[0];
-
-  const handleDeleteItem = () => {
-    swal({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    }).then(result => {
-      if (result.value) {
-        swal('Deleted!', 'Your file has been deleted.', 'success');
-      }
-    });
-  };
 
   return (
     <li>
@@ -75,7 +58,11 @@ const BookItem = ({ book, recommendations }) => {
           }}
         >
           <Icon name="check" size="big" />
-          <Icon name="trash" onClick={handleDeleteItem} size="big" />
+          <Icon
+            name="trash"
+            onClick={() => deleteBook({ category, id })}
+            size="big"
+          />
         </div>
       </BookItemContainer>
     </li>

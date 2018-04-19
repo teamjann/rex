@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Container, Header, Icon, Menu } from 'semantic-ui-react';
+import swal from 'sweetalert2';
 
 import BookItem from './BookItem.js';
 
@@ -41,7 +42,46 @@ class BrowseView extends Component {
       });
   }
 
-  deleteBook() {}
+  deleteBook = deletedInfo => {
+    const { category, id } = deletedInfo;
+    const { userId } = this.state;
+
+    console.log(deletedInfo);
+
+    swal({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(result => {
+      if (result.value) {
+        // swal('Deleted!', 'Your file has been deleted.', 'success');
+
+        fetch(`/u/${userId}/${category}/${id}`, {
+          method: 'DELETE'
+        })
+          .then(res => res.json())
+          .then(data => {
+            const categoryItems = this.state[category];
+            console.log('before delete', categoryItems);
+
+            delete categoryItems[id];
+
+            console.log('after delete', categoryItems);
+
+            this.setState({
+              [category]: categoryItems
+            });
+
+            console.log('new state', this.state);
+          })
+          .catch(err => console.log('delete unsuccessful', err));
+      }
+    });
+  };
 
   updateBook() {}
 
@@ -56,7 +96,7 @@ class BrowseView extends Component {
   render() {
     // const { category } = this.props;
     const category = 'books';
-    const { activeItem } = this.state;
+    const { activeItem, userId } = this.state;
 
     return (
       <Container>
@@ -96,7 +136,15 @@ class BrowseView extends Component {
           {Object.entries(this.state[category]).map(([bookId, bookInfo]) => {
             const { book, recommendations } = bookInfo;
             const recommendationCount = recommendations.length;
-            return <BookItem book={book} recommendations={recommendations} />;
+            return (
+              <BookItem
+                id={bookId}
+                book={book}
+                recommendations={recommendations}
+                deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
+                category={category}
+              />
+            );
           })}
         </BookList>
       </Container>
