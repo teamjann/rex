@@ -1,8 +1,12 @@
 import React from "react";
+
 import axios from "axios";
-import { parseString } from "xml2js";
+import proxify from "proxify-url";
+
 import { Search, Dropdown, Rating, Container } from "semantic-ui-react";
+
 import "./EntryListView.css";
+
 import BookDetail from "./Entry/BookDetail";
 import EntryDetail from "./Entry/EntryDetail";
 
@@ -37,76 +41,69 @@ class EntryListView extends React.Component {
   }
 
   handleResultSelect(e, data) {
-    const options = {
-      params: {
-        id: data.result.id,
-        key: "KB2ywbcnLjNO8pokkBVgg"
-      }
+    const params = {
+      id: data.result.apiId,
+      key: "KB2ywbcnLjNO8pokkBVgg"
     };
     const entries = this;
+    const url = proxify(`https://www.goodreads.com/book/show.xml?id=${params.id}&key=${params.key}`, {inputFormat: 'xml'});
     axios
-      .get("https://www.goodreads.com/book/show.xml", options)
+      .get(url)
       .then(res => {
-        parseString(res.data, (err, result) => {
-          const book = result.GoodreadsResponse.book[0];
-          console.log(
-            book.description[0]
+        const book = res.data.query.results.GoodreadsResponse.book;
+        entries.setState({
+          resultDetail: {
+            title: book.title,
+            rating: book.average_rating,
+            apiId: data.result.id,
+            authors: book.authors.author.map(author => {
+              if (author.role) {
+                return `${author.name} (${author.role})`;
+              }
+              return author.name
+            }),
+            yearPublished: book.publication_year,
+            description: book.description
               .split("<br /><br />")
-              .map(p => p.replace(/<.*?>/gm, ""))
-          );
-          entries.setState({
-            resultDetail: {
-              title: book.title[0],
-              rating: book.average_rating[0],
-              id: data.result.id,
-              authors: book.authors[0].author.map(obj => obj.name[0]),
-              yearPublished: book.publication_year[0],
-              description: book.description[0]
-                .split("<br /><br />")
-                .map(paragraph => paragraph.replace(/<.*?>/gm, "")),
-              imageUrl: book.image_url[0],
-              link: book.link[0]
-            }
-          });
+              .map(paragraph => paragraph.replace(/<.*?>/gm, "")),
+            imageUrl: book.image_url,
+            link: book.link
+          }
         });
       })
       .catch(err => {
-        console.error(err);
+      console.error(err);
       });
   }
 
   search(e, data) {
     e.preventDefault();
-    const options = {
-      params: {
-        q: data.value,
-        key: "KB2ywbcnLjNO8pokkBVgg"
-      }
+    const params = {
+      q: data.value,
+      key: "KB2ywbcnLjNO8pokkBVgg"
     };
     const entries = this;
+
+    const url = proxify(`https://www.goodreads.com/search/index.xml?q=${params.q}&key=${params.key}`,
+      {inputFormat: 'xml'});
+
     axios
-      .get("https://www.goodreads.com/search/index.xml", options)
+      .get(url)
       .then(res => {
-        parseString(res.data, (err, result) => {
-          if (err) {
-            return console.log(err);
+        const resultItems = res.data.query.results.GoodreadsResponse.search.results.work;
+        const books = resultItems.map(
+          book => {
+            return {
+              title: book.best_book.title,
+              rating: Number(book.average_rating),
+              apiId: Number(book.best_book.id.content),
+              author: book.best_book.author.name,
+              imageUrl: book.best_book.image_url
+            };
           }
-          const books = result.GoodreadsResponse.search[0].results[0].work.map(
-            book => {
-              const rating = Number(book.average_rating[0]);
-              const otherInfo = book.best_book[0];
-              return {
-                title: otherInfo.title[0],
-                rating: rating,
-                id: Number(otherInfo.id[0]._),
-                author: otherInfo.author[0].name[0],
-                imageUrl: otherInfo.small_image_url[0]
-              };
-            }
-          );
-          entries.setState({
-            results: books
-          });
+        );
+        entries.setState({
+          results: books
         });
       })
       .catch(err => {

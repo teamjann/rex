@@ -11,7 +11,6 @@ const BookDetail = props => {
     yearPublished,
     link
   } = props.result;
-
   return (
     <div>
       <Container>
