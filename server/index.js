@@ -7,7 +7,7 @@ const {
   updateQuery,
   deleteQuery
 } = require("../database/index");
-const { FETCH_BOOKS, ADD_BOOK } = require("../database/queries");
+const { FETCH_BOOKS, ADD_BOOK, ADD_REC } = require("../database/queries");
 
 const app = express();
 
@@ -72,11 +72,11 @@ app.get("/u/:userId/:category", (req, res) => {
 
 app.post("/u/:userId/:category", (req, res) => {
   const { userId, category } = req.params;
-  // console.log("request body: ", req.body);
-  insertQuery(ADD_BOOK(req.body))
-    .then(id => console.log("id", id))
+  console.log("req.body", req.body);
+
+  insertQuery(ADD_REC(req.body))
+    .then(sqlResponse => res.json({ inserted: "success" }))
     .catch(err => console.log(err));
-  res.end();
 });
 
 app.get("*", function(req, res) {
