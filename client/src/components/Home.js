@@ -9,6 +9,7 @@ import food from '../images/food.gif';
 import './Home.css';
 
 export default class Home extends Component {
+
   render() {
     return (
       <Container>

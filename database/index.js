@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 
 const host = process.env.DATABASE_URL || {
   database: "rex",
-  username: "shuchen",
+  username: "Mike",
   password: null,
   dialect: "postgres"
 };

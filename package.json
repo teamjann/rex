@@ -24,8 +24,10 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bcrypt": "^2.0.1",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
+    "express-session": "^1.15.6",
     "file-loader": "^1.1.11",
     "image-webpack-loader": "^4.2.0",
     "path": "^0.12.7",
