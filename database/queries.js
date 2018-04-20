@@ -56,12 +56,21 @@ VALUES(default, null, 3, '${recommender_name}', '${newComments}',
 // 	RETURNING *
 // `;
 
-// // Add Card to DeckID
-// exports.ADD_CARD = ({ cardFront, cardBack, deckId }) => `
-// 	INSERT INTO cards(id, card_front, card_back, deck_id)
-// 		VALUES(DEFAULT, '${cardFront}', '${cardBack}', ${deckId})
-// 		RETURNING *
-// `;
+// Add recommender and comments info to an existing book based on book_id
+exports.ADD_REC_TO_EXISTING_BOOK = ({
+  userId,
+  category,
+  id,
+  firstName,
+  lastName,
+  comments
+}) => `
+	INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category)
+		VALUES(DEFAULT, null,'${userId}' , '${firstName +
+  " " +
+  lastName}', '${comments}', ${id}, default, '${category}')
+		RETURNING *;
+`;
 
 // // Update Deck Quiz score
 // exports.UPDATE_SCORE = ({ id, score }) => `

@@ -8,7 +8,12 @@ const {
   updateQuery,
   deleteQuery
 } = require("../database/index");
-const { FETCH_BOOKS, ADD_BOOK, ADD_REC } = require("../database/queries");
+const {
+  FETCH_BOOKS,
+  ADD_BOOK,
+  ADD_REC,
+  ADD_REC_TO_EXISTING_BOOK
+} = require("../database/queries");
 
 const app = express();
 
@@ -88,6 +93,22 @@ app.post("/u/:userId/:category", (req, res) => {
         .catch(err => console.log(err));
     }
   });
+});
+
+app.post("/u/:userId/:category/:bookId", (req, res) => {
+  const { userId, category, bookId } = req.params;
+  const { id, firstName, lastName, comments } = req.body;
+  const recInfo = {
+    userId,
+    category,
+    id,
+    firstName,
+    lastName,
+    comments
+  };
+  insertQuery(ADD_REC_TO_EXISTING_BOOK(recInfo))
+    .then(sqlResponse => res.json({ inserted: "success" }))
+    .catch(err => console.log(err));
 });
 
 app.get("*", function(req, res) {

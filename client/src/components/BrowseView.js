@@ -78,7 +78,8 @@ class BrowseView extends Component {
     this.setState({
       detailedView: true,
       clickedBook: props.book,
-      clickedRecommendations: props.recommendations
+      clickedRecommendations: props.recommendations,
+      clickedId: props.id
     });
     //reroute the browsedetail view (bookdetails)
   };
@@ -89,6 +90,12 @@ class BrowseView extends Component {
     const { activeItem } = this.state;
     return this.state.detailedView ? (
       <BrowseDetail
+        handleRecUpdate={categoryItems =>
+          this.setState({
+            clickedRecommendations: categoryItems
+          })
+        }
+        id={this.state.clickedId}
         book={this.state.clickedBook}
         recommendations={this.state.clickedRecommendations}
       />
@@ -127,6 +134,7 @@ class BrowseView extends Component {
             return (
               <BookItem
                 handleClick={props => this.handleClick(props)}
+                id={bookId}
                 book={book}
                 recommendations={recommendations}
               />

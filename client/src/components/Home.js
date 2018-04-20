@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
 import {
   Dropdown,
   Menu,
@@ -8,7 +9,6 @@ import {
   Header,
   Icon
 } from "semantic-ui-react";
-import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
 
 const ButtonContainer = styled.ul`
   width: 100%;
