@@ -1,9 +1,12 @@
+// React
 import React, { Component } from 'react';
+// Styling
 import styled from 'styled-components';
-import { Container, Header, Icon, Menu } from 'semantic-ui-react';
+import { Container, Header, Icon } from 'semantic-ui-react';
 import swal from 'sweetalert2';
-
-import BookItem from './BookItem.js';
+// Components
+import SortMenu from './SortMenu';
+import BookItem from './BookItem';
 
 const BookList = styled.ul`
   width: 100%;
@@ -11,22 +14,14 @@ const BookList = styled.ul`
   list-style: none;
 `;
 
-const MenuBar = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: 0;
-`;
 class BrowseView extends Component {
   state = {
     userId: 3,
     activeItem: 'Recommendations',
-    // [this.props.category]: {}
     books: {},
     showCompleted: false
   };
 
-  // LOAD BOOKS INTO STATE FROM DB
   populateBooks() {
     const category = 'books';
     const { userId } = this.state;
@@ -43,8 +38,6 @@ class BrowseView extends Component {
       });
   }
 
-  // DELETES BOOK FROM DB AND STATE
-  // deletedInfo must have category and id
   deleteBook = deletedInfo => {
     // Pop-up asking for delete confirmation
     swal({
@@ -57,7 +50,7 @@ class BrowseView extends Component {
       confirmButtonText: 'Yes, delete it!'
     }).then(result => {
       if (result.value) {
-        // On delete confirmation, sends DELETE request to server
+        // On confirmation, send DELETE request to server
         const { category, id } = deletedInfo;
         const { userId } = this.state;
 
@@ -66,7 +59,7 @@ class BrowseView extends Component {
         })
           .then(res => res.json())
           .then(data => {
-            // On server response, deletes item from React state
+            // On server response, delete item from state
             const categoryItems = this.state[category];
 
             delete categoryItems[id];
@@ -80,11 +73,11 @@ class BrowseView extends Component {
     });
   };
 
-  // MARKS ITEM AS COMPLETED AND ASSIGNS RATING
   markCompleted = itemInfo => {
     const { userId } = this.state;
     const { category, id } = itemInfo;
 
+    // Rating pop-up
     swal({
       title: 'Rate the recommendation:',
       showCancelButton: true,
@@ -98,6 +91,7 @@ class BrowseView extends Component {
       inputValue: 2.5
     }).then(result => {
       if (result.value) {
+        // If rating confirmed, update in server
         fetch(`/u/${userId}/${category}/${id}`, {
           headers: {
             Accept: 'application/json',
@@ -110,6 +104,7 @@ class BrowseView extends Component {
           })
         })
           .then(res =>
+            // Update rating / status in state
             this.setState({
               [category]: {
                 ...this.state[category],
@@ -138,9 +133,8 @@ class BrowseView extends Component {
     this.setState({ showCompleted: !this.state.showCompleted });
 
   render() {
-    // const { category } = this.props;
     const category = 'books';
-    const { activeItem, userId } = this.state;
+    const { activeItem, userId, showCompleted } = this.state;
 
     return (
       <Container>
@@ -149,32 +143,12 @@ class BrowseView extends Component {
           <Header.Content>Books</Header.Content>
         </Header>
 
-        <MenuBar>
-          <Menu text>
-            <Menu.Item header>Sort By</Menu.Item>
-            <Menu.Item
-              name="Recommendations"
-              active={activeItem === 'Recommendations'}
-              onClick={this.handleItemClick}
-            />
-            <Menu.Item
-              name="Oldest"
-              active={activeItem === 'Oldest'}
-              onClick={this.handleItemClick}
-            />
-            <Menu.Item
-              name="Newest"
-              active={activeItem === 'Newest'}
-              onClick={this.handleItemClick}
-            />
-            <Menu.Item
-              name="Show Completed"
-              className="completedOption"
-              active={this.state.showCompleted}
-              onClick={this.handleCompletedClick}
-            />
-          </Menu>
-        </MenuBar>
+        <SortMenu
+          activeItem={activeItem}
+          showCompleted={showCompleted}
+          handleItemClick={this.handleItemClick}
+          handleCompletedClick={this.handleCompletedClick}
+        />
 
         <BookList>
           {Object.entries(this.state[category]).map(([bookId, bookInfo]) => {
