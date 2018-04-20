@@ -1,12 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+// Sequelize Requests, use SQL queries
 const {
   promiseQuery,
   insertQuery,
   updateQuery,
   deleteQuery
 } = require('../database/index');
+// SQL queries
 const {
   FETCH_BOOKS,
   ADD_BOOK,
@@ -21,8 +23,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(`${__dirname}/../client/dist`));
 
+// GET BOOKS AND RECOMMENDATIONS FOR USER
 app.get('/u/:userId/:category', (req, res) => {
   const { userId, category } = req.params;
+
   promiseQuery(FETCH_BOOKS(userId, category))
     .then(books => {
       const parsedBooks = books.reduce((bookItems, recommendation) => {
@@ -76,16 +80,16 @@ app.get('/u/:userId/:category', (req, res) => {
     .catch(err => res.end('404', err));
 });
 
+// ADD NEW RECOMMENDATION
 app.post('/u/:userId/:category', (req, res) => {
   const { userId, category } = req.params;
-  console.log('req.body', req.body);
 
   insertQuery(ADD_REC(req.body))
     .then(sqlResponse => res.json({ inserted: 'success' }))
     .catch(err => console.log(err));
 });
 
-// UPDATE STATUS / RATING FOR RECOMMENDATION
+// UPDATE STATUS & RATING FOR RECOMMENDATION
 app.put('/u/:userId/:category/:itemId', (req, res) => {
   const { userId, category, itemId } = req.params;
   const { status, rating } = req.body;
@@ -125,19 +129,3 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log('listening on port 3000!');
 });
-
-// {
-//   "rec_id": 6,
-//   "id": 2,
-//   "recommender_id": null,
-//   "user_id": 3,
-//   "recommender_name": "Bob",
-//   "comment": "read this",
-//   "item_id": 2,
-//   "date_added": "2018-04-10T21:03:13.518Z",
-//   "category": "books",
-//   "title": "Harry Potter",
-//   "thumbnail_url": "somesite",
-//   "description": "harry potter",
-//   "url": "potterlink"
-// }
