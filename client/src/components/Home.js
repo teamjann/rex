@@ -72,6 +72,7 @@ class FindRecommendationButton extends Component {
                 onClick={() => {
                   this.setState({ category: "books" });
                   //<Redirect to="/browse" />;
+                  //redirect is like component
                 }}
               >
                 <Link to="/browse">Books</Link>

@@ -56,6 +56,16 @@ VALUES(default, null, 3, '${recommender_name}', '${newComments}',
 // 	RETURNING *
 // `;
 
+exports.DELETE_REC_TO_EXISTING_BOOK = ({
+  userId,
+  comment,
+  id,
+  recommender_name
+}) =>
+  `DELETE FROM recommendations r where r.item_id = '${id}' AND r.user_id = '${userId}' 
+  AND r.comment = '${comment}' AND 
+  r.recommender_name = '${recommender_name}' RETURNING *`;
+
 // Add recommender and comments info to an existing book based on book_id
 exports.ADD_REC_TO_EXISTING_BOOK = ({
   userId,

@@ -59,12 +59,17 @@ class AddRecommenderButton extends Component {
             let newRecs = Object.entries(categoryItems).find(book => {
               return book[0] === id;
             })[1].recommendations;
+            console.log("~~~~~~~~~~~~~~~newRecs", newRecs);
             return this.props.handleRecUpdate(newRecs);
           })
       )
       .catch(err => {
         throw err;
       });
+
+    this.setState({
+      toggle: false
+    });
   };
 
   render() {
@@ -134,7 +139,12 @@ const BrowseDetail = props => {
       </header>
       <Item.Group>
         {props.recommendations.map(recommendation => (
-          <RecommendationListItem recommendation={recommendation} />
+          <RecommendationListItem
+            handleRemoveRec={props.handleRemoveRec}
+            id={props.id}
+            recommendation={recommendation}
+            recommendations={props.recommendations}
+          />
         ))}
       </Item.Group>
       <div className="buttons">

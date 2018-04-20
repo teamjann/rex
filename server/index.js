@@ -12,7 +12,8 @@ const {
   FETCH_BOOKS,
   ADD_BOOK,
   ADD_REC,
-  ADD_REC_TO_EXISTING_BOOK
+  ADD_REC_TO_EXISTING_BOOK,
+  DELETE_REC_TO_EXISTING_BOOK
 } = require("../database/queries");
 
 const app = express();
@@ -54,8 +55,6 @@ app.get("/u/:userId/:category", (req, res) => {
           url
         };
 
-        console.log(bookItems);
-
         if (item_id in bookItems) {
           bookItems[item_id].recommendations.push(recEntry);
         } else {
@@ -67,8 +66,6 @@ app.get("/u/:userId/:category", (req, res) => {
 
         return bookItems;
       }, {});
-
-      console.log("parsedBooks = ", parsedBooks);
 
       res.json(parsedBooks);
       res.end();
@@ -107,6 +104,22 @@ app.post("/u/:userId/:category/:bookId", (req, res) => {
     comments
   };
   insertQuery(ADD_REC_TO_EXISTING_BOOK(recInfo))
+    .then(sqlResponse => res.json({ inserted: "success" }))
+    .catch(err => console.log(err));
+});
+
+app.delete("/u/:userId/:category/:bookId", (req, res) => {
+  console.log("server side delete action", req.params, req.body);
+  const { userId, category, bookId } = req.params;
+  const { id, recommender_name, comment } = req.body;
+  const recInfo = {
+    userId,
+    category,
+    id,
+    recommender_name,
+    comment
+  };
+  deleteQuery(DELETE_REC_TO_EXISTING_BOOK(recInfo))
     .then(sqlResponse => res.json({ inserted: "success" }))
     .catch(err => console.log(err));
 });

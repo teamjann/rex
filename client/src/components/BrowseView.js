@@ -31,7 +31,6 @@ class BrowseView extends Component {
     // const { category } = this.props;
     const category = "books";
     const { userId } = this.state;
-    console.log(userId, category);
 
     fetch(`/u/${userId}/${category}`)
       .then(res => res.json())
@@ -74,7 +73,6 @@ class BrowseView extends Component {
   };
 
   handleClick = props => {
-    console.log("handleClick props", props);
     this.setState({
       detailedView: true,
       clickedBook: props.book,
@@ -90,6 +88,11 @@ class BrowseView extends Component {
     const { activeItem } = this.state;
     return this.state.detailedView ? (
       <BrowseDetail
+        handleRemoveRec={removeItem =>
+          this.setState({
+            clickedRecommendations: removeItem
+          })
+        }
         handleRecUpdate={categoryItems =>
           this.setState({
             clickedRecommendations: categoryItems
