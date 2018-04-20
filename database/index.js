@@ -27,4 +27,6 @@ exports.updateQuery = query =>
     returning: true
   });
 
+exports.validateQuery = query => sequelize.query(query, { returning: true });
+
 exports.MODE_PRODUCTION = 'mode_production';

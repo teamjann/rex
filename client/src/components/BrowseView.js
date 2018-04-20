@@ -7,6 +7,7 @@ import swal from 'sweetalert2';
 // Components
 import SortMenu from './SortMenu';
 import BookItem from './BookItem';
+import BrowseDetail from './Browse/BrowseDetail';
 
 const BookList = styled.ul`
   width: 100%;
@@ -19,7 +20,10 @@ class BrowseView extends Component {
     userId: 3,
     activeItem: 'Recommendations',
     books: {},
-    showCompleted: false
+    showCompleted: false,
+    clickedBook: {},
+    clickedRecommendations: [],
+    detailedView: false
   };
 
   populateBooks() {
@@ -128,15 +132,69 @@ class BrowseView extends Component {
     this.populateBooks();
   }
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
   handleCompletedClick = (e, { name }) =>
     this.setState({ showCompleted: !this.state.showCompleted });
 
+  handleItemClick = (e, { name }) => {
+    this.setState({ activeItem: name });
+    //declare sort type and the array of books
+    let sortType = this.state.activeItem;
+    const bookArray = this.state.books;
+    //sort the array of recommendation entries of each book (each book may have many rec entries)
+    const getLatestDate = arr => {
+      return arr.reduce((latestDate, rec) => {
+        return Math.max(new Date(rec.date_added), latestDate);
+      }, new Date(arr[0].date_added));
+    };
+    //sort the array of books
+    const sortBy = (a, b) => {
+      let latestDate_a = getLatestDate(a[1].recommendations);
+      let latestDate_b = getLatestDate(b[1].recommendations);
+      if (sortType === 'Newest') {
+        return latestDate_b - latestDate_a;
+      } else if (sortType === 'Oldest') {
+        return latestDate_a - latestDate_b;
+      }
+    };
+    // set state with the newly sorted array of books
+    let sortedArray = bookArray.sort(sortBy);
+    this.setState({
+      books: sortedArray
+    });
+  };
+
+  handleClick = ({ book, recommendations, id }) => {
+    this.setState({
+      detailedView: true,
+      clickedBook: book,
+      clickedRecommendations: recommendations,
+      clickedId: id
+    });
+    //reroute the browsedetail view (bookdetails)
+  };
+
   render() {
+    //const { category } = this.props;
     const category = 'books';
     const { activeItem, userId, showCompleted } = this.state;
 
-    return (
+    return this.state.detailedView ? (
+      <BrowseDetail
+        handleRemoveRec={removeItem =>
+          this.setState({
+            clickedRecommendations: removeItem
+          })
+        }
+        handleRecUpdate={categoryItems =>
+          this.setState({
+            clickedRecommendations: categoryItems
+          })
+        }
+        id={this.state.clickedId}
+        book={this.state.clickedBook}
+        recommendations={this.state.clickedRecommendations}
+      />
+    ) : (
       <Container>
         <Header as="h1" icon textAlign="center">
           <Icon name="book" circular />
@@ -152,6 +210,7 @@ class BrowseView extends Component {
 
         <BookList>
           {Object.entries(this.state[category]).map(([bookId, bookInfo]) => {
+            console.log(this.state);
             const { book, recommendations } = bookInfo;
             const recommendationCount = recommendations.length;
             const { showCompleted } = this.state;
@@ -159,6 +218,7 @@ class BrowseView extends Component {
             if (showCompleted || book.status === 'active') {
               return (
                 <BookItem
+                  handleClick={props => this.handleClick(props)}
                   id={bookId}
                   book={book}
                   recommendations={recommendations}

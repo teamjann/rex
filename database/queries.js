@@ -43,7 +43,8 @@ exports.ADD_REC = bookInfo => {
     lastName,
     item_id,
     category,
-    comments
+    comments,
+    apiId
   } = bookInfo;
 
   let newDescription = description
@@ -55,22 +56,33 @@ exports.ADD_REC = bookInfo => {
   let newTitle = title.replace(/\'/gi, "''");
   let newComments = comments.replace(/\'/gi, "''");
   let recommender_name = firstName + ' ' + lastName;
-  console.log(
-    'bookinfo after cleaning up~~~~~~~~~~~',
-    'description',
-    newDescription,
-    'title',
-    newTitle,
-    'coments',
-    newComments,
-    'recommender_name',
-    recommender_name
-  );
+
   return `WITH book AS 
-( INSERT INTO books(id, title, thumbnail_url, description, url) 
-VALUES(DEFAULT, '${newTitle}', '${imageUrl}', '${newDescription}', '${link}') RETURNING id )
+( INSERT INTO books(id, api_id, title, thumbnail_url, description, url) 
+VALUES(default, '${apiId}', '${newTitle}', '${imageUrl}', '${newDescription}', '${link}') RETURNING id )
 INSERT INTO recommendations 
 (id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category) 
-VALUES(DEFAULT, null, 3, '${recommender_name}', '${newComments}', 
+VALUES(default, null, 3, '${recommender_name}', '${newComments}', 
         ( SELECT id from book ), default, '${category}');`;
 };
+
+// Add recommender and comments info to an existing book based on book_id
+exports.ADD_REC_TO_EXISTING_BOOK = ({
+  userId,
+  category,
+  id,
+  firstName,
+  lastName,
+  comments
+}) => `
+	INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category)
+		VALUES(DEFAULT, null,'${userId}' , '${firstName +
+  ' ' +
+  lastName}', '${comments}', ${id}, default, '${category}')
+		RETURNING *;
+`;
+
+// // Update Deck Quiz score
+// exports.UPDATE_SCORE = ({ id, score }) => `
+// 	UPDATE decks SET score = '${score}' where id = '${id}'
+// `;

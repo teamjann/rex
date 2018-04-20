@@ -39,11 +39,12 @@ class EntryListView extends React.Component {
       .get(url)
       .then(res => {
         const book = res.data.query.results.GoodreadsResponse.book;
+        console.log("!!!!!!!!!!!!!", book);
         entries.setState({
           resultDetail: {
             title: book.title,
             rating: book.average_rating,
-            apiId: data.result.id,
+            apiId: book.id,
             authors: book.authors.author.map(author => {
               if (author.role) {
                 return `${author.name} (${author.role})`;

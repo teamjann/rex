@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Icon } from 'semantic-ui-react';
+import BookDetail from './Entry/BookDetail';
 
 const BookItemContainer = styled.div`
   display: flex;
@@ -18,7 +19,8 @@ const BookItem = ({
   recommendations,
   markCompleted,
   deleteBook,
-  category
+  category,
+  handleClick
 }) => {
   const { title, description, thumbnail_url } = book;
   const firstRecommender = recommendations[0];
@@ -46,7 +48,9 @@ const BookItem = ({
         </div>
         <div style={{ width: '58%', display: 'flex', flexWrap: 'wrap' }}>
           <div style={{ width: '100%' }}>
-            <h1>{title}</h1>
+            <h1 onClick={() => handleClick({ book, recommendations, id })}>
+              {title}
+            </h1>
             {description}
           </div>
           <div style={{ width: '100%', alignSelf: 'flex-end' }}>
