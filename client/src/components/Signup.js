@@ -6,29 +6,41 @@ import axios from 'axios';
 class Signup extends Component {
   state = {
     username: '',
-    password: ''
+    password: '',
+    firstName: '',
+    lastName: ''
   }
 
   handleChange = (event, { name, value }) => this.setState({ [name]: value })
 
   handleSubmit = (event) => {
-    const that = this;
+    const self = this;
     axios
     .post('/signup', this.state)
     .then((res) => {
-      that.props.handleAuth(res.data);
+      self.props.handleAuth(res.data);
     })
     .catch((err) => console.log(err));
     
-    this.setState({ username: '', password: '' })
+    this.setState({ username: '', password: '', firstName:'', lastName:'' })
   }
 
   render() {
-    const { name, email } = this.state
+    const { username, password, firstName, lastName } = this.state
 
     return (
       <Form onSubmit={this.handleSubmit}>
         <Form.Group>
+          <Form.Input
+              placeholder='First Name'
+              name='firstName'
+              value={firstName}
+              onChange={this.handleChange} />
+          <Form.Input
+            placeholder='Last Name'
+            name='lastName'
+            value={lastName}
+            onChange={this.handleChange} />
           <Form.Input
             placeholder='Username'
             name='username'

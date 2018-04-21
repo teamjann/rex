@@ -1,18 +1,24 @@
 const Sequelize = require("sequelize");
 
-const host = process.env.DATABASE_URL || {
-  database: "rex",
-  username: "Mike",
-  password: null,
-  dialect: "postgres"
-};
+const host = `postgres://cweicgpabdtjhg:f29d128c28622c3861240d4e18e3fe0f02dff49a11d49dc02f962137973bc22f@ec2-54-243-213-188.compute-1.amazonaws.com:5432/d1dqjsl382dfk3`;
+//  || {
+//   database: "rex",
+//   username: "Mike",
+//   password: null,
+//   dialect: "postgres"
+// };
 
-const sequelize = new Sequelize(host);
+const sequelize = new Sequelize(host, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: true
+  }
+});
 
 sequelize
   .authenticate()
   .then(() => console.log("connection made"))
-  .catch(() => console.log("cannot connect"));
+  .catch((err) => console.log(`cannot connect: ${err}`));
 
 exports.promiseQuery = query =>
   sequelize.query(query, { type: sequelize.QueryTypes.SELECT });

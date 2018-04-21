@@ -3,6 +3,9 @@ var bodyParser = require("body-parser");
 var path = require("path");
 var session = require("express-session");
 var bcrypt = require('bcrypt');
+var uuidv4 = require('uuid/v4');
+
+const authObj = {};
 
 const {
   promiseQuery,
@@ -10,59 +13,62 @@ const {
   updateQuery,
   deleteQuery
 } = require("../database/index");
+
 const { FETCH_BOOKS, ADD_BOOK, ADD_REC, FIND_USER, ADD_USER } = require("../database/queries");
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}));
-
-
-
-const checkAuth = function (req, res, next) {
-  if (req.session.cookie.user) {
-    next();
-  } else {
-    res.redirect('/login');
-  }
-};
-
-const createSession = (req, username) => {
-  req.session.cookie.user = username;
-}
+app.use(session({
+  secret: 'keyboard cat',
+  cookie: { maxAge: 24 * 60 * 60 * 1000 },
+  resave: true,
+  saveUninitialized: false
+}));
 
 app.use(express.static(`${__dirname}/../client/dist`));
 
 app.post('/login', (req, res) => {
   const {username, password} = req.body;
   promiseQuery(FIND_USER(username))
-    .then(userObj => {
-      brypt.compare(password, userObj.password, (err, result) => {
+    .then((sqlResponse) => {
+      const { id, password: hash } = sqlResponse[0];
+      bcrypt.compare(password, hash, (err, doesMatch) => {
         if (err) {
-
+          console.error(err);
         } else {
-
+          if (doesMatch) {
+            const key = uuidv4();
+            authObj[key] = id;
+            req.session.uuid = key;
+            res.send({uuid: key});
+          } else {
+            res.send('login failed');
+          }
         }
       });
     })
     .catch((err) => {
-      console.log(err);
+      console.error(err);
       // send 'invalid username' message;
     })
 });
 
 app.post('/signup', (req, res) => {
-  const {username, password} = req.body;
+  const {username, password, firstName, lastName} = req.body;
   promiseQuery(FIND_USER(username))
     .then(() => {
-      // send 'username already exists' message
+      console.log(`signup validation err, username '${username}' already exists`);
     })
     .catch(() => {
       bcrypt.hash(password, 10, (err, hash) => {
-        insertQuery(ADD_USER(username, hash))
+        insertQuery(ADD_USER(username, hash, firstName, lastName))
           .then((sqlResponse) => {
-            // retrieve user_id from sql
+            const { id } = sqlResponse[0][0];
+            const key = uuidv4();
+            authObj[key] = id;
+            res.send({uuid: id});
             // create session
           })
       });
@@ -102,8 +108,6 @@ app.get("/u/:userId/:category", (req, res) => {
           url
         };
 
-        console.log(bookItems);
-
         if (item_id in bookItems) {
           bookItems[item_id].recommendations.push(recEntry);
         } else {
@@ -115,9 +119,6 @@ app.get("/u/:userId/:category", (req, res) => {
 
         return bookItems;
       }, {});
-
-      console.log("parsedBooks = ", parsedBooks);
-
       res.json(parsedBooks);
       res.end();
     })
@@ -133,6 +134,14 @@ app.post("/u/:userId/:category", (req, res) => {
     .catch(err => console.log(err));
 });
 
+app.get('/auth', (req, res) => {
+  if (req.session.uuid) {
+    res.send({ uuid: req.session.uuid });
+  } else {
+    res.send('not logged in');
+  }
+})
+
 app.get("*", function(req, res) {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
@@ -140,19 +149,3 @@ app.get("*", function(req, res) {
 app.listen(3000, () => {
   console.log("listening on port 3000!");
 });
-
-// {
-//   "rec_id": 6,
-//   "id": 2,
-//   "recommender_id": null,
-//   "user_id": 3,
-//   "recommender_name": "Bob",
-//   "comment": "read this",
-//   "item_id": 2,
-//   "date_added": "2018-04-10T21:03:13.518Z",
-//   "category": "books",
-//   "title": "Harry Potter",
-//   "thumbnail_url": "somesite",
-//   "description": "harry potter",
-//   "url": "potterlink"
-// }

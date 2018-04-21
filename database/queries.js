@@ -52,12 +52,12 @@ VALUES(DEFAULT, null, 3, '${recommender_name}', '${newComments}',
 
 exports.FIND_USER = (username) => {
   return `SELECT id, password FROM users
-    WHERE name = '${username}';`
+    WHERE username = '${username}';`
 }
 
-exports.ADD_USER = (username, passwordHash) => {
+exports.ADD_USER = (username, passwordHash, firstName, lastName) => {
   return ` 
-  INSERT INTO users (id, user_name, password)
-      VALUES (DEFAULT, '${username}', '${passwordHash}'
-      RETURNING id`
+  INSERT INTO users (id, username, password, first_name, last_name)
+      VALUES (DEFAULT, '${username}', '${passwordHash}', '${firstName}', '${lastName}')
+      RETURNING id;`
 }
