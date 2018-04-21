@@ -1,20 +1,26 @@
-const { validateQuery } = require("../database/index");
-var express = require("express");
-var bodyParser = require("body-parser");
-var path = require("path");
+const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
+// Sequelize Requests, use SQL queries
 const {
   promiseQuery,
   insertQuery,
   updateQuery,
-  deleteQuery
-} = require("../database/index");
+  deleteQuery,
+  validateQuery
+} = require('../database/index');
+// SQL queries
 const {
   FETCH_BOOKS,
+  CHECK_BOOK,
   ADD_BOOK,
+  DELETE_BOOK,
   ADD_REC,
+  ADD_REC_AND_BOOK,
+  UPDATE_RECOMMENDATION,
   ADD_REC_TO_EXISTING_BOOK,
-  DELETE_REC_TO_EXISTING_BOOK
-} = require("../database/queries");
+  CHECK_EXISTING_REC
+} = require('../database/queries');
 
 const app = express();
 
@@ -22,8 +28,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(`${__dirname}/../client/dist`));
 
-app.get("/u/:userId/:category", (req, res) => {
+// GET BOOKS AND RECOMMENDATIONS FOR USER
+app.get('/u/:userId/:category', (req, res) => {
   const { userId, category } = req.params;
+
   promiseQuery(FETCH_BOOKS(userId, category))
     .then(books => {
       const parsedBooks = books.reduce((bookItems, recommendation) => {
@@ -38,7 +46,9 @@ app.get("/u/:userId/:category", (req, res) => {
           title,
           thumbnail_url,
           description,
-          url
+          url,
+          status,
+          user_rating
         } = recommendation;
 
         const recEntry = {
@@ -52,7 +62,9 @@ app.get("/u/:userId/:category", (req, res) => {
           title,
           thumbnail_url,
           description,
-          url
+          url,
+          status,
+          user_rating
         };
 
         if (item_id in bookItems) {
@@ -70,29 +82,48 @@ app.get("/u/:userId/:category", (req, res) => {
       res.json(parsedBooks);
       res.end();
     })
-    .catch(err => res.end("404", err));
+    .catch(err => res.end('404', err));
 });
 
-app.post("/u/:userId/:category", (req, res) => {
+// ADD NEW RECOMMENDATION
+app.post('/u/:userId/:category', (req, res) => {
   const { userId, category } = req.params;
-  //check if the book already exists (user_id + book_id)
+  const { apiId, firstName, lastName, comments } = req.body;
 
-  validateQuery(
-    `select exists(select 1 from recommendations r inner join books b on b.id = r.item_id where r.user_id=${
-      req.body.userId
-    } AND b.api_id=${req.body.apiId});`
-  ).then(exist => {
-    if (exist[0][0].exists) {
-      res.json({ alreadyExist: true });
-    } else {
-      insertQuery(ADD_REC(req.body))
-        .then(sqlResponse => res.json({ inserted: "success" }))
+  promiseQuery(CHECK_BOOK({ apiId }))
+    .then(bookIdObj => {
+      const bookId = bookIdObj[0].id;
+
+      validateQuery(CHECK_EXISTING_REC({ userId, apiId })).then(exist => {
+        const recommendationsExist = exist[0][0].exists;
+
+        if (recommendationsExist) {
+          res.status(404).send('Already exists');
+        } else {
+          const recommendationInfo = {
+            firstName,
+            lastName,
+            comments,
+            category,
+            userId,
+            bookId
+          };
+
+          insertQuery(ADD_REC(recommendationInfo))
+            .then(sqlResponse => res.json({ inserted: 'success' }))
+            .catch(err => console.log(err));
+        }
+      });
+    })
+    .catch(bookNotInDB => {
+      insertQuery(ADD_REC_AND_BOOK(req.body))
+        .then(sqlResponse => res.json({ inserted: 'success' }))
         .catch(err => console.log(err));
-    }
-  });
+    });
 });
 
-app.post("/u/:userId/:category/:bookId", (req, res) => {
+// ADD NEW RECOMMENDATION
+app.post('/u/:userId/:category/:bookId', (req, res) => {
   const { userId, category, bookId } = req.params;
   const { id, firstName, lastName, comments } = req.body;
   const recInfo = {
@@ -104,46 +135,47 @@ app.post("/u/:userId/:category/:bookId", (req, res) => {
     comments
   };
   insertQuery(ADD_REC_TO_EXISTING_BOOK(recInfo))
-    .then(sqlResponse => res.json({ inserted: "success" }))
+    .then(sqlResponse => res.json({ inserted: 'success' }))
     .catch(err => console.log(err));
 });
 
-app.delete("/u/:userId/:category/:bookId", (req, res) => {
-  console.log("server side delete action", req.params, req.body);
-  const { userId, category, bookId } = req.params;
-  const { id, recommender_name, comment } = req.body;
-  const recInfo = {
-    userId,
-    category,
-    id,
-    recommender_name,
-    comment
-  };
-  deleteQuery(DELETE_REC_TO_EXISTING_BOOK(recInfo))
-    .then(sqlResponse => res.json({ inserted: "success" }))
+// UPDATE STATUS & RATING FOR RECOMMENDATION
+app.put('/u/:userId/:category/:itemId', (req, res) => {
+  const { userId, category, itemId } = req.params;
+  const { status, rating } = req.body;
+
+  updateQuery(
+    UPDATE_RECOMMENDATION({
+      userId,
+      category,
+      itemId,
+      status,
+      rating
+    })
+  )
+    .then(sqlRes => {
+      console.log(sqlRes);
+      res.send('success');
+    })
+    .catch(err => console.log('could not update'));
+});
+
+// DELETE RECOMMENDATIONS FOR A BOOK
+app.delete('/u/:userId/:category/:itemId', (req, res) => {
+  const { userId, category, itemId } = req.params;
+
+  deleteQuery(DELETE_BOOK({ userId, category, itemId }))
+    .then(sqlRes => res.json({ deleted: itemId }))
     .catch(err => console.log(err));
 });
 
-app.get("*", function(req, res) {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+// SERVE REACT INDEX.HTML FOR ALL UNHANDLED REQUESTS
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
-app.listen(3000, () => {
-  console.log("listening on port 3000!");
-});
+const port = process.env.PORT || 3000;
 
-// {
-//   "rec_id": 6,
-//   "id": 2,
-//   "recommender_id": null,
-//   "user_id": 3,
-//   "recommender_name": "Bob",
-//   "comment": "read this",
-//   "item_id": 2,
-//   "date_added": "2018-04-10T21:03:13.518Z",
-//   "category": "books",
-//   "title": "Harry Potter",
-//   "thumbnail_url": "somesite",
-//   "description": "harry potter",
-//   "url": "potterlink"
-// }
+app.listen(port, () => {
+  console.log('listening on port 3000!');
+});

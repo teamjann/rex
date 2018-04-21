@@ -1,4 +1,4 @@
-// Fetch decks, name, score, and cardcount
+// FETCH BOOKS AND RECOMMENDATIONS
 exports.FETCH_BOOKS = (userId, category) => `
   SELECT r.id AS rec_id, * from recommendations r
     INNER JOIN books b on r.item_id = b.id
@@ -6,18 +6,44 @@ exports.FETCH_BOOKS = (userId, category) => `
     AND r.user_id = '${userId}';
   `;
 
-// // Fetch Deck
-// exports.FETCH_DECK = deckname =>
-//   `SELECT * FROM decks d WHERE d.deckname = '${deckname}'`;
+// DELETE RECOMMENDATIONS
+// Note: Doesn't delete the actual item from db, just recommendations
+exports.DELETE_BOOK = ({ userId, category, itemId }) => `
+  DELETE FROM recommendations r
+    WHERE r.user_id='${userId}'
+    AND r.category='${category}'
+    AND r.item_id='${itemId}';
+`;
 
-// // Fetch cards in each deck
-// exports.FETCH_DECK_CARDS = deckName => {
-//   return `SELECT c.id, c.card_front, c.card_back, d.id AS deck_id FROM cards c
-// 	INNER JOIN decks d ON c.deck_id = d.id
-// 	WHERE d.deckname = '${deckName}';`;
-// };
+// CHECK IF BOOK IN DB, return id or null
+exports.CHECK_BOOK = ({ apiId }) => `
+  SELECT id FROM books b WHERE b.api_id = ${apiId};
+`;
 
-exports.ADD_REC = bookInfo => {
+// CHECKS IF USER HAS RECOMMENDATION FOR A BOOK
+exports.CHECK_EXISTING_REC = ({ userId, apiId }) => `
+  SELECT EXISTS(SELECT 1 FROM recommendations r 
+    INNER JOIN books b ON b.id = r.item_id 
+    WHERE r.user_id=${userId} 
+    AND b.api_id=${apiId});`;
+
+// UPDATE RECOMMENDATIONS - status and rating
+exports.UPDATE_RECOMMENDATION = ({
+  userId,
+  category,
+  itemId,
+  status,
+  rating
+}) => `
+  UPDATE recommendations r 
+  SET status = '${status}', user_rating='${rating}' 
+  WHERE r.user_id='${userId}'
+  AND r.category='${category}'
+  AND r.item_id='${itemId}';
+`;
+
+// ADD NEW RECOMMENDATION AND BOOK TO DB
+exports.ADD_REC_AND_BOOK = bookInfo => {
   let {
     title,
     description,
@@ -34,14 +60,14 @@ exports.ADD_REC = bookInfo => {
   } = bookInfo;
 
   let newDescription = description
-    .join("\n")
-    .split(" ")
+    .join('\n')
+    .split(' ')
     .slice(0, 100);
-  newDescription.push("...");
-  newDescription = newDescription.join(" ").replace(/\'/gi, "''");
+  newDescription.push('...');
+  newDescription = newDescription.join(' ').replace(/\'/gi, "''");
   let newTitle = title.replace(/\'/gi, "''");
   let newComments = comments.replace(/\'/gi, "''");
-  let recommender_name = firstName + " " + lastName;
+  let recommender_name = firstName + ' ' + lastName;
 
   return `WITH book AS 
 ( INSERT INTO books(id, api_id, title, thumbnail_url, description, url) 
@@ -51,20 +77,25 @@ INSERT INTO recommendations
 VALUES(default, null, 3, '${recommender_name}', '${newComments}', 
         ( SELECT id from book ), default, '${category}');`;
 };
+// ADD NEW RECOMMENDATION WITH BOOK ID
+exports.ADD_REC = recommendationInfo => {
+  let {
+    userId,
+    firstName,
+    lastName,
+    bookId,
+    category,
+    comments
+  } = recommendationInfo;
 
-// 	DELETE FROM decks d WHERE d.id = '${id}'
-// 	RETURNING *
-// `;
+  let newComments = comments.replace(/\'/gi, "''");
+  let recommenderName = firstName + ' ' + lastName;
 
-exports.DELETE_REC_TO_EXISTING_BOOK = ({
-  userId,
-  comment,
-  id,
-  recommender_name
-}) =>
-  `DELETE FROM recommendations r where r.item_id = '${id}' AND r.user_id = '${userId}' 
-  AND r.comment = '${comment}' AND 
-  r.recommender_name = '${recommender_name}' RETURNING *`;
+  return `
+    INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category) 
+      VALUES(DEFAULT, NULL, 3, '${recommenderName}', '${newComments}', '${bookId}', DEFAULT, '${category}');
+  `;
+};
 
 // Add recommender and comments info to an existing book based on book_id
 exports.ADD_REC_TO_EXISTING_BOOK = ({
@@ -77,7 +108,7 @@ exports.ADD_REC_TO_EXISTING_BOOK = ({
 }) => `
 	INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category)
 		VALUES(DEFAULT, null,'${userId}' , '${firstName +
-  " " +
+  ' ' +
   lastName}', '${comments}', ${id}, default, '${category}')
 		RETURNING *;
 `;

@@ -4,10 +4,6 @@
   justify-content: center;
   margin-top: 15%;
 }
-.logo {
-  margin-right: 20px;
-  text-align: center;
-}
 h1:first-child,
 h2:first-child,
 h3:first-child,
@@ -22,7 +18,7 @@ h5:first-child {
 
 body {
   padding: 50;
-  font-family: "Open Sans Condensed", sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   /* background: url("../images/header.gif");
   background-repeat: no-repeat; */
   opacity: 0.9;
@@ -42,4 +38,18 @@ div.transbox h1 {
 }
 div.background {
   background-color: turquoise;
+}
+
+.iconRow {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.homeMenuIcon {
+  margin-right: 20px;
+  text-align: center;
+}
+
+.homeMenuIcon :hover {
+  cursor: pointer;
 }

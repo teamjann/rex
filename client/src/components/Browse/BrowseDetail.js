@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { Button, Popup, Item, Form, Input, TextArea } from "semantic-ui-react";
-import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
-import RecommendationListItem from "./RecommendationListItem";
-import BrowseBookDetail from "../Browse/BrowseBookDetail";
-import styled from "styled-components";
-import { RSA_SSLV23_PADDING } from "constants";
+import React, { Component } from 'react';
+import { Button, Popup, Item, Form, Input, TextArea } from 'semantic-ui-react';
+import { Route, Link, BrowserRouter, Switch, Redirect } from 'react-router-dom';
+import RecommendationListItem from './RecommendationListItem';
+import BrowseBookDetail from './BrowseBookDetail';
+import styled from 'styled-components';
+import { RSA_SSLV23_PADDING } from 'constants';
 
 const BrowseContainer = styled.div`
   width: 100%;
@@ -25,9 +25,9 @@ const CheckOutButton = props => (
 class AddRecommenderButton extends Component {
   state = {
     toggle: false,
-    firstName: "",
-    lastName: "",
-    comments: ""
+    firstName: '',
+    lastName: '',
+    comments: ''
   };
 
   handleSubmit = e => {
@@ -42,14 +42,14 @@ class AddRecommenderButton extends Component {
       lastName,
       comments
     };
-    const category = "books";
+    const category = 'books';
     const userId = 3;
     //update recommendation table,
     fetch(`/u/${userId}/${category}/${bookInfo.id}`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(bookInfo),
       headers: new Headers({
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       })
     })
       .then(res =>
@@ -59,7 +59,7 @@ class AddRecommenderButton extends Component {
             let newRecs = Object.entries(categoryItems).find(book => {
               return book[0] === id;
             })[1].recommendations;
-            console.log("~~~~~~~~~~~~~~~newRecs", newRecs);
+            console.log('~~~~~~~~~~~~~~~newRecs', newRecs);
             return this.props.handleRecUpdate(newRecs);
           })
       )
@@ -137,6 +137,7 @@ const BrowseDetail = props => {
           <BrowseBookDetail book={props.book} />
         </BrowseContainer>
       </header>
+
       <Item.Group>
         {props.recommendations.map(recommendation => (
           <RecommendationListItem
@@ -147,6 +148,7 @@ const BrowseDetail = props => {
           />
         ))}
       </Item.Group>
+
       <div className="buttons">
         <CheckOutButton url={props.book.url} />
 

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Form,
   Input,
@@ -6,17 +6,22 @@ import {
   Button,
   Container,
   Divider
-} from "semantic-ui-react";
-import { Redirect } from "react-router-dom";
+} from 'semantic-ui-react';
+import { Redirect } from 'react-router-dom';
 
 class RecommendationEntry extends Component {
-  state = { firstName: "", lastName: "", comments: "", inserted: false };
+  state = {
+    firstName: '',
+    lastName: '',
+    comments: '',
+    inserted: false
+  };
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log("Props data!!!!!!!!!", this.props.entry.id);
+    console.log('Props data!!!!!!!!!', this.props.entry.id);
     const { firstName, lastName, comments } = this.state;
     // send our data to server and server will save to the db
     const {
@@ -30,7 +35,7 @@ class RecommendationEntry extends Component {
       apiId
     } = this.props.entry;
 
-    const category = "books";
+    const category = 'books';
     const userId = 3;
 
     const bookInfo = {
@@ -50,16 +55,24 @@ class RecommendationEntry extends Component {
     };
 
     fetch(`/u/${userId}/${category}`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(bookInfo),
       headers: new Headers({
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       })
-    }).then(res =>
-      this.setState({
-        inserted: true
+    })
+      .then(res => {
+        if (res.status === 404) {
+          alert(`${title} already exists in your recommendations!`);
+        } else {
+          this.setState({
+            inserted: true
+          });
+        }
       })
-    );
+      .catch(err => {
+        throw err;
+      });
   };
 
   render() {
