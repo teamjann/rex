@@ -15,6 +15,18 @@ exports.DELETE_BOOK = ({ userId, category, itemId }) => `
     AND r.item_id='${itemId}';
 `;
 
+// CHECK IF BOOK IN DB, return id or null
+exports.CHECK_BOOK = ({ apiId }) => `
+  SELECT id FROM books b WHERE b.api_id = ${apiId};
+`;
+
+// CHECKS IF USER HAS RECOMMENDATION FOR A BOOK
+exports.CHECK_EXISTING_REC = ({ userId, apiId }) => `
+  SELECT EXISTS(SELECT 1 FROM recommendations r 
+    INNER JOIN books b ON b.id = r.item_id 
+    WHERE r.user_id=${userId} 
+    AND b.api_id=${apiId});`;
+
 // UPDATE RECOMMENDATIONS - status and rating
 exports.UPDATE_RECOMMENDATION = ({
   userId,
@@ -31,7 +43,7 @@ exports.UPDATE_RECOMMENDATION = ({
 `;
 
 // ADD NEW RECOMMENDATION AND BOOK TO DB
-exports.ADD_REC = bookInfo => {
+exports.ADD_REC_AND_BOOK = bookInfo => {
   let {
     title,
     description,
@@ -64,6 +76,25 @@ INSERT INTO recommendations
 (id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category) 
 VALUES(default, null, 3, '${recommender_name}', '${newComments}', 
         ( SELECT id from book ), default, '${category}');`;
+};
+// ADD NEW RECOMMENDATION WITH BOOK ID
+exports.ADD_REC = recommendationInfo => {
+  let {
+    userId,
+    firstName,
+    lastName,
+    bookId,
+    category,
+    comments
+  } = recommendationInfo;
+
+  let newComments = comments.replace(/\'/gi, "''");
+  let recommenderName = firstName + ' ' + lastName;
+
+  return `
+    INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category) 
+      VALUES(DEFAULT, NULL, 3, '${recommenderName}', '${newComments}', '${bookId}', DEFAULT, '${category}');
+  `;
 };
 
 // Add recommender and comments info to an existing book based on book_id

@@ -12,11 +12,14 @@ const {
 // SQL queries
 const {
   FETCH_BOOKS,
+  CHECK_BOOK,
   ADD_BOOK,
   DELETE_BOOK,
   ADD_REC,
+  ADD_REC_AND_BOOK,
   UPDATE_RECOMMENDATION,
-  ADD_REC_TO_EXISTING_BOOK
+  ADD_REC_TO_EXISTING_BOOK,
+  CHECK_EXISTING_REC
 } = require('../database/queries');
 
 const app = express();
@@ -85,25 +88,45 @@ app.get('/u/:userId/:category', (req, res) => {
 // ADD NEW RECOMMENDATION
 app.post('/u/:userId/:category', (req, res) => {
   const { userId, category } = req.params;
-  //check if the book already exists (user_id + book_id)
+  const { apiId, firstName, lastName, comments } = req.body;
 
-  validateQuery(
-    `select exists(select 1 from recommendations r inner join books b on b.id = r.item_id where r.user_id=${
-      req.body.userId
-    } AND b.api_id=${req.body.apiId});`
-  ).then(exist => {
-    if (exist[0][0].exists) {
-      res.json({ alreadyExist: true });
-    } else {
-      insertQuery(ADD_REC(req.body))
-        .then(sqlResponse => res.json({ inserted: "success" }))
+  promiseQuery(CHECK_BOOK({ apiId }))
+    .then(bookIdObj => {
+      const bookId = bookIdObj[0].id;
+      console.log('book in DB');
+
+      validateQuery(CHECK_EXISTING_REC({ userId, apiId })).then(exist => {
+        if (exist[0][0].exists) {
+          console.log('recommendations exist');
+          res.status(404).send('Already exists');
+        } else {
+          console.log('recommendations dont exist');
+          const recommendationInfo = {
+            firstName,
+            lastName,
+            comments,
+            category,
+            userId,
+            bookId
+          };
+
+          insertQuery(ADD_REC(recommendationInfo))
+            .then(sqlResponse => res.json({ inserted: 'success' }))
+            .catch(err => console.log(err));
+        }
+      });
+    })
+    // If book not in DB
+    .catch(bookNotInDB => {
+      console.log('book not in db');
+      insertQuery(ADD_REC_AND_BOOK(req.body))
+        .then(sqlResponse => res.json({ inserted: 'success' }))
         .catch(err => console.log(err));
-    }
-  });
+    });
 });
 
 // ADD NEW RECOMMENDATION
-app.post("/u/:userId/:category/:bookId", (req, res) => {
+app.post('/u/:userId/:category/:bookId', (req, res) => {
   const { userId, category, bookId } = req.params;
   const { id, firstName, lastName, comments } = req.body;
   const recInfo = {
@@ -115,7 +138,7 @@ app.post("/u/:userId/:category/:bookId", (req, res) => {
     comments
   };
   insertQuery(ADD_REC_TO_EXISTING_BOOK(recInfo))
-    .then(sqlResponse => res.json({ inserted: "success" }))
+    .then(sqlResponse => res.json({ inserted: 'success' }))
     .catch(err => console.log(err));
 });
 
