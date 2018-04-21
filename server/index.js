@@ -93,14 +93,13 @@ app.post('/u/:userId/:category', (req, res) => {
   promiseQuery(CHECK_BOOK({ apiId }))
     .then(bookIdObj => {
       const bookId = bookIdObj[0].id;
-      console.log('book in DB');
 
       validateQuery(CHECK_EXISTING_REC({ userId, apiId })).then(exist => {
-        if (exist[0][0].exists) {
-          console.log('recommendations exist');
+        const recommendationsExist = exist[0][0].exists;
+
+        if (recommendationsExist) {
           res.status(404).send('Already exists');
         } else {
-          console.log('recommendations dont exist');
           const recommendationInfo = {
             firstName,
             lastName,
@@ -116,9 +115,7 @@ app.post('/u/:userId/:category', (req, res) => {
         }
       });
     })
-    // If book not in DB
     .catch(bookNotInDB => {
-      console.log('book not in db');
       insertQuery(ADD_REC_AND_BOOK(req.body))
         .then(sqlResponse => res.json({ inserted: 'success' }))
         .catch(err => console.log(err));

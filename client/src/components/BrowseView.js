@@ -20,6 +20,7 @@ class BrowseView extends Component {
     userId: 3,
     activeItem: 'Recommendations',
     books: {},
+    bookOrder: [],
     showCompleted: false,
     clickedBook: {},
     clickedRecommendations: [],
@@ -29,12 +30,15 @@ class BrowseView extends Component {
   populateBooks() {
     const category = 'books';
     const { userId } = this.state;
+    // Use 'category' and 'categoryItems' to eventually add other categories
+    // For now, category and sort is hard-coded to books
 
     fetch(`/u/${userId}/${category}`)
       .then(res => res.json())
       .then(categoryItems => {
         this.setState({
-          [category]: categoryItems
+          [category]: categoryItems,
+          bookOrder: Object.entries(categoryItems).map(([key, val]) => key)
         });
       })
       .catch(err => {
@@ -65,11 +69,15 @@ class BrowseView extends Component {
           .then(data => {
             // On server response, delete item from state
             const categoryItems = this.state[category];
+            const bookOrder = this.state.bookOrder.filter(
+              bookId => bookId !== id
+            );
 
             delete categoryItems[id];
 
             this.setState({
-              [category]: categoryItems
+              [category]: categoryItems,
+              bookOrder
             });
           })
           .catch(err => console.log('delete unsuccessful', err));
@@ -135,31 +143,39 @@ class BrowseView extends Component {
   handleCompletedClick = (e, { name }) =>
     this.setState({ showCompleted: !this.state.showCompleted });
 
+  // When menu sort option clicked
   handleItemClick = (e, { name }) => {
+    const sortType = name;
+    const bookArray = Object.entries(this.state.books);
+
     this.setState({ activeItem: name });
-    //declare sort type and the array of books
-    let sortType = this.state.activeItem;
-    const bookArray = this.state.books;
-    //sort the array of recommendation entries of each book (each book may have many rec entries)
-    const getLatestDate = arr => {
-      return arr.reduce((latestDate, rec) => {
+
+    const getLastRecDate = recommendationsArray => {
+      return recommendationsArray.reduce((latestDate, rec) => {
         return Math.max(new Date(rec.date_added), latestDate);
-      }, new Date(arr[0].date_added));
+      }, new Date(recommendationsArray[0].date_added));
     };
-    //sort the array of books
-    const sortBy = (a, b) => {
-      let latestDate_a = getLatestDate(a[1].recommendations);
-      let latestDate_b = getLatestDate(b[1].recommendations);
+
+    const sortBooksByRecDate = (book1, book2) => {
+      const book1LastRecDate = getLastRecDate(book1[1].recommendations);
+      const book2LastRecDate = getLastRecDate(book2[1].recommendations);
+
       if (sortType === 'Newest') {
-        return latestDate_b - latestDate_a;
+        return book2LastRecDate - book1LastRecDate;
       } else if (sortType === 'Oldest') {
-        return latestDate_a - latestDate_b;
+        return book1LastRecDate - book2LastRecDate;
       }
     };
+
     // set state with the newly sorted array of books
-    let sortedArray = bookArray.sort(sortBy);
+    const sortedArray = bookArray
+      .sort(sortBooksByRecDate)
+      .map(([id, book]) => id);
+
+    console.log(sortedArray);
+
     this.setState({
-      books: sortedArray
+      bookOrder: sortedArray
     });
   };
 
@@ -177,6 +193,7 @@ class BrowseView extends Component {
     //const { category } = this.props;
     const category = 'books';
     const { activeItem, userId, showCompleted } = this.state;
+    const { bookOrder } = this.state;
 
     return this.state.detailedView ? (
       <BrowseDetail
@@ -209,26 +226,27 @@ class BrowseView extends Component {
         />
 
         <BookList>
-          {Object.entries(this.state[category]).map(([bookId, bookInfo]) => {
-            console.log(this.state);
-            const { book, recommendations } = bookInfo;
-            const recommendationCount = recommendations.length;
-            const { showCompleted } = this.state;
+          {bookOrder.length > 0 &&
+            bookOrder.map(bookId => {
+              const bookInfo = this.state.books[bookId];
+              const { book, recommendations } = bookInfo;
+              const recommendationCount = recommendations.length;
+              const { showCompleted } = this.state;
 
-            if (showCompleted || book.status === 'active') {
-              return (
-                <BookItem
-                  handleClick={props => this.handleClick(props)}
-                  id={bookId}
-                  book={book}
-                  recommendations={recommendations}
-                  deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
-                  markCompleted={this.markCompleted}
-                  category={category}
-                />
-              );
-            }
-          })}
+              if (showCompleted || book.status === 'active') {
+                return (
+                  <BookItem
+                    handleClick={props => this.handleClick(props)}
+                    id={bookId}
+                    book={book}
+                    recommendations={recommendations}
+                    deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
+                    markCompleted={this.markCompleted}
+                    category={category}
+                  />
+                );
+              }
+            })}
         </BookList>
       </Container>
     );
