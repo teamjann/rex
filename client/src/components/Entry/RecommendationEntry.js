@@ -63,7 +63,7 @@ class RecommendationEntry extends Component {
     })
       .then(res => {
         if (res.status === 404) {
-          alert(`${title} already in your recommendations!`);
+          alert(`${title} already exists in your recommendations!`);
         } else {
           this.setState({
             inserted: true

@@ -1,12 +1,10 @@
 import React from 'react';
-
+import { Search, Dropdown, Rating, Container } from 'semantic-ui-react';
 import axios from 'axios';
 import proxify from 'proxify-url';
-
-import { Search, Dropdown, Rating, Container } from 'semantic-ui-react';
+import _ from 'lodash';
 
 import './EntryListView.css';
-
 import BookDetail from './Entry/BookDetail';
 import EntryDetail from './Entry/EntryDetail';
 
@@ -28,29 +26,38 @@ class EntryListView extends React.Component {
       id: data.result.apiId,
       key: 'KB2ywbcnLjNO8pokkBVgg'
     };
-    const entries = this;
+    const self = this;
     const url = proxify(
       `https://www.goodreads.com/book/show.xml?id=${params.id}&key=${
         params.key
       }`,
       { inputFormat: 'xml' }
     );
+
     axios
       .get(url)
       .then(res => {
         const book = res.data.query.results.GoodreadsResponse.book;
-        console.log("!!!!!!!!!!!!!", book);
-        entries.setState({
-          resultDetail: {
-            title: book.title,
-            rating: book.average_rating,
-            apiId: book.id,
-            authors: book.authors.author.map(author => {
+        console.log('!!!!!!!!!!!!!', book);
+        let authors;
+        if (Array.isArray(book.authors.author)) {
+          authors = book.authors.author
+            .map(author => {
               if (author.role) {
                 return `${author.name} (${author.role})`;
               }
               return author.name;
-            }),
+            })
+            .join(', ');
+        } else {
+          authors = book.authors.author.name;
+        }
+        self.setState({
+          resultDetail: {
+            title: book.title,
+            rating: book.average_rating,
+            apiId: book.id,
+            authors,
             yearPublished: book.publication_year,
             description: book.description
               .split('<br /><br />')
@@ -67,12 +74,14 @@ class EntryListView extends React.Component {
 
   search(e, data) {
     e.preventDefault();
+    this.setState({
+      results: []
+    });
     const params = {
-      q: data.value,
+      q: data.value.replace(/\s+/g, '-'),
       key: 'KB2ywbcnLjNO8pokkBVgg'
     };
-    const entries = this;
-
+    const self = this;
     const url = proxify(
       `https://www.goodreads.com/search/index.xml?q=${params.q}&key=${
         params.key
@@ -94,7 +103,7 @@ class EntryListView extends React.Component {
             imageUrl: book.best_book.image_url
           };
         });
-        entries.setState({
+        self.setState({
           results: books
         });
       })
@@ -121,6 +130,8 @@ class EntryListView extends React.Component {
   }
 
   render() {
+    const throttledSearch = _.debounce(this.search, 300);
+
     if (this.state.resultDetail) {
       return <EntryDetail result={this.state.resultDetail} />;
     }
@@ -136,7 +147,7 @@ class EntryListView extends React.Component {
           options={[{ text: 'books', value: 'books' }]}
         />
         <Search
-          onSearchChange={this.search}
+          onSearchChange={throttledSearch}
           results={this.state.results}
           resultRenderer={this.renderResult}
           onResultSelect={this.handleResultSelect}
