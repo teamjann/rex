@@ -1,7 +1,12 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-// Sequelize Requests, use SQL queries
+var express = require("express");
+var bodyParser = require("body-parser");
+var path = require("path");
+var session = require("express-session");
+var bcrypt = require('bcrypt');
+var uuidv4 = require('uuid/v4');
+
+const authObj = {};
+
 const {
   promiseQuery,
   insertQuery,
@@ -11,6 +16,8 @@ const {
 } = require('../database/index');
 // SQL queries
 const {
+  FIND_USER,
+  ADD_USER,
   FETCH_BOOKS,
   CHECK_BOOK,
   ADD_BOOK,
@@ -26,7 +33,60 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({
+  secret: 'keyboard cat',
+  cookie: { maxAge: 24 * 60 * 60 * 1000 },
+  resave: true,
+  saveUninitialized: false
+}));
+
 app.use(express.static(`${__dirname}/../client/dist`));
+
+app.post('/login', (req, res) => {
+  const {username, password} = req.body;
+  promiseQuery(FIND_USER(username))
+    .then((sqlResponse) => {
+      const { id, password: hash } = sqlResponse[0];
+      bcrypt.compare(password, hash, (err, doesMatch) => {
+        if (err) {
+          console.error(err);
+        } else {
+          if (doesMatch) {
+            const key = uuidv4();
+            authObj[key] = id;
+            req.session.uuid = key;
+            res.send({uuid: key});
+          } else {
+            res.send('login failed');
+          }
+        }
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      // send 'invalid username' message;
+    })
+});
+
+app.post('/signup', (req, res) => {
+  const {username, password, firstName, lastName} = req.body;
+  promiseQuery(FIND_USER(username))
+    .then(() => {
+      console.log(`signup validation err, username '${username}' already exists`);
+    })
+    .catch(() => {
+      bcrypt.hash(password, 10, (err, hash) => {
+        insertQuery(ADD_USER(username, hash, firstName, lastName))
+          .then((sqlResponse) => {
+            const { id } = sqlResponse[0][0];
+            const key = uuidv4();
+            authObj[key] = id;
+            res.send({uuid: id});
+            // create session
+          })
+      });
+    });
+});
 
 // GET BOOKS AND RECOMMENDATIONS FOR USER
 app.get('/u/:userId/:category', (req, res) => {
@@ -78,7 +138,6 @@ app.get('/u/:userId/:category', (req, res) => {
 
         return bookItems;
       }, {});
-
       res.json(parsedBooks);
       res.end();
     })
@@ -137,6 +196,14 @@ app.post('/u/:userId/:category/:bookId', (req, res) => {
   insertQuery(ADD_REC_TO_EXISTING_BOOK(recInfo))
     .then(sqlResponse => res.json({ inserted: 'success' }))
     .catch(err => console.log(err));
+});
+
+app.get('/auth', (req, res) => {
+  if (req.session.uuid) {
+    res.send({ uuid: req.session.uuid });
+  } else {
+    res.send('not logged in');
+  }
 });
 
 // UPDATE STATUS & RATING FOR RECOMMENDATION

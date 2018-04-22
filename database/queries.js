@@ -90,10 +90,10 @@ exports.ADD_REC = recommendationInfo => {
 
   let newComments = comments.replace(/\'/gi, "''");
   let recommenderName = firstName + ' ' + lastName;
-
+  
   return `
-    INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category) 
-      VALUES(DEFAULT, NULL, 3, '${recommenderName}', '${newComments}', '${bookId}', DEFAULT, '${category}');
+  INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category) 
+  VALUES(DEFAULT, NULL, 3, '${recommenderName}', '${newComments}', '${bookId}', DEFAULT, '${category}');
   `;
 };
 
@@ -106,14 +106,20 @@ exports.ADD_REC_TO_EXISTING_BOOK = ({
   lastName,
   comments
 }) => `
-	INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category)
-		VALUES(DEFAULT, null,'${userId}' , '${firstName +
+INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category)
+VALUES(DEFAULT, null,'${userId}' , '${firstName +
   ' ' +
   lastName}', '${comments}', ${id}, default, '${category}')
-		RETURNING *;
-`;
-
-// // Update Deck Quiz score
-// exports.UPDATE_SCORE = ({ id, score }) => `
-// 	UPDATE decks SET score = '${score}' where id = '${id}'
-// `;
+  RETURNING *;
+  `;
+  
+exports.FIND_USER = (username) => {
+  return `SELECT id, password FROM users
+    WHERE username = '${username}';`
+}
+exports.ADD_USER = (username, passwordHash, firstName, lastName) => {
+  return ` 
+  INSERT INTO users (id, username, password, first_name, last_name)
+  VALUES (DEFAULT, '${username}', '${passwordHash}', '${firstName}', '${lastName}')
+  RETURNING id;`
+}
