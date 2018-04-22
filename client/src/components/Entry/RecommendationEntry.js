@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Form,
   Input,
@@ -6,17 +6,22 @@ import {
   Button,
   Container,
   Divider
-} from "semantic-ui-react";
-import { Link, Redirect } from "react-router-dom";
+} from 'semantic-ui-react';
+import { Redirect } from 'react-router-dom';
 
 class RecommendationEntry extends Component {
-  state = { firstName: "", lastName: "", comments: "", inserted: false };
+  state = {
+    firstName: '',
+    lastName: '',
+    comments: '',
+    inserted: false
+  };
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log("Props data", this.props.entry);
+    console.log('Props data!!!!!!!!!', this.props.entry.id);
     const { firstName, lastName, comments } = this.state;
     // send our data to server and server will save to the db
     const {
@@ -26,10 +31,11 @@ class RecommendationEntry extends Component {
       imageUrl,
       link,
       rating,
-      yearPublished
+      yearPublished,
+      apiId
     } = this.props.entry;
 
-    const category = "books";
+    const category = 'books';
     const userId = 3;
 
     const bookInfo = {
@@ -44,21 +50,29 @@ class RecommendationEntry extends Component {
       lastName,
       comments,
       category,
-      userId
+      userId,
+      apiId
     };
-    console.log("book info Client Side: ", bookInfo);
+
     fetch(`/u/${userId}/${category}`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(bookInfo),
       headers: new Headers({
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       })
-    }).then(res =>
-      this.setState({
-        inserted: true
+    })
+      .then(res => {
+        if (res.status === 404) {
+          alert(`${title} already exists in your recommendations!`);
+        } else {
+          this.setState({
+            inserted: true
+          });
+        }
       })
-    );
-    // render the browse view
+      .catch(err => {
+        throw err;
+      });
   };
 
   render() {
@@ -70,6 +84,7 @@ class RecommendationEntry extends Component {
         <Form onSubmit={this.handleSubmit}>
           <Form.Group widths="equal">
             <Form.Field
+              required
               id="form-input-control-first-name"
               control={Input}
               label="Recommender's First name"
@@ -94,14 +109,12 @@ class RecommendationEntry extends Component {
             name="comments"
             onChange={this.handleChange}
           />
-          {/* <Link to="/browse"> */}
           <Form.Field
             id="form-button-control-public"
             control={Button}
             content="Save"
             label="Save to my list"
           />
-          {/* </Link> */}
         </Form>
       </Container>
     );

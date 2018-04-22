@@ -1,3 +1,4 @@
+// FETCH BOOKS AND RECOMMENDATIONS
 exports.FETCH_BOOKS = (userId, category) => `
   SELECT r.id AS rec_id, * from recommendations r
     INNER JOIN books b on r.item_id = b.id
@@ -5,8 +6,44 @@ exports.FETCH_BOOKS = (userId, category) => `
     AND r.user_id = '${userId}';
   `;
 
-exports.ADD_REC = bookInfo => {
-  console.log("bookInfo Database Side~~~~~~~~~", bookInfo);
+// DELETE RECOMMENDATIONS
+// Note: Doesn't delete the actual item from db, just recommendations
+exports.DELETE_BOOK = ({ userId, category, itemId }) => `
+  DELETE FROM recommendations r
+    WHERE r.user_id='${userId}'
+    AND r.category='${category}'
+    AND r.item_id='${itemId}';
+`;
+
+// CHECK IF BOOK IN DB, return id or null
+exports.CHECK_BOOK = ({ apiId }) => `
+  SELECT id FROM books b WHERE b.api_id = ${apiId};
+`;
+
+// CHECKS IF USER HAS RECOMMENDATION FOR A BOOK
+exports.CHECK_EXISTING_REC = ({ userId, apiId }) => `
+  SELECT EXISTS(SELECT 1 FROM recommendations r 
+    INNER JOIN books b ON b.id = r.item_id 
+    WHERE r.user_id=${userId} 
+    AND b.api_id=${apiId});`;
+
+// UPDATE RECOMMENDATIONS - status and rating
+exports.UPDATE_RECOMMENDATION = ({
+  userId,
+  category,
+  itemId,
+  status,
+  rating
+}) => `
+  UPDATE recommendations r 
+  SET status = '${status}', user_rating='${rating}' 
+  WHERE r.user_id='${userId}'
+  AND r.category='${category}'
+  AND r.item_id='${itemId}';
+`;
+
+// ADD NEW RECOMMENDATION AND BOOK TO DB
+exports.ADD_REC_AND_BOOK = bookInfo => {
   let {
     title,
     description,
@@ -18,46 +55,71 @@ exports.ADD_REC = bookInfo => {
     lastName,
     item_id,
     category,
-    comments
+    comments,
+    apiId
   } = bookInfo;
 
   let newDescription = description
-    .join("\n")
-    .split(" ")
+    .join('\n')
+    .split(' ')
     .slice(0, 100);
-  newDescription.push("...");
-  newDescription = newDescription.join(" ").replace(/\'/gi, "''");
+  newDescription.push('...');
+  newDescription = newDescription.join(' ').replace(/\'/gi, "''");
   let newTitle = title.replace(/\'/gi, "''");
   let newComments = comments.replace(/\'/gi, "''");
-  let recommender_name = firstName + " " + lastName;
-  console.log(
-    "bookinfo after cleaning up~~~~~~~~~~~",
-    "description",
-    newDescription,
-    "title",
-    newTitle,
-    "coments",
-    newComments,
-    "recommender_name",
-    recommender_name
-  );
+  let recommender_name = firstName + ' ' + lastName;
+
   return `WITH book AS 
-( INSERT INTO books(id, title, thumbnail_url, description, url) 
-VALUES(DEFAULT, '${newTitle}', '${imageUrl}', '${newDescription}', '${link}') RETURNING id )
+( INSERT INTO books(id, api_id, title, thumbnail_url, description, url) 
+VALUES(default, '${apiId}', '${newTitle}', '${imageUrl}', '${newDescription}', '${link}') RETURNING id )
 INSERT INTO recommendations 
 (id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category) 
-VALUES(DEFAULT, null, 3, '${recommender_name}', '${newComments}', 
+VALUES(default, null, 3, '${recommender_name}', '${newComments}', 
         ( SELECT id from book ), default, '${category}');`;
 };
+// ADD NEW RECOMMENDATION WITH BOOK ID
+exports.ADD_REC = recommendationInfo => {
+  let {
+    userId,
+    firstName,
+    lastName,
+    bookId,
+    category,
+    comments
+  } = recommendationInfo;
 
+  let newComments = comments.replace(/\'/gi, "''");
+  let recommenderName = firstName + ' ' + lastName;
+  
+  return `
+  INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category) 
+  VALUES(DEFAULT, NULL, 3, '${recommenderName}', '${newComments}', '${bookId}', DEFAULT, '${category}');
+  `;
+};
+
+// Add recommender and comments info to an existing book based on book_id
+exports.ADD_REC_TO_EXISTING_BOOK = ({
+  userId,
+  category,
+  id,
+  firstName,
+  lastName,
+  comments
+}) => `
+INSERT INTO recommendations(id, recommender_id, user_id, recommender_name, comment, item_id, date_added, category)
+VALUES(DEFAULT, null,'${userId}' , '${firstName +
+  ' ' +
+  lastName}', '${comments}', ${id}, default, '${category}')
+  RETURNING *;
+  `;
+  
 exports.FIND_USER = (username) => {
   return `SELECT id, password FROM users
     WHERE username = '${username}';`
 }
-
 exports.ADD_USER = (username, passwordHash, firstName, lastName) => {
   return ` 
   INSERT INTO users (id, username, password, first_name, last_name)
-      VALUES (DEFAULT, '${username}', '${passwordHash}', '${firstName}', '${lastName}')
-      RETURNING id;`
+  VALUES (DEFAULT, '${username}', '${passwordHash}', '${firstName}', '${lastName}')
+  RETURNING id;`
 }

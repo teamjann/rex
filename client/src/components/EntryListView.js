@@ -1,20 +1,18 @@
-import React from "react";
+import React from 'react';
+import { Search, Dropdown, Rating, Container } from 'semantic-ui-react';
+import axios from 'axios';
+import proxify from 'proxify-url';
+import _ from 'lodash';
 
-import axios from "axios";
-import proxify from "proxify-url";
-
-import { Search, Dropdown, Rating, Container } from "semantic-ui-react";
-
-import "./EntryListView.css";
-
-import BookDetail from "./Entry/BookDetail";
-import EntryDetail from "./Entry/EntryDetail";
+import './EntryListView.css';
+import BookDetail from './Entry/BookDetail';
+import EntryDetail from './Entry/EntryDetail';
 
 class EntryListView extends React.Component {
   constructor() {
     super();
     this.state = {
-      category: '',
+      category: 'books',
       categoryOptions: [
         {
           text: 'books',
@@ -62,73 +60,93 @@ class EntryListView extends React.Component {
   handleResultSelect(e, data) {
     const params = {
       id: data.result.apiId,
-      key: "KB2ywbcnLjNO8pokkBVgg"
+      key: 'KB2ywbcnLjNO8pokkBVgg'
     };
-    const entries = this;
-    const url = proxify(`https://www.goodreads.com/book/show.xml?id=${params.id}&key=${params.key}`, {inputFormat: 'xml'});
+    const self = this;
+    const url = proxify(
+      `https://www.goodreads.com/book/show.xml?id=${params.id}&key=${
+        params.key
+      }`,
+      { inputFormat: 'xml' }
+    );
+
     axios
       .get(url)
       .then(res => {
         const book = res.data.query.results.GoodreadsResponse.book;
-        entries.setState({
-          resultDetail: {
-            title: book.title,
-            rating: book.average_rating,
-            apiId: data.result.id,
-            authors: book.authors.author.map(author => {
+        console.log('!!!!!!!!!!!!!', book);
+        let authors;
+        if (Array.isArray(book.authors.author)) {
+          authors = book.authors.author
+            .map(author => {
               if (author.role) {
                 return `${author.name} (${author.role})`;
               }
-              return author.name
-            }),
+              return author.name;
+            })
+            .join(', ');
+        } else {
+          authors = book.authors.author.name;
+        }
+        self.setState({
+          resultDetail: {
+            title: book.title,
+            rating: book.average_rating,
+            apiId: book.id,
+            authors,
             yearPublished: book.publication_year,
             description: book.description
-              .split("<br /><br />")
-              .map(paragraph => paragraph.replace(/<.*?>/gm, "")),
+              .split('<br /><br />')
+              .map(paragraph => paragraph.replace(/<.*?>/gm, '')),
             imageUrl: book.image_url,
             link: book.link
           }
         });
       })
       .catch(err => {
-      console.error(err);
+        console.error(err);
       });
   }
 
   search(e, data) {
     e.preventDefault();
+    this.setState({
+      results: []
+    });
+    console.log('search fired', `category: ${this.state.category}`);
     if (this.state.category === 'books') {
+
       const params = {
-        query: data.value,
-        key: "KB2ywbcnLjNO8pokkBVgg"
+        q: data.value.replace(/\s+/g, '-'),
+        key: 'KB2ywbcnLjNO8pokkBVgg'
       };
-      const entries = this;
-      const url = proxify(`https://www.goodreads.com/search/index.xml?q=${params.query}&key=${params.key}`,
-        {inputFormat: 'xml'});
+      const self = this;
+      const url = proxify(
+        `https://www.goodreads.com/search/index.xml?q=${params.q}&key=${
+          params.key
+        }`,
+        { inputFormat: 'xml' }
+      );
   
       axios
         .get(url)
         .then(res => {
-          const resultItems = res.data.query.results.GoodreadsResponse.search.results.work;
-          const books = resultItems.map(
-            book => {
-              return {
-                title: book.best_book.title,
-                rating: Number(book.average_rating),
-                apiId: Number(book.best_book.id.content),
-                author: book.best_book.author.name,
-                imageUrl: book.best_book.image_url
-              };
-            }
-          );
-          entries.setState({
+          const resultItems =
+            res.data.query.results.GoodreadsResponse.search.results.work;
+          const books = resultItems.map(book => {
+            return {
+              title: book.best_book.title,
+              rating: Number(book.average_rating),
+              apiId: Number(book.best_book.id.content),
+              author: book.best_book.author.name,
+              imageUrl: book.best_book.image_url
+            };
+          });
+          self.setState({
             results: books
           });
-        })
-        .catch(err => {
-          console.error(err);
         });
-      } else if (this.state.category === 'movies') {
+    } else if (this.state.category === 'movies') {
         const params = {
           api_key: '9e1ab4f6c063b70843455bf3f7852d66',
           query: data.value
@@ -144,10 +162,28 @@ class EntryListView extends React.Component {
     this.setState({
       category: data.value
     });
-    console.log(this.state.category);
+  }
+
+  renderResult(result) {
+    return (
+      <div>
+        <img className="book-image" src={result.imageUrl} />
+        <h4>{result.title}</h4>
+        <p>{result.author}</p>
+        <Rating
+          size="tiny"
+          maxRating={5}
+          defaultRating={result.rating}
+          disabled
+          icon="star"
+        />
+      </div>
+    );
   }
 
   render() {
+    const throttledSearch = _.debounce(this.search, 300);
+
     if (this.state.resultDetail) {
       return <EntryDetail result={this.state.resultDetail} />;
     } else {
@@ -164,7 +200,7 @@ class EntryListView extends React.Component {
             onChange={this.handleDropDownChange}
           />
           <Search
-            onSearchChange={this.search}
+            onSearchChange={throttledSearch}
             results={this.state.results}
             resultRenderer={this.renderResult}
             onResultSelect={this.handleResultSelect}

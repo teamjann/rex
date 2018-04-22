@@ -3,6 +3,7 @@ import { Route, Link, BrowserRouter, Switch } from 'react-router-dom';
 import { Button, Container } from 'semantic-ui-react';
 import { Dropdown, Menu } from 'semantic-ui-react';
 import axios from 'axios';
+import CssBaseline from "material-ui/CssBaseline";
 
 import Home from './Home';
 import BrowseDetail from './Browse/BrowseDetail';
@@ -11,7 +12,9 @@ import EntryListView from './EntryListView';
 import BrowseView from './BrowseView';
 import Auth from './Auth';
 
-const NewRecommendationButton = () => <Button>Enter New Recommendation </Button>;
+const NewRecommendationButton = () => (
+  <Button>Enter New Recommendation </Button>
+);
 
 class App extends Component {
   state = {
@@ -37,7 +40,9 @@ class App extends Component {
   render() {
     if (this.state.uuid) {
       return (
-        <div>
+        <React.Fragment>
+          <CssBaseline />
+
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/browsedetail" component={BrowseDetail} />
@@ -45,7 +50,7 @@ class App extends Component {
             <Route exact path="/entry" component={EntryListView} />
             <Route exact path="/browse" component={BrowseView} />
           </Switch>
-        </div>
+        </React.Fragment>
       );
     } else {
       return <Auth handleAuth={this.handleAuth.bind(this)}/>;
