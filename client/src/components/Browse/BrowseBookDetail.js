@@ -17,7 +17,7 @@ const BrowseBookDetail = props => {
           size="small"
           floated="left"
         />
-        {<p>{description}</p>}
+        {<p style={{ fontSize: "15px", marginTop: "30px" }}>{description}</p>}
       </Container>
     </div>
   );

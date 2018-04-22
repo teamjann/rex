@@ -8,6 +8,7 @@ import { Dropdown, Menu } from "semantic-ui-react";
 import EntryListView from "./EntryListView";
 import BrowseView from "./BrowseView";
 import CssBaseline from "material-ui/CssBaseline";
+import { Navbar } from "react-bootstrap";
 
 const NewRecommendationButton = () => (
   <Button>Enter New Recommendation </Button>
@@ -21,8 +22,9 @@ class App extends Component {
 
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route exact path="/browsedetail" component={BrowseDetail} />
-          <Route exact path="/entrydetail" component={EntryDetail} />
+          {/* <Route exact path="/books/" component={BrowseDetail} />
+
+          <Route exact path="/addbook" component={EntryDetail} /> */}
           <Route exact path="/entry" component={EntryListView} />
           <Route exact path="/browse" component={BrowseView} />
         </Switch>

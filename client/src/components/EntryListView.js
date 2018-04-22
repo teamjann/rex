@@ -10,6 +10,9 @@ import "./EntryListView.css";
 import BookDetail from "./Entry/BookDetail";
 import EntryDetail from "./Entry/EntryDetail";
 
+import { Navbar } from "reactstrap";
+import NavBar from "./NavBar";
+
 class EntryListView extends React.Component {
   constructor() {
     super();
@@ -56,7 +59,6 @@ class EntryListView extends React.Component {
       .get(url)
       .then(res => {
         const book = res.data.query.results.GoodreadsResponse.book;
-        console.log("!!!!!!!!!!!!!", book);
         entries.setState({
           resultDetail: {
             title: book.title,
@@ -125,23 +127,27 @@ class EntryListView extends React.Component {
       return <EntryDetail result={this.state.resultDetail} />;
     } else {
       return (
-        <Container>
-          <div className="page-title">
-            <h1>Add Recommendations</h1>
-          </div>
+        <div>
+          <NavBar />
+          <Container>
+            <div className="page-title">
+              <h1>Add New Recommendations</h1>
+            </div>
 
-          <Dropdown
-            placeholder="Select Category"
-            selection
-            options={[{ text: "books", value: "books" }]}
-          />
-          <Search
-            onSearchChange={this.search}
-            results={this.state.results}
-            resultRenderer={this.renderResult}
-            onResultSelect={this.handleResultSelect}
-          />
-        </Container>
+            <Dropdown
+              placeholder="Select Category"
+              selection
+              options={[{ text: "books", value: "books" }]}
+            />
+            <Search
+              placeholder="Search"
+              onSearchChange={this.search}
+              results={this.state.results}
+              resultRenderer={this.renderResult}
+              onResultSelect={this.handleResultSelect}
+            />
+          </Container>
+        </div>
       );
     }
   }

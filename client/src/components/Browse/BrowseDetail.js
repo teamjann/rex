@@ -1,21 +1,29 @@
 import React, { Component } from "react";
 import { Button, Popup, Item, Form, Input, TextArea } from "semantic-ui-react";
-import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
+import { Route, Link, BrowserRouter, Switch } from "react-router-dom";
 import RecommendationListItem from "./RecommendationListItem";
 import BrowseBookDetail from "../Browse/BrowseBookDetail";
 import styled from "styled-components";
 import { RSA_SSLV23_PADDING } from "constants";
-
-const BrowseContainer = styled.div`
+import NavBar from "../NavBar";
+const MenuBar = styled.div`
   width: 100%;
-  padding: 20px;
-  margin: 30px;
+  display: flex;
+  justify-content: left;
+  margin-left: 15%;
 `;
-
 const CheckOutButton = props => (
   <Popup
+    style={{ fontSize: "12px" }}
     trigger={
-      <Button as="a" href={props.url} icon="search" content="Check it out" />
+      <Button
+        style={{ fontSize: "12px" }}
+        color="blue"
+        as="a"
+        href={props.url}
+        icon="search"
+        content="Check it out"
+      />
     }
     content="Search for more information about the book."
     on="hover"
@@ -59,7 +67,7 @@ class AddRecommenderButton extends Component {
             let newRecs = Object.entries(categoryItems).find(book => {
               return book[0] === id;
             })[1].recommendations;
-            console.log("~~~~~~~~~~~~~~~newRecs", newRecs);
+
             return this.props.handleRecUpdate(newRecs);
           })
       )
@@ -68,59 +76,68 @@ class AddRecommenderButton extends Component {
       });
 
     this.setState({
-      toggle: false
+      toggle: false,
+      firstName: "",
+      lastName: "",
+      comments: ""
     });
   };
 
   render() {
     return (
       <div>
-        <Popup
-          trigger={
-            <Button
-              onClick={() => this.setState({ toggle: !this.state.toggle })}
-              icon="add"
-              content="Add a recommender"
-            />
-          }
-        />
-        {this.state.toggle && (
-          <Form onSubmit={this.handleSubmit}>
-            <Form.Group widths="equal">
+        <div>
+          <Button
+            style={{ fontSize: "12px" }}
+            color="blue"
+            onClick={() => this.setState({ toggle: !this.state.toggle })}
+            icon="add"
+            content="Add a recommender"
+          />
+          <hr />
+
+          {this.state.toggle && (
+            <Form
+              classNmae="add-recommender-form"
+              style={{ fontSize: "12px" }}
+              onSubmit={this.handleSubmit}
+            >
+              <Form.Group widths="equal">
+                <Form.Field
+                  required
+                  id="form-input-control-first-name"
+                  control={Input}
+                  value={this.state.firstName}
+                  onChange={e => this.setState({ firstName: e.target.value })}
+                  label="First name"
+                  placeholder="First name"
+                />
+                <Form.Field
+                  id="form-input-control-last-name"
+                  control={Input}
+                  value={this.state.lastName}
+                  onChange={e => this.setState({ lastName: e.target.value })}
+                  label="Last name"
+                  placeholder="Last name"
+                />
+              </Form.Group>
               <Form.Field
-                required
-                id="form-input-control-first-name"
-                control={Input}
-                value={this.state.firstName}
-                onChange={e => this.setState({ firstName: e.target.value })}
-                label="First name"
-                placeholder="First name"
+                id="form-textarea-control-opinion"
+                control={TextArea}
+                value={this.state.comments}
+                onChange={e => this.setState({ comments: e.target.value })}
+                label="Comments"
+                placeholder="Comments"
               />
               <Form.Field
-                id="form-input-control-last-name"
-                control={Input}
-                value={this.state.lastName}
-                onChange={e => this.setState({ lastName: e.target.value })}
-                label="Last name"
-                placeholder="Last name"
+                style={{ fontSize: "14px", backgroundColor: "beige" }}
+                id="form-button-control-public"
+                control={Button}
+                content="Submit"
               />
-            </Form.Group>
-            <Form.Field
-              id="form-textarea-control-opinion"
-              control={TextArea}
-              value={this.state.comments}
-              onChange={e => this.setState({ comments: e.target.value })}
-              label="Comments"
-              placeholder="Comments"
-            />
-            <Form.Field
-              id="form-button-control-public"
-              control={Button}
-              content="Submit"
-              label="Label with htmlFor"
-            />
-          </Form>
-        )}
+            </Form>
+          )}
+        </div>
       </div>
     );
   }
@@ -132,31 +149,36 @@ class AddRecommenderButton extends Component {
 const BrowseDetail = props => {
   return (
     <div>
+      <NavBar />
       <header className="book-detail">
-        <BrowseContainer>
-          <BrowseBookDetail book={props.book} />
-        </BrowseContainer>
+        <BrowseBookDetail book={props.book} />
       </header>
       <Item.Group>
         {props.recommendations.map(recommendation => (
           <RecommendationListItem
-            handleRemoveRec={props.handleRemoveRec}
             id={props.id}
             recommendation={recommendation}
             recommendations={props.recommendations}
           />
         ))}
       </Item.Group>
-      <div className="buttons">
-        <CheckOutButton url={props.book.url} />
-
-        <AddRecommenderButton
-          handleRecUpdate={props.handleRecUpdate}
-          book={props.book}
-          id={props.id}
-          recommendations={props.recommendations}
-        />
-      </div>
+      <MenuBar>
+        <div className="buttons">
+          <div style={{ fontsize: "30px", marginBottom: "10px" }}>
+            <CheckOutButton url={props.book.url} />
+          </div>
+          <AddRecommenderButton
+            handleRecUpdate={props.handleRecUpdate}
+            book={props.book}
+            id={props.id}
+            recommendations={props.recommendations}
+          />
+          <div style={{ fontsize: "40px", marginTop: "10px" }}>
+            {" "}
+            <Link to="/browse">back</Link>
+          </div>
+        </div>
+      </MenuBar>
     </div>
   );
 };

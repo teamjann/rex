@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Icon } from "semantic-ui-react";
 import BookDetail from "./Entry/BookDetail";
+import moment from "moment";
 
 const BookItemContainer = styled.div`
   display: flex;
@@ -9,7 +10,7 @@ const BookItemContainer = styled.div`
   border: 1px solid grey;
   border-width: hairline;
   border-radius: 5px;
-  padding: 5px;
+  padding: 15px;
   overflow: hidden;
 `;
 
@@ -19,10 +20,10 @@ const BookItem = props => {
 
   return (
     <li>
-      <BookItemContainer>
-        <div style={{ width: "20%" }}>
+      <BookItemContainer style={{ marginBottom: "10px" }}>
+        <span style={{ width: "15%" }}>
           Recommenders: {props.recommendations.length}
-        </div>
+        </span>
         <div
           style={{
             width: "12%",
@@ -35,19 +36,32 @@ const BookItem = props => {
           <img
             src={`${thumbnail_url}`}
             alt=""
-            style={{ height: "100px", borderRadius: "20px" }}
+            style={{
+              height: "120px",
+              borderRadius: "20px",
+              marginRight: "100px"
+            }}
           />
         </div>
         <div style={{ width: "58%", display: "flex", flexWrap: "wrap" }}>
           <div style={{ width: "100%" }}>
-            <h1 onClick={() => props.handleClick(props)}>{title}</h1>
-            {description}
+            <h2
+              style={{ marginTop: "20px" }}
+              onClick={() => props.handleClick(props)}
+            >
+              {title}
+            </h2>
+            <p style={{ marginTop: "20px" }}>{description}</p>
           </div>
-          <div style={{ width: "100%", alignSelf: "flex-end" }}>
+          <div
+            style={{ width: "100%", alignSelf: "flex-end", marginTop: "20px" }}
+          >
             <span style={{ fontWeight: "bold" }}>Recommended By:</span>{" "}
             {firstRecommender.recommender_name}{" "}
-            <span style={{ fontWeight: "bold" }}>Date:</span>{" "}
-            {firstRecommender.date_added}
+            <span style={{ fontWeight: "bold", marginLeft: "20px" }}>
+              Date:
+            </span>{" "}
+            {moment(firstRecommender.date_added).format("L")}
           </div>
         </div>
         <div

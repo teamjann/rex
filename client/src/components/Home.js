@@ -1,5 +1,11 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import "./Home.css";
+import book from "../images/book.png";
+import music from "../images/music.png";
+import movie from "../images/movie.png";
+import food from "../images/food.png";
+import NavBar from "./NavBar";
 import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
 import {
   Dropdown,
@@ -10,28 +16,19 @@ import {
   Icon
 } from "semantic-ui-react";
 
-const ButtonContainer = styled.ul`
-  width: 100%;
-  padding: 10%;
-`;
+import { Row, Col } from "reactstrap";
 
-// const FindRecommendationButton = () => (
-//   <Link to="/browse">
-//     <Button>
-//       Find Something from <Category />
-//     </Button>
-//   </Link>
-// );
+import BookDetail from "./Entry/BookDetail";
 
 const NewRecommendationButton = () => (
-  <Container>
+  <div className="newRecButton">
     <Link to="/entry">
-      <Button animated="fade">
-        <Button.Content visible>Enter New Recommendation</Button.Content>
-        <Button.Content hidden>+</Button.Content>
+      <Button size="massive" color="teal">
+        New Recommendations
+        <Icon className="plus" name="plus" />
       </Button>
     </Link>
-  </Container>
+  </div>
 );
 
 class Home extends Component {
@@ -41,14 +38,29 @@ class Home extends Component {
 
   render() {
     return (
-      <ButtonContainer>
-        <div className="new-recommendation-button">
-          <NewRecommendationButton />
-        </div>
-        <div className="find-recommendation-button">
-          <FindRecommendationButton category={this.state.category} />
-        </div>
-      </ButtonContainer>
+      <div>
+        <NavBar />
+        <div className="userName">Hello, Shu</div>
+
+        <Row>
+          <Col>
+            <Link to="/browse">
+              <img src={book} width="80" height="80" />
+            </Link>
+          </Col>
+          <Col>
+            <img src={food} width="80" height="80" />
+          </Col>
+          <Col>
+            <img src={music} width="80" height="80" />
+          </Col>
+          <Col>
+            <img src={movie} width="80" height="80" />
+          </Col>
+        </Row>
+
+        <NewRecommendationButton />
+      </div>
     );
   }
 }

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Container, Header, Icon, Menu } from "semantic-ui-react";
 import BookItem from "./BookItem";
 import BrowseDetail from "./Browse/BrowseDetail";
+import NavBar from "./NavBar";
 
 const BookList = styled.ul`
   width: 100%;
@@ -88,11 +89,6 @@ class BrowseView extends Component {
     const { activeItem } = this.state;
     return this.state.detailedView ? (
       <BrowseDetail
-        handleRemoveRec={removeItem =>
-          this.setState({
-            clickedRecommendations: removeItem
-          })
-        }
         handleRecUpdate={categoryItems =>
           this.setState({
             clickedRecommendations: categoryItems
@@ -103,48 +99,56 @@ class BrowseView extends Component {
         recommendations={this.state.clickedRecommendations}
       />
     ) : (
-      <Container>
-        <Header as="h1" icon textAlign="center">
-          <Icon name="book" circular />
-          <Header.Content>Books</Header.Content>
-        </Header>
+      <div>
+        <NavBar />
+        <Container>
+          <Header as="h1" icon textAlign="center">
+            <Icon name="book" circular />
+            <Header.Content style={{ fontSize: "20px" }}>Books</Header.Content>
+          </Header>
 
-        <MenuBar>
-          <Menu text>
-            <Menu.Item header>Sort By</Menu.Item>
-            <Menu.Item
-              name="Recommendations"
-              active={activeItem === "Recommendations"}
-              onClick={this.handleItemClick}
-            />
-            <Menu.Item
-              name="Oldest"
-              active={activeItem === "Oldest"}
-              onClick={this.handleItemClick}
-            />
-            <Menu.Item
-              name="Newest"
-              active={activeItem === "Newest"}
-              onClick={this.handleItemClick}
-            />
-          </Menu>
-        </MenuBar>
-
-        <BookList>
-          {this.state[category].map(([bookId, bookInfo]) => {
-            const { book, recommendations } = bookInfo;
-            // const recommendationCount = recommendations.length;
-            return (
-              <BookItem
-                handleClick={props => this.handleClick(props)}
-                id={bookId}
-                book={book}
-                recommendations={recommendations}
+          <MenuBar>
+            <Menu text>
+              <Menu.Item style={{ fontSize: "15px" }} header>
+                Sort By
+              </Menu.Item>
+              <Menu.Item
+                name="Recommendations"
+                style={{ fontSize: "15px" }}
+                active={activeItem === "Recommendations"}
+                onClick={this.handleItemClick}
               />
-            );
-          })}
-        </BookList>
-      </Container>
+              <Menu.Item
+                style={{ fontSize: "15px" }}
+                name="Oldest"
+                active={activeItem === "Oldest"}
+                onClick={this.handleItemClick}
+              />
+              <Menu.Item
+                style={{ fontSize: "15px" }}
+                name="Newest"
+                active={activeItem === "Newest"}
+                onClick={this.handleItemClick}
+              />
+            </Menu>
+          </MenuBar>
+
+          <BookList>
+            {this.state[category].map(([bookId, bookInfo]) => {
+              const { book, recommendations } = bookInfo;
+              // const recommendationCount = recommendations.length;
+              return (
+                <BookItem
+                  handleClick={props => this.handleClick(props)}
+                  id={bookId}
+                  book={book}
+                  recommendations={recommendations}
+                />
+              );
+            })}
+          </BookList>
+        </Container>
+      </div>
     );
   }
 }
