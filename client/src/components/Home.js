@@ -23,7 +23,7 @@ import BookDetail from "./Entry/BookDetail";
 const NewRecommendationButton = () => (
   <div className="newRecButton">
     <Link to="/entry">
-      <Button size="massive" color="teal">
+      <Button size="massive" color="teal" borderRadius="30px">
         New Recommendations
         <Icon className="plus" name="plus" />
       </Button>
@@ -33,8 +33,16 @@ const NewRecommendationButton = () => (
 
 class Home extends Component {
   state = {
-    category: ""
+    category: "",
+    imageStatus: "loading"
   };
+  handleImageLoaded() {
+    this.setState({ imageStatus: "loaded" });
+  }
+
+  handleImageErrored() {
+    this.setState({ imageStatus: "failed to load" });
+  }
 
   render() {
     return (
@@ -42,24 +50,51 @@ class Home extends Component {
         <NavBar />
         <div className="userName">Hello, Shu</div>
 
-        <Row>
-          <Col>
+        <div className="icon-list">
+          <div>
             <Link to="/browse">
-              <img src={book} width="80" height="80" />
+              <img
+                src={book}
+                width="80"
+                height="80"
+                onLoad={this.handleImageLoaded.bind(this)}
+                onError={this.handleImageErrored.bind(this)}
+              />
             </Link>
-          </Col>
-          <Col>
-            <img src={food} width="80" height="80" />
-          </Col>
-          <Col>
-            <img src={music} width="80" height="80" />
-          </Col>
-          <Col>
-            <img src={movie} width="80" height="80" />
-          </Col>
-        </Row>
-
-        <NewRecommendationButton />
+          </div>
+          <div>
+            <img
+              src={food}
+              width="80"
+              height="80"
+              onLoad={this.handleImageLoaded.bind(this)}
+              onError={this.handleImageErrored.bind(this)}
+            />
+          </div>
+          <div>
+            <img
+              src={music}
+              width="80"
+              height="80"
+              onLoad={this.handleImageLoaded.bind(this)}
+              onError={this.handleImageErrored.bind(this)}
+            />
+          </div>
+          <div>
+            <img
+              src={movie}
+              width="80"
+              height="80"
+              onLoad={this.handleImageLoaded.bind(this)}
+              onError={this.handleImageErrored.bind(this)}
+            />
+          </div>
+        </div>
+        <div>
+          <div className="newRec-button">
+            <NewRecommendationButton />
+          </div>
+        </div>
       </div>
     );
   }
