@@ -52,8 +52,7 @@ const BookItem = props => {
               onClick={() => props.handleClick(props)}
             >
               <Link to={{ pathname: `/browse/${props.id}`, query: props }}>
-                {" "}
-                {title}{" "}
+                {title}
               </Link>
             </h2>
             <p style={{ marginTop: "20px" }}>{description}</p>

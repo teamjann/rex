@@ -4,7 +4,7 @@ import axios from "axios";
 import proxify from "proxify-url";
 
 import { Search, Dropdown, Rating, Container } from "semantic-ui-react";
-
+import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
 import "./EntryListView.css";
 
 import BookDetail from "./Entry/BookDetail";
@@ -78,6 +78,11 @@ class EntryListView extends React.Component {
             link: book.link
           }
         });
+
+        entries.props.history.push({
+          pathname: `/entry/${entries.state.resultDetail.apiId}`,
+          state: { result: entries.state.resultDetail }
+        });
       })
       .catch(err => {
         console.error(err);
@@ -123,33 +128,32 @@ class EntryListView extends React.Component {
   }
 
   render() {
-    if (this.state.resultDetail) {
-      return <EntryDetail result={this.state.resultDetail} />;
-    } else {
-      return (
-        <div>
-          <NavBar />
-          <Container>
-            <div className="page-title">
-              <h1>Add New Recommendations</h1>
-            </div>
+    // if (this.state.resultDetail) {
+    //   return <EntryDetail result={this.state.resultDetail} />;
+    // } else {
+    return (
+      <div>
+        <NavBar />
+        <Container>
+          <div className="page-title">
+            <h1>Add New Recommendations</h1>
+          </div>
 
-            <Dropdown
-              placeholder="Select Category"
-              selection
-              options={[{ text: "books", value: "books" }]}
-            />
-            <Search
-              placeholder="Search"
-              onSearchChange={this.search}
-              results={this.state.results}
-              resultRenderer={this.renderResult}
-              onResultSelect={this.handleResultSelect}
-            />
-          </Container>
-        </div>
-      );
-    }
+          <Dropdown
+            placeholder="Select Category"
+            selection
+            options={[{ text: "books", value: "books" }]}
+          />
+          <Search
+            placeholder="Search"
+            onSearchChange={this.search}
+            results={this.state.results}
+            resultRenderer={this.renderResult}
+            onResultSelect={this.handleResultSelect}
+          />
+        </Container>
+      </div>
+    );
   }
 }
 
