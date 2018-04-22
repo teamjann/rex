@@ -22,7 +22,7 @@ const NavBar = () => {
         <Navbar.Collapse>
           <Nav>
             <NavItem eventKey={2} href="#">
-              About
+              Profile
             </NavItem>
             <NavDropdown eventKey={3} title="My List" id="basic-nav-dropdown">
               <MenuItem eventKey={3.1}>
@@ -43,7 +43,7 @@ const NavBar = () => {
             <NavItem eventKey={1}>
               <Link to="/entry">Search</Link>
             </NavItem>
-            <NavItem eventKey={1.2}>Profile</NavItem>
+            <NavItem eventKey={1.2}>Log out</NavItem>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

@@ -147,37 +147,45 @@ class AddRecommenderButton extends Component {
 //const RemoveFromListButton = () => <Button>Remove from list</Button>;
 
 const BrowseDetail = props => {
+  const target = props.location.query;
+  console.log("target", target);
   return (
     <div>
       <NavBar />
       <header className="book-detail">
-        <BrowseBookDetail book={props.book} />
+        <BrowseBookDetail book={target.book} />
       </header>
       <Item.Group>
-        {props.recommendations.map(recommendation => (
+        {target.recommendations.map(recommendation => (
           <RecommendationListItem
-            id={props.id}
+            id={target.id}
             recommendation={recommendation}
-            recommendations={props.recommendations}
+            recommendations={target.recommendations}
           />
         ))}
       </Item.Group>
       <MenuBar>
-        <div className="buttons">
-          <div style={{ fontsize: "30px", marginBottom: "10px" }}>
-            <CheckOutButton url={props.book.url} />
-          </div>
+        <div>
           <AddRecommenderButton
-            handleRecUpdate={props.handleRecUpdate}
-            book={props.book}
-            id={props.id}
-            recommendations={props.recommendations}
+            handleRecUpdate={target.handleRecUpdate}
+            book={target.book}
+            id={target.id}
+            recommendations={target.recommendations}
           />
-          <div style={{ fontsize: "40px", marginTop: "10px" }}>
-            {" "}
-            <Link to="/browse">back</Link>
-          </div>
         </div>
+        <div
+          style={{
+            fontsize: "30px",
+            marginBottom: "10px",
+            marginRight: "50px"
+          }}
+        >
+          <CheckOutButton url={target.book.url} />
+        </div>
+
+        <Link to="/browse">
+          <div style={{ fontsize: "40px", marginTop: "10px" }}> {`< back`}</div>
+        </Link>
       </MenuBar>
     </div>
   );

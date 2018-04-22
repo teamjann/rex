@@ -87,18 +87,20 @@ class BrowseView extends Component {
     //const { category } = this.props;
     const category = "books";
     const { activeItem } = this.state;
-    return this.state.detailedView ? (
-      <BrowseDetail
-        handleRecUpdate={categoryItems =>
-          this.setState({
-            clickedRecommendations: categoryItems
-          })
-        }
-        id={this.state.clickedId}
-        book={this.state.clickedBook}
-        recommendations={this.state.clickedRecommendations}
-      />
-    ) : (
+
+    // this.state.detailedView ? (
+    //   <BrowseDetail
+    //     handleRecUpdate={categoryItems =>
+    //       this.setState({
+    //         clickedRecommendations: categoryItems
+    //       })
+    //     }
+    //     id={this.state.clickedId}
+    //     book={this.state.clickedBook}
+    //     recommendations={this.state.clickedRecommendations}
+    //   />
+    // ) :
+    return (
       <div>
         <NavBar />
         <Container>

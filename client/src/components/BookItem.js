@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Icon } from "semantic-ui-react";
 import BookDetail from "./Entry/BookDetail";
 import moment from "moment";
+import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
 
 const BookItemContainer = styled.div`
   display: flex;
@@ -15,6 +16,7 @@ const BookItemContainer = styled.div`
 `;
 
 const BookItem = props => {
+  console.log("bookItem Id", props.id);
   const { title, description, thumbnail_url } = props.book;
   const firstRecommender = props.recommendations[0];
 
@@ -49,7 +51,10 @@ const BookItem = props => {
               style={{ marginTop: "20px" }}
               onClick={() => props.handleClick(props)}
             >
-              {title}
+              <Link to={{ pathname: `/browse/${props.id}`, query: props }}>
+                {" "}
+                {title}{" "}
+              </Link>
             </h2>
             <p style={{ marginTop: "20px" }}>{description}</p>
           </div>

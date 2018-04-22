@@ -22,9 +22,8 @@ class App extends Component {
 
         <Switch>
           <Route exact path="/" component={Home} />
-          {/* <Route exact path="/books/" component={BrowseDetail} />
-
-          <Route exact path="/addbook" component={EntryDetail} /> */}
+          <Route path="/browse/:bookId" component={BrowseDetail} />
+          <Route path="/entry/:bookId" component={EntryDetail} />
           <Route exact path="/entry" component={EntryListView} />
           <Route exact path="/browse" component={BrowseView} />
         </Switch>
