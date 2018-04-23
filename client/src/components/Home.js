@@ -1,24 +1,17 @@
-import React, { Component } from "react";
-import styled from "styled-components";
-import "./Home.css";
-import book from "../images/book.png";
-import music from "../images/music.png";
-import movie from "../images/movie.png";
-import food from "../images/food.png";
-import NavBar from "./NavBar";
-import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
-import {
-  Dropdown,
-  Menu,
-  Button,
-  Container,
-  Header,
-  Icon
-} from "semantic-ui-react";
+import React, { Component } from 'react';
+import styled from 'styled-components';
+import './Home.css';
+import book from '../images/book.png';
+import music from '../images/music.png';
+import movie from '../images/movie.png';
+import food from '../images/food.png';
+import NavBar from './NavBar';
+import { Route, Link, BrowserRouter, Switch, Redirect } from 'react-router-dom';
+import { Dropdown, Menu, Button, Container, Header, Icon } from 'semantic-ui-react';
 
-import { Row, Col } from "reactstrap";
+import { Row, Col } from 'reactstrap';
 
-import BookDetail from "./Entry/BookDetail";
+import BookDetail from './Entry/BookDetail';
 
 const NewRecommendationButton = () => (
   <div className="newRecButton">
@@ -33,22 +26,22 @@ const NewRecommendationButton = () => (
 
 class Home extends Component {
   state = {
-    category: "",
-    imageStatus: "loading"
+    category: '',
+    imageStatus: 'loading',
   };
   handleImageLoaded() {
-    this.setState({ imageStatus: "loaded" });
+    this.setState({ imageStatus: 'loaded' });
   }
 
   handleImageErrored() {
-    this.setState({ imageStatus: "failed to load" });
+    this.setState({ imageStatus: 'failed to load' });
   }
 
   render() {
     return (
       <div>
         <NavBar />
-        <div className="userName">Hello, Shu</div>
+        <div className="userName">Hello, {this.props.username}</div>
 
         <div className="icon-list">
           <div>
@@ -102,22 +95,18 @@ class Home extends Component {
 
 class FindRecommendationButton extends Component {
   state = {
-    category: ""
+    category: '',
   };
 
   render() {
     return (
       <div>
         <Menu vertical>
-          <Dropdown
-            text="Find Something from"
-            pointing="left"
-            className="link item"
-          >
+          <Dropdown text="Find Something from" pointing="left" className="link item">
             <Dropdown.Menu>
               <Dropdown.Item
                 onClick={() => {
-                  this.setState({ category: "books" });
+                  this.setState({ category: 'books' });
                   //<Redirect to="/browse" />;
                   //redirect is like component
                 }}

@@ -17,10 +17,11 @@ const NewRecommendationButton = () => <Button>Enter New Recommendation </Button>
 class App extends Component {
   state = {
     isAuthenticated: false,
+    username: '',
   };
 
-  handleAuth({ isAuthenticated }) {
-    this.setState({ isAuthenticated });
+  handleAuth({ isAuthenticated, username }) {
+    this.setState({ isAuthenticated, username });
   }
 
   componentDidMount() {
@@ -36,10 +37,12 @@ class App extends Component {
   }
 
   render() {
+    const username = this.state.username;
+
     if (this.state.isAuthenticated) {
       return (
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" render={() => <Home username={username} />} />
           <Route path="/browse/:bookId" component={BrowseDetail} />
           <Route path="/entry/:bookId" component={EntryDetail} />
           <Route exact path="/entry" component={EntryListView} />

@@ -12,7 +12,6 @@
 .book-image {
   height: 120px;
   border-radius: 20px;
-  margin-right: 100px;
   width: 80px;
 }
 .book-detail-container {
@@ -32,4 +31,12 @@
 .book-recommended-date {
   margin-left: 20px;
   font-weight: bold;
+}
+.ui.text.menu {
+  background: none transparent;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  margin: 1em -0.5em;
+  font-size: 18px;
 }

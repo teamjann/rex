@@ -13,10 +13,12 @@ class Login extends Component {
 
   handleSubmit = event => {
     const self = this;
+    const state = this.state;
     axios
       .post('/login', this.state)
       .then(res => {
-        self.props.handleAuth(res.data);
+        console.log('state being sent, ', state);
+        self.props.handleAuth({ ...res.data, state });
       })
       .catch(err => console.log(err));
 
