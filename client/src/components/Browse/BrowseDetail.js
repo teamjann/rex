@@ -22,6 +22,7 @@ const CheckOutButton = props => (
         className="checkout-button"
         color="blue"
         as="a"
+        target="_blank"
         href={props.url}
         icon="search"
         content="Check it out"

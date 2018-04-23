@@ -188,25 +188,27 @@ class EntryListView extends React.Component {
   render() {
     const throttledSearch = _.debounce(this.search, 300);
     return (
-      <Container>
+      <div>  
         <NavBar />
-        <div className="page-title">
-          <h1>Add New Recommendations</h1>
-        </div>
+        <Container>
+          <div className="page-title">
+            <h1>Add New Recommendations</h1>
+          </div>
 
-        <Dropdown
-          placeholder="Select Category"
-          selection
-          options={this.state.categoryOptions}
-          onChange={this.handleDropDownChange}
-        />
-        <Search
-          onSearchChange={throttledSearch}
-          results={this.state.results}
-          resultRenderer={this.renderResult}
-          onResultSelect={this.handleResultSelect}
-        />
-      </Container>
+          <Dropdown
+            placeholder="Select Category"
+            selection
+            options={this.state.categoryOptions}
+            onChange={this.handleDropDownChange}
+          />
+          <Search
+            onSearchChange={throttledSearch}
+            results={this.state.results}
+            resultRenderer={this.renderResult}
+            onResultSelect={this.handleResultSelect}
+          />
+        </Container>
+      </div>  
     );
   }
 }

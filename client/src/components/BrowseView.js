@@ -193,44 +193,47 @@ class BrowseView extends Component {
     const { bookOrder } = this.state;
 
     return (
-      <Container>
+      <div>
         <NavBar />
-        <Header as="h1" icon textAlign="center">
-          <Icon name="book" circular />
-          <Header.Content>Books</Header.Content>
-        </Header>
 
-        <SortMenu
-          activeItem={activeItem}
-          showCompleted={showCompleted}
-          handleItemClick={this.handleItemClick}
-          handleCompletedClick={this.handleCompletedClick}
-        />
+        <Container>
+          <Header as="h1" icon textAlign="center">
+            <Icon name="book" circular />
+            <Header.Content>Books</Header.Content>
+          </Header>
 
-        <BookList>
-          {bookOrder.length > 0 &&
-            bookOrder.map(bookId => {
-              const bookInfo = this.state.books[bookId];
-              const { book, recommendations } = bookInfo;
-              const recommendationCount = recommendations.length;
-              const { showCompleted } = this.state;
+          <SortMenu
+            activeItem={activeItem}
+            showCompleted={showCompleted}
+            handleItemClick={this.handleItemClick}
+            handleCompletedClick={this.handleCompletedClick}
+          />
 
-              if (showCompleted || book.status === 'active') {
-                return (
-                  <BookItem
-                    handleClick={props => this.handleClick(props)}
-                    id={bookId}
-                    book={book}
-                    recommendations={recommendations}
-                    deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
-                    markCompleted={this.markCompleted}
-                    category={category}
-                  />
-                );
-              }
-            })}
-        </BookList>
-      </Container>
+          <BookList>
+            {bookOrder.length > 0 &&
+              bookOrder.map(bookId => {
+                const bookInfo = this.state.books[bookId];
+                const { book, recommendations } = bookInfo;
+                const recommendationCount = recommendations.length;
+                const { showCompleted } = this.state;
+
+                if (showCompleted || book.status === 'active') {
+                  return (
+                    <BookItem
+                      handleClick={props => this.handleClick(props)}
+                      id={bookId}
+                      book={book}
+                      recommendations={recommendations}
+                      deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
+                      markCompleted={this.markCompleted}
+                      category={category}
+                    />
+                  );
+                }
+              })}
+          </BookList>
+        </Container>
+      </div>
     );
   }
 }
