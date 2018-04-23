@@ -3,7 +3,7 @@ import { Route, Link, BrowserRouter, Switch } from 'react-router-dom';
 import { Button, Container } from 'semantic-ui-react';
 import { Dropdown, Menu } from 'semantic-ui-react';
 import axios from 'axios';
-import CssBaseline from "material-ui/CssBaseline";
+import CssBaseline from 'material-ui/CssBaseline';
 
 import Home from './Home';
 import BrowseDetail from './Browse/BrowseDetail';
@@ -12,33 +12,31 @@ import EntryListView from './EntryListView';
 import BrowseView from './BrowseView';
 import Auth from './Auth';
 
-const NewRecommendationButton = () => (
-  <Button>Enter New Recommendation </Button>
-);
+const NewRecommendationButton = () => <Button>Enter New Recommendation </Button>;
 
 class App extends Component {
   state = {
-    uuid: ''
-  }
+    isAuthenticated: false,
+  };
 
-  handleAuth({ uuid }) {
-    this.setState({ uuid });
+  handleAuth({ isAuthenticated }) {
+    this.setState({ isAuthenticated });
   }
 
   componentDidMount() {
     const self = this;
     axios
       .get('/auth')
-      .then((res) => {
+      .then(res => {
         self.handleAuth(res.data);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   }
 
   render() {
-    if (this.state.uuid) {
+    if (this.state.isAuthenticated) {
       return (
         <React.Fragment>
           <CssBaseline />
@@ -53,7 +51,7 @@ class App extends Component {
         </React.Fragment>
       );
     } else {
-      return <Auth handleAuth={this.handleAuth.bind(this)}/>;
+      return <Auth handleAuth={this.handleAuth.bind(this)} />;
     }
   }
 }
