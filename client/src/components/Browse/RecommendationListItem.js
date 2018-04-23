@@ -10,6 +10,7 @@ import {
   Confirm
 } from "semantic-ui-react";
 import { METHODS } from "http";
+import "./BrowseDetail.css";
 
 const MenuBar = styled.div`
   width: 100%;
@@ -23,61 +24,31 @@ const RecommendationListItem = props => (
       <Icon size="large" name="user circle" />
     </div>
 
-    <div style={{ fontWeight: "bold" }}>
+    <div className="recommendation-table">
       <div>
         Recommender Name:{" "}
         {
-          <span style={{ fontWeight: "normal" }}>
+          <span className="recommender-info">
             {props.recommendation.recommender_name}
           </span>
         }{" "}
       </div>
       <div>
-        Date:{" "}
         {
-          <span
-            style={{
-              fontWeight: "normal"
-            }}
-          >
-            {moment(props.recommendation.date_added).format("L")}
+          <span className="recommender-info">
+            {moment(props.recommendation.date_added).fromNow()}
           </span>
         }{" "}
       </div>
       <div>
         Comments:{" "}
-        <span style={{ fontWeight: "normal" }}>
+        <span className="recommender-info">
           {" "}
           {props.recommendation.comment}
         </span>
       </div>
     </div>
   </MenuBar>
-
-  // <div>
-  //   <List horizontal>
-  //     <List.Item>
-  //       <List.Content>
-  //         <List.Header>Date</List.Header>
-  //         {moment(props.recommendation.date_added).format("L")}
-  //       </List.Content>
-  //     </List.Item>
-
-  //     <List.Item>
-  //       <List.Content>
-  //         <List.Header>Recommender</List.Header>
-  //         {props.recommendation.recommender_name}
-  //       </List.Content>
-  //     </List.Item>
-
-  //     <List.Item>
-  //       <List.Content>
-  //         <List.Header>Comments</List.Header>
-  //         {props.recommendation.comment}
-  //       </List.Content>
-  //     </List.Item>
-  //   </List>
-  // </div>
 );
 
 export default RecommendationListItem;

@@ -41,7 +41,9 @@ const NavBar = () => {
           </Nav>
           <Nav pullRight>
             <NavItem eventKey={1}>
-              <Link to="/entry">Search</Link>
+              <Link to="/entry">
+                <Icon name="plus" size="large" />
+              </Link>
             </NavItem>
             <NavItem eventKey={1.2}>Log out</NavItem>
           </Nav>

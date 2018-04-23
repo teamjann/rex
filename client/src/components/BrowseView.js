@@ -4,7 +4,7 @@ import { Container, Header, Icon, Menu } from "semantic-ui-react";
 import BookItem from "./BookItem";
 import BrowseDetail from "./Browse/BrowseDetail";
 import NavBar from "./NavBar";
-
+import "./BrowseView.css";
 const BookList = styled.ul`
   width: 100%;
   padding: 5px;
@@ -21,7 +21,6 @@ class BrowseView extends Component {
   state = {
     userId: 3,
     activeItem: "Recommendations",
-    //[this.props.category]: {}
     books: [],
     clickedBook: {},
     clickedRecommendations: [],
@@ -29,7 +28,6 @@ class BrowseView extends Component {
   };
 
   componentDidMount() {
-    // const { category } = this.props;
     const category = "books";
     const { userId } = this.state;
 
@@ -80,54 +78,38 @@ class BrowseView extends Component {
       clickedRecommendations: props.recommendations,
       clickedId: props.id
     });
-    //reroute the browsedetail view (bookdetails)
   };
 
   render() {
-    //const { category } = this.props;
+    const self = this;
     const category = "books";
     const { activeItem } = this.state;
-
-    // this.state.detailedView ? (
-    //   <BrowseDetail
-    //     handleRecUpdate={categoryItems =>
-    //       this.setState({
-    //         clickedRecommendations: categoryItems
-    //       })
-    //     }
-    //     id={this.state.clickedId}
-    //     book={this.state.clickedBook}
-    //     recommendations={this.state.clickedRecommendations}
-    //   />
-    // ) :
     return (
       <div>
         <NavBar />
         <Container>
           <Header as="h1" icon textAlign="center">
             <Icon name="book" circular />
-            <Header.Content style={{ fontSize: "20px" }}>Books</Header.Content>
+            <Header.Content className="menu-header">Books</Header.Content>
           </Header>
 
           <MenuBar>
             <Menu text>
-              <Menu.Item style={{ fontSize: "15px" }} header>
-                Sort By
-              </Menu.Item>
+              <Menu.Item className="menu-item-header">Sort By</Menu.Item>
               <Menu.Item
+                className="menu-item"
                 name="Recommendations"
-                style={{ fontSize: "15px" }}
                 active={activeItem === "Recommendations"}
                 onClick={this.handleItemClick}
               />
               <Menu.Item
-                style={{ fontSize: "15px" }}
+                className="menu-item"
                 name="Oldest"
                 active={activeItem === "Oldest"}
                 onClick={this.handleItemClick}
               />
               <Menu.Item
-                style={{ fontSize: "15px" }}
+                className="menu-item"
                 name="Newest"
                 active={activeItem === "Newest"}
                 onClick={this.handleItemClick}
@@ -138,10 +120,10 @@ class BrowseView extends Component {
           <BookList>
             {this.state[category].map(([bookId, bookInfo]) => {
               const { book, recommendations } = bookInfo;
-              // const recommendationCount = recommendations.length;
               return (
                 <BookItem
-                  handleClick={props => this.handleClick(props)}
+                  handleRecUpdate={this.handleRecUpdate}
+                  handleClick={this.handleClick}
                   id={bookId}
                   book={book}
                   recommendations={recommendations}

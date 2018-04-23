@@ -1,17 +1,11 @@
 import React from "react";
-
 import axios from "axios";
 import proxify from "proxify-url";
-
 import { Search, Dropdown, Rating, Container } from "semantic-ui-react";
-import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
-import "./EntryListView.css";
-
 import BookDetail from "./Entry/BookDetail";
 import EntryDetail from "./Entry/EntryDetail";
-
-import { Navbar } from "reactstrap";
 import NavBar from "./NavBar";
+import "./EntryListView.css";
 
 class EntryListView extends React.Component {
   constructor() {
@@ -128,9 +122,6 @@ class EntryListView extends React.Component {
   }
 
   render() {
-    // if (this.state.resultDetail) {
-    //   return <EntryDetail result={this.state.resultDetail} />;
-    // } else {
     return (
       <div>
         <NavBar />

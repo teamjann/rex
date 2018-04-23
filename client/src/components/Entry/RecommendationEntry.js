@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 import {
   Form,
   Input,
@@ -7,7 +8,6 @@ import {
   Container,
   Divider
 } from "semantic-ui-react";
-import { Redirect } from "react-router-dom";
 
 class RecommendationEntry extends Component {
   state = { firstName: "", lastName: "", comments: "", inserted: false };
@@ -16,7 +16,6 @@ class RecommendationEntry extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log("Props data!!!!!!!!!", this.props.entry.id);
     const { firstName, lastName, comments } = this.state;
     // send our data to server and server will save to the db
     const {
@@ -32,7 +31,6 @@ class RecommendationEntry extends Component {
 
     const category = "books";
     const userId = 3;
-
     const bookInfo = {
       title,
       imageUrl,
@@ -100,7 +98,6 @@ class RecommendationEntry extends Component {
             id="form-button-control-public"
             control={Button}
             content="Save"
-            label="Save to my list"
           />
         </Form>
       </Container>

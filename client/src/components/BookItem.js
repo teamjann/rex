@@ -1,9 +1,10 @@
+import moment from "moment";
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 import { Icon } from "semantic-ui-react";
 import BookDetail from "./Entry/BookDetail";
-import moment from "moment";
-import { Route, Link, BrowserRouter, Switch, Redirect } from "react-router-dom";
+import "./BookItem.css";
 
 const BookItemContainer = styled.div`
   display: flex;
@@ -22,60 +23,30 @@ const BookItem = props => {
 
   return (
     <li>
-      <BookItemContainer style={{ marginBottom: "10px" }}>
-        <span style={{ width: "15%" }}>
+      <BookItemContainer>
+        <span className="recommender">
           Recommenders: {props.recommendations.length}
         </span>
-        <div
-          style={{
-            width: "12%",
-            padding: "5px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <img
-            src={`${thumbnail_url}`}
-            alt=""
-            style={{
-              height: "120px",
-              borderRadius: "20px",
-              marginRight: "100px"
-            }}
-          />
+        <div className="book-image-container">
+          <img className="book-image" src={`${thumbnail_url}`} alt="" />
         </div>
-        <div style={{ width: "58%", display: "flex", flexWrap: "wrap" }}>
-          <div style={{ width: "100%" }}>
-            <h2
-              style={{ marginTop: "20px" }}
-              onClick={() => props.handleClick(props)}
-            >
+        <div className="book-detail-container">
+          <div className="book-title-container">
+            <h2 className="book-title" onClick={props.handleClick}>
               <Link to={{ pathname: `/browse/${props.id}`, query: props }}>
                 {title}
               </Link>
             </h2>
-            <p style={{ marginTop: "20px" }}>{description}</p>
+            <p className="book-description">{description}</p>
           </div>
-          <div
-            style={{ width: "100%", alignSelf: "flex-end", marginTop: "20px" }}
-          >
-            <span style={{ fontWeight: "bold" }}>Recommended By:</span>{" "}
+          <div className="book-recommender-container">
+            <span className="book-recommender-name">Recommended By:</span>{" "}
             {firstRecommender.recommender_name}{" "}
-            <span style={{ fontWeight: "bold", marginLeft: "20px" }}>
-              Date:
-            </span>{" "}
+            <span className="book-recommended-date">Date:</span>{" "}
             {moment(firstRecommender.date_added).format("L")}
           </div>
         </div>
-        <div
-          style={{
-            width: "10%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
+        <div className="book-action-container">
           <Icon name="check" size="big" />
           <Icon name="trash" size="big" />
         </div>
