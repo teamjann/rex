@@ -41,7 +41,7 @@ class Home extends Component {
     return (
       <div>
         <NavBar />
-        <div className="userName">Hello, {this.props.username}</div>
+        <div className="userName">Welcome! {this.props.username}</div>
 
         <div className="icon-list">
           <div>
