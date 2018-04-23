@@ -71,3 +71,17 @@ i.icon.plus:before {
   flex-direction: row;
   align-items: center;
 }
+
+.iconRow {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.homeMenuIcon {
+  margin-right: 20px;
+  text-align: center;
+}
+
+.homeMenuIcon :hover {
+  cursor: pointer;
+}

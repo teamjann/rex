@@ -1,41 +1,46 @@
-import React, { Component } from "react";
-import styled from "styled-components";
-import { Container, Header, Icon, Menu } from "semantic-ui-react";
-import BookItem from "./BookItem";
-import BrowseDetail from "./Browse/BrowseDetail";
-import NavBar from "./NavBar";
-import "./BrowseView.css";
+// React
+import React, { Component } from 'react';
+// Styling
+import styled from 'styled-components';
+import { Container, Header, Icon, Menu } from 'semantic-ui-react';
+import swal from 'sweetalert2';
+import './BrowseView.css';
+// Components
+import NavBar from './NavBar';
+import SortMenu from './SortMenu';
+import BookItem from './BookItem';
+import BrowseDetail from './Browse/BrowseDetail';
+
 const BookList = styled.ul`
   width: 100%;
   padding: 5px;
   list-style: none;
 `;
 
-const MenuBar = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: 0;
-`;
 class BrowseView extends Component {
   state = {
     userId: 3,
-    activeItem: "Recommendations",
-    books: [],
+    activeItem: 'Recommendations',
+    books: {},
+    bookOrder: [],
+    showCompleted: false,
     clickedBook: {},
     clickedRecommendations: [],
-    detailedView: false
+    detailedView: false,
   };
 
-  componentDidMount() {
-    const category = "books";
+  populateBooks() {
+    const category = 'books';
     const { userId } = this.state;
+    // Use 'category' and 'categoryItems' to eventually add other categories
+    // For now, category and sort is hard-coded to books
 
     fetch(`/u/${userId}/${category}`)
       .then(res => res.json())
       .then(categoryItems => {
         this.setState({
-          [category]: Object.entries(categoryItems)
+          [category]: categoryItems,
+          bookOrder: Object.entries(categoryItems).map(([key, val]) => key),
         });
       })
       .catch(err => {
@@ -43,96 +48,189 @@ class BrowseView extends Component {
       });
   }
 
-  handleItemClick = (e, { name }) => {
-    this.setState({ activeItem: name });
-    //declare sort type and the array of books
-    let sortType = this.state.activeItem;
-    const bookArray = this.state.books;
-    //sort the array of recommendation entries of each book (each book may have many rec entries)
-    const getLatestDate = arr => {
-      return arr.reduce((latestDate, rec) => {
-        return Math.max(new Date(rec.date_added), latestDate);
-      }, new Date(arr[0].date_added));
-    };
-    //sort the array of books
-    const sortBy = (a, b) => {
-      let latestDate_a = getLatestDate(a[1].recommendations);
-      let latestDate_b = getLatestDate(b[1].recommendations);
-      if (sortType === "Newest") {
-        return latestDate_b - latestDate_a;
-      } else if (sortType === "Oldest") {
-        return latestDate_a - latestDate_b;
+  deleteBook = deletedInfo => {
+    // Pop-up asking for delete confirmation
+    swal({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(result => {
+      if (result.value) {
+        // On confirmation, send DELETE request to server
+        const { category, id } = deletedInfo;
+        const { userId } = this.state;
+
+        fetch(`/u/${userId}/${category}/${id}`, {
+          method: 'DELETE',
+        })
+          .then(res => res.json())
+          .then(data => {
+            // On server response, delete item from state
+            const categoryItems = this.state[category];
+            const bookOrder = this.state.bookOrder.filter(bookId => bookId !== id);
+
+            delete categoryItems[id];
+
+            this.setState({
+              [category]: categoryItems,
+              bookOrder,
+            });
+          })
+          .catch(err => console.log('delete unsuccessful', err));
       }
-    };
-    // set state with the newly sorted array of books
-    let sortedArray = bookArray.sort(sortBy);
-    this.setState({
-      books: sortedArray
     });
   };
 
-  handleClick = props => {
+  markCompleted = itemInfo => {
+    const { userId } = this.state;
+    const { category, id } = itemInfo;
+
+    // Rating pop-up
+    swal({
+      title: 'Rate the recommendation:',
+      showCancelButton: true,
+      type: 'question',
+      input: 'range',
+      inputAttributes: {
+        min: 0,
+        max: 5,
+        step: 0.5,
+      },
+      inputValue: 2.5,
+    }).then(result => {
+      if (result.value) {
+        // If rating confirmed, update in server
+        fetch(`/u/${userId}/${category}/${id}`, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          method: 'PUT',
+          body: JSON.stringify({
+            status: 'completed',
+            rating: result.value,
+          }),
+        })
+          .then(res =>
+            // Update rating / status in state
+            this.setState({
+              [category]: {
+                ...this.state[category],
+                [id]: {
+                  ...this.state[category][id],
+                  book: {
+                    ...this.state[category][id].book,
+                    status: 'completed',
+                    rating: result.value,
+                  },
+                },
+              },
+            }),
+          )
+          .catch(err => console.log('insert failed'));
+      }
+    });
+  };
+
+  componentDidMount() {
+    this.populateBooks();
+  }
+
+  handleCompletedClick = (e, { name }) =>
+    this.setState({ showCompleted: !this.state.showCompleted });
+
+  // When menu sort option clicked
+  handleItemClick = (e, { name }) => {
+    const sortType = name;
+    const bookArray = Object.entries(this.state.books);
+
+    this.setState({ activeItem: name });
+
+    const getLastRecDate = recommendationsArray => {
+      return recommendationsArray.reduce((latestDate, rec) => {
+        return Math.max(new Date(rec.date_added), latestDate);
+      }, new Date(recommendationsArray[0].date_added));
+    };
+
+    const sortBooksByRecDate = (book1, book2) => {
+      const book1LastRecDate = getLastRecDate(book1[1].recommendations);
+      const book2LastRecDate = getLastRecDate(book2[1].recommendations);
+
+      if (sortType === 'Newest') {
+        return book2LastRecDate - book1LastRecDate;
+      } else if (sortType === 'Oldest') {
+        return book1LastRecDate - book2LastRecDate;
+      }
+    };
+
+    // set state with the newly sorted array of books
+    const sortedArray = bookArray.sort(sortBooksByRecDate).map(([id, book]) => id);
+
+    console.log(sortedArray);
+
+    this.setState({
+      bookOrder: sortedArray,
+    });
+  };
+
+  handleClick = ({ book, recommendations, id }) => {
     this.setState({
       detailedView: true,
-      clickedBook: props.book,
-      clickedRecommendations: props.recommendations,
-      clickedId: props.id
+      clickedBook: book,
+      clickedRecommendations: recommendations,
+      clickedId: id,
     });
   };
 
   render() {
-    const self = this;
-    const category = "books";
-    const { activeItem } = this.state;
+    //const { category } = this.props;
+    const category = 'books';
+    const { activeItem, userId, showCompleted } = this.state;
+    const { bookOrder } = this.state;
+
     return (
-      <div>
+      <Container>
         <NavBar />
-        <Container>
-          <Header as="h1" icon textAlign="center">
-            <Icon name="book" circular />
-            <Header.Content className="menu-header">Books</Header.Content>
-          </Header>
+        <Header as="h1" icon textAlign="center">
+          <Icon name="book" circular />
+          <Header.Content>Books</Header.Content>
+        </Header>
 
-          <MenuBar>
-            <Menu text>
-              <Menu.Item className="menu-item-header">Sort By</Menu.Item>
-              <Menu.Item
-                className="menu-item"
-                name="Recommendations"
-                active={activeItem === "Recommendations"}
-                onClick={this.handleItemClick}
-              />
-              <Menu.Item
-                className="menu-item"
-                name="Oldest"
-                active={activeItem === "Oldest"}
-                onClick={this.handleItemClick}
-              />
-              <Menu.Item
-                className="menu-item"
-                name="Newest"
-                active={activeItem === "Newest"}
-                onClick={this.handleItemClick}
-              />
-            </Menu>
-          </MenuBar>
+        <SortMenu
+          activeItem={activeItem}
+          showCompleted={showCompleted}
+          handleItemClick={this.handleItemClick}
+          handleCompletedClick={this.handleCompletedClick}
+        />
 
-          <BookList>
-            {this.state[category].map(([bookId, bookInfo]) => {
+        <BookList>
+          {bookOrder.length > 0 &&
+            bookOrder.map(bookId => {
+              const bookInfo = this.state.books[bookId];
               const { book, recommendations } = bookInfo;
-              return (
-                <BookItem
-                  handleRecUpdate={this.handleRecUpdate}
-                  handleClick={this.handleClick}
-                  id={bookId}
-                  book={book}
-                  recommendations={recommendations}
-                />
-              );
+              const recommendationCount = recommendations.length;
+              const { showCompleted } = this.state;
+
+              if (showCompleted || book.status === 'active') {
+                return (
+                  <BookItem
+                    handleClick={props => this.handleClick(props)}
+                    id={bookId}
+                    book={book}
+                    recommendations={recommendations}
+                    deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
+                    markCompleted={this.markCompleted}
+                    category={category}
+                  />
+                );
+              }
             })}
-          </BookList>
-        </Container>
-      </div>
+        </BookList>
+      </Container>
     );
   }
 }

@@ -1,12 +1,18 @@
-import React, { Component } from "react";
-import { Button, Popup, Item, Form, Input, TextArea } from "semantic-ui-react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { RSA_SSLV23_PADDING } from "constants";
-import RecommendationListItem from "./RecommendationListItem";
-import BrowseBookDetail from "../Browse/BrowseBookDetail";
-import NavBar from "../NavBar";
-import "./BrowseDetail.css";
+import React, { Component } from 'react';
+import { Button, Popup, Item, Form, Input, TextArea } from 'semantic-ui-react';
+import styled from 'styled-components';
+import { Route, Link, BrowserRouter, Switch, Redirect } from 'react-router-dom';
+import { RSA_SSLV23_PADDING } from 'constants';
+import RecommendationListItem from './RecommendationListItem';
+import BrowseBookDetail from './BrowseBookDetail';
+import NavBar from '../NavBar';
+import './BrowseDetail.css';
+
+const BrowseContainer = styled.div`
+  width: 100%;
+  padding: 20px;
+  margin: 30px;
+`;
 
 const CheckOutButton = props => (
   <Popup
@@ -29,13 +35,14 @@ const CheckOutButton = props => (
 class AddRecommenderButton extends Component {
   state = {
     toggle: false,
-    firstName: "",
-    lastName: "",
-    comments: ""
+    firstName: '',
+    lastName: '',
+    comments: '',
   };
 
   handleSubmit = e => {
     //save to database, render new list of rec/comments;
+
     e.preventDefault();
     const { firstName, lastName, comments } = this.state;
     const id = this.props.id;
@@ -44,18 +51,18 @@ class AddRecommenderButton extends Component {
       id,
       firstName,
       lastName,
-      comments
+      comments,
     };
-    const category = "books";
+    const category = 'books';
     const userId = 3;
     //update recommendation table,
-    console.log("this", this);
-    fetch(`/u/${userId}/${category}/${bookInfo.id}`, {
-      method: "POST",
+    console.log('this', this);
+    fetch(`/r/${category}/${bookInfo.id}`, {
+      method: 'POST',
       body: JSON.stringify(bookInfo),
       headers: new Headers({
-        "Content-Type": "application/json"
-      })
+        'Content-Type': 'application/json',
+      }),
     })
       .then(res =>
         fetch(`/u/${userId}/${category}`)
@@ -64,9 +71,8 @@ class AddRecommenderButton extends Component {
             let newRecs = Object.entries(categoryItems).find(book => {
               return book[0] === id;
             })[1].recommendations;
-
             return this.props.handleRecUpdate(newRecs);
-          })
+          }),
       )
       .catch(err => {
         throw err;
@@ -74,9 +80,9 @@ class AddRecommenderButton extends Component {
 
     this.setState({
       toggle: false,
-      firstName: "",
-      lastName: "",
-      comments: ""
+      firstName: '',
+      lastName: '',
+      comments: '',
     });
   };
 
@@ -94,7 +100,7 @@ class AddRecommenderButton extends Component {
           <hr />
 
           {this.state.toggle && (
-            <Form classNmae="add-recommender-form" onSubmit={this.handleSubmit}>
+            <Form className="add-recommender-form" onSubmit={this.handleSubmit}>
               <Form.Group widths="equal">
                 <Form.Field
                   required
@@ -139,19 +145,42 @@ class AddRecommenderButton extends Component {
 class BrowseDetail extends Component {
   state = {
     book: this.props.location.query.book,
-    recs: this.props.location.query.recommendations
+    recs: this.props.location.query.recommendations,
   };
 
   handleRecUpdate = clickedBookRec => {
-    console.log("this.state before~~~~", this.state);
-    console.log("clickedBookRec", clickedBookRec);
+    console.log('this.state before~~~~', this.state);
+    console.log('clickedBookRec', clickedBookRec);
     this.setState({
-      recs: clickedBookRec
+      recs: clickedBookRec,
     });
-    console.log("this.state after~~~~", this.state);
+    console.log('this.state after~~~~', this.state);
   };
+  // const BrowseDetail = props => {
+  //   return (
+  //     <div>
+  //       <header className="book-detail">
+  //         <BrowseContainer>
+  //           <BrowseBookDetail book={props.book} />
+  //         </BrowseContainer>
+  //       </header>
+
+  //       <Item.Group>
+  //         {props.recommendations.map(recommendation => (
+  //           <RecommendationListItem
+  //             handleRemoveRec={props.handleRemoveRec}
+  //             id={props.id}
+  //             recommendation={recommendation}
+  //             recommendations={props.recommendations}
+  //           />
+  //         ))}
+  //       </Item.Group>
+
+  //       <div className="buttons">
+  //         <CheckOutButton url={props.book.url} />
 
   render() {
+    console.log(this.props.location);
     const target = this.props.location.query;
     return (
       <div>

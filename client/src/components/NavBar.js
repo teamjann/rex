@@ -6,7 +6,6 @@ import {
   NavItem,
   NavDropdown,
   MenuItem,
-  Jumbotron
 } from "react-bootstrap";
 import { Icon } from "semantic-ui-react";
 const NavBar = () => {

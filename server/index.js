@@ -1,31 +1,114 @@
-const { validateQuery } = require("../database/index");
-var express = require("express");
-var bodyParser = require("body-parser");
-var path = require("path");
+const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+const uuidv4 = require('uuid/v4');
+
+const authObj = {};
+
 const {
   promiseQuery,
   insertQuery,
   updateQuery,
-  deleteQuery
-} = require("../database/index");
+  deleteQuery,
+  validateQuery,
+} = require('../database/index');
+// SQL queries
 const {
+  FIND_USER,
+  ADD_USER,
   FETCH_BOOKS,
+  CHECK_BOOK,
   ADD_BOOK,
+  DELETE_BOOK,
   ADD_REC,
+  ADD_REC_AND_BOOK,
+  UPDATE_RECOMMENDATION,
   ADD_REC_TO_EXISTING_BOOK,
-  DELETE_REC_TO_EXISTING_BOOK
-} = require("../database/queries");
+  CHECK_EXISTING_REC,
+} = require('../database/queries');
+
+// Middleware to retrieve userId from request
+const getUserId = (req, res, next) => {
+  const { sessions } = req.sessionStore;
+
+  for (const [key, val] of Object.entries(sessions)) {
+    const uuid = JSON.parse(sessions[key]).uuid;
+    if (uuid) {
+      req.userId = authObj[uuid];
+      next();
+    }
+  }
+};
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({
+  secret: 'keyboard cat',
+  cookie: { maxAge: 24 * 60 * 60 * 1000 },
+  resave: true,
+  saveUninitialized: false,
+}));
+
 app.use(express.static(`${__dirname}/../client/dist`));
 
-app.get("/u/:userId/:category", (req, res) => {
-  const { userId, category } = req.params;
+// LOGIN
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  promiseQuery(FIND_USER(username))
+    .then((sqlResponse) => {
+      const { id, password: hash } = sqlResponse[0];
+      bcrypt.compare(password, hash, (err, doesMatch) => {
+        if (err) {
+          console.error(err);
+        } else if (doesMatch) {
+          const key = uuidv4();
+          authObj[key] = id;
+          req.session.uuid = key;
+          res.send({ isAuthenticated: true });
+        } else {
+          res.send({ isAuthenticated: false });
+        }
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      // send 'invalid username' message;
+    });
+});
+
+// SIGNUP
+app.post('/signup', (req, res) => {
+  const {
+    username, password, firstName, lastName,
+  } = req.body;
+  promiseQuery(FIND_USER(username))
+    .then(() => {
+      console.log(`signup validation err, username '${username}' already exists`);
+    })
+    .catch(() => {
+      bcrypt.hash(password, 10, (err, hash) => {
+        insertQuery(ADD_USER(username, hash, firstName, lastName)).then((sqlResponse) => {
+          const { id } = sqlResponse[0][0];
+          const key = uuidv4();
+          authObj[key] = id;
+          req.session.uuid = key;
+          res.send({ isAuthenticated: true });
+        });
+      });
+    });
+});
+
+// GET BOOKS AND RECOMMENDATIONS FOR USER
+app.get('/u/:userId/:category', getUserId, (req, res) => {
+  const { category } = req.params;
+  const { userId } = req;
+
   promiseQuery(FETCH_BOOKS(userId, category))
-    .then(books => {
+    .then((books) => {
       const parsedBooks = books.reduce((bookItems, recommendation) => {
         const {
           rec_id,
@@ -38,21 +121,25 @@ app.get("/u/:userId/:category", (req, res) => {
           title,
           thumbnail_url,
           description,
-          url
+          url,
+          status,
+          user_rating,
         } = recommendation;
 
         const recEntry = {
           recommender_id,
           recommender_name,
           comment,
-          date_added
+          date_added,
         };
 
         const book = {
           title,
           thumbnail_url,
           description,
-          url
+          url,
+          status,
+          user_rating,
         };
 
         if (item_id in bookItems) {
@@ -60,41 +147,23 @@ app.get("/u/:userId/:category", (req, res) => {
         } else {
           bookItems[item_id] = {
             book,
-            recommendations: [recEntry]
+            recommendations: [recEntry],
           };
         }
 
         return bookItems;
       }, {});
-
       res.json(parsedBooks);
       res.end();
     })
-    .catch(err => res.end("404", err));
+    .catch(err => res.end('404', err));
 });
 
-app.post("/u/:userId/:category", (req, res) => {
-  const { userId, category } = req.params;
-  //check if the book already exists (user_id + book_id)
-
-  validateQuery(
-    `select exists(select 1 from recommendations r inner join books b on b.id = r.item_id where r.user_id=${
-      req.body.userId
-    } AND b.api_id=${req.body.apiId});`
-  ).then(exist => {
-    if (exist[0][0].exists) {
-      res.json({ alreadyExist: true });
-    } else {
-      insertQuery(ADD_REC(req.body))
-        .then(sqlResponse => res.json({ inserted: "success" }))
-        .catch(err => console.log(err));
-    }
-  });
-});
-
-app.post("/u/:userId/:category/:bookId", (req, res) => {
-  const { userId, category, bookId } = req.params;
+// ADD RECOMMENDATION WHEN BOOKID KNOWN
+app.post("/r/:category/:bookId", getUserId, (req, res) => {
+  const { category, bookId } = req.params;
   const { id, firstName, lastName, comments } = req.body;
+  const { userId } = req;
   const recInfo = {
     userId,
     category,
@@ -108,42 +177,95 @@ app.post("/u/:userId/:category/:bookId", (req, res) => {
     .catch(err => console.log(err));
 });
 
-app.delete("/u/:userId/:category/:bookId", (req, res) => {
-  console.log("server side delete action", req.params, req.body);
-  const { userId, category, bookId } = req.params;
-  const { id, recommender_name, comment } = req.body;
-  const recInfo = {
+
+// ADD NEW RECOMMENDATION
+app.post('/u/:userId/:category/', getUserId, (req, res) => {
+  const { category } = req.params;
+  const {
+    apiId, firstName, lastName, comments,
+  } = req.body;
+
+  const { userId } = req;
+
+  console.log('adding recommendation');
+
+  promiseQuery(CHECK_BOOK({ apiId }))
+    .then((bookIdObj) => {
+      const bookId = bookIdObj[0].id;
+      console.log('book in db');
+
+      validateQuery(CHECK_EXISTING_REC({ userId, apiId })).then((exist) => {
+        const recommendationsExist = exist[0][0].exists;
+
+        if (recommendationsExist) {
+          res.status(404).send('Already exists');
+        } else {
+          const recommendationInfo = {
+            firstName,
+            lastName,
+            comments,
+            category,
+            userId,
+            bookId,
+          };
+
+          insertQuery(ADD_REC(recommendationInfo))
+            .then(sqlResponse => res.json({ inserted: 'success' }))
+            .catch(err => console.log(err));
+        }
+      });
+    })
+    .catch((bookNotInDB) => {
+      insertQuery(ADD_REC_AND_BOOK({ ...req.body, userId }))
+        .then(sqlResponse => res.json({ inserted: 'success' }))
+        .catch(err => console.log(err));
+    });
+});
+
+app.get('/auth', (req, res) => {
+  if (req.session.uuid) {
+    res.send({ isAuthenticated: true });
+  } else {
+    res.send({ isAuthenticated: false });
+  }
+});
+
+// UPDATE STATUS & RATING FOR RECOMMENDATION
+app.put('/u/:userId/:category/:itemId', getUserId, (req, res) => {
+  const { category, itemId } = req.params;
+  const { status, rating } = req.body;
+  const { userId } = req;
+
+  updateQuery(UPDATE_RECOMMENDATION({
     userId,
     category,
-    id,
-    recommender_name,
-    comment
-  };
-  deleteQuery(DELETE_REC_TO_EXISTING_BOOK(recInfo))
-    .then(sqlResponse => res.json({ inserted: "success" }))
+    itemId,
+    status,
+    rating,
+  }))
+    .then((sqlRes) => {
+      res.send('recommendation successfully updated');
+    })
+    .catch(err => console.log('could not update'));
+});
+
+// DELETE RECOMMENDATIONS FOR A BOOK
+app.delete('/u/:userId/:category/:itemId', getUserId, (req, res) => {
+  const { category, itemId } = req.params;
+  const { userId } = req;
+
+  deleteQuery(DELETE_BOOK({ userId, category, itemId }))
+    .then(sqlRes => res.json({ deleted: itemId }))
     .catch(err => console.log(err));
 });
 
-app.get("*", function(req, res) {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+// SERVE REACT INDEX.HTML FOR ALL UNHANDLED REQUESTS
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
-app.listen(3000, () => {
-  console.log("listening on port 3000!");
-});
+const port = process.env.PORT || 3000;
 
-// {
-//   "rec_id": 6,
-//   "id": 2,
-//   "recommender_id": null,
-//   "user_id": 3,
-//   "recommender_name": "Bob",
-//   "comment": "read this",
-//   "item_id": 2,
-//   "date_added": "2018-04-10T21:03:13.518Z",
-//   "category": "books",
-//   "title": "Harry Potter",
-//   "thumbnail_url": "somesite",
-//   "description": "harry potter",
-//   "url": "potterlink"
-// }
+app.listen(port, () => {
+  console.log('listening on port 3000!');
+});

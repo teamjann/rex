@@ -10,7 +10,12 @@ import {
 } from "semantic-ui-react";
 
 class RecommendationEntry extends Component {
-  state = { firstName: "", lastName: "", comments: "", inserted: false };
+  state = {
+    firstName: "",
+    lastName: "",
+    comments: "",
+    inserted: false
+  };
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
 
@@ -53,11 +58,19 @@ class RecommendationEntry extends Component {
       headers: new Headers({
         "Content-Type": "application/json"
       })
-    }).then(res =>
-      this.setState({
-        inserted: true
+    })
+      .then(res => {
+        if (res.status === 404) {
+          alert(`${title} already exists in your recommendations!`);
+        } else {
+          this.setState({
+            inserted: true
+          });
+        }
       })
-    );
+      .catch(err => {
+        throw err;
+      });
   };
 
   render() {
