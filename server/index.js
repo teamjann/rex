@@ -29,6 +29,19 @@ const {
   CHECK_EXISTING_REC,
 } = require('../database/queries');
 
+// Middleware to retrieve userId from request
+const getUserId = (req, res, next) => {
+  const sessions = req.sessionStore.sessions;
+
+  for (const [key, val] of Object.entries(sessions)) {
+    const uuid = JSON.parse(sessions[key]).uuid;
+    if (uuid) {
+      req.userId = authObj[uuid];
+      next();
+    }
+  }
+};
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -55,9 +68,9 @@ app.post('/login', (req, res) => {
           const key = uuidv4();
           authObj[key] = id;
           req.session.uuid = key;
-          res.send({ uuid: key });
+          res.send({ isAuthenticated: true });
         } else {
-          res.send('login failed');
+          res.send({ isAuthenticated: false });
         }
       });
     })
@@ -82,16 +95,17 @@ app.post('/signup', (req, res) => {
           const { id } = sqlResponse[0][0];
           const key = uuidv4();
           authObj[key] = id;
-          res.send({ uuid: id });
-          // create session
+          req.session.uuid = key;
+          res.send({ isAuthenticated: true });
         });
       });
     });
 });
 
 // GET BOOKS AND RECOMMENDATIONS FOR USER
-app.get('/u/:userId/:category', (req, res) => {
-  const { userId, category } = req.params;
+app.get('/u/:userId/:category', getUserId, (req, res) => {
+  const { category } = req.params;
+  const { userId } = req;
 
   promiseQuery(FETCH_BOOKS(userId, category))
     .then((books) => {
@@ -146,22 +160,12 @@ app.get('/u/:userId/:category', (req, res) => {
 });
 
 // ADD NEW RECOMMENDATION
-app.post('/u/:userId/:category', (req, res) => {
+app.post('/u/:userId/:category', getUserId, (req, res) => {
   const { category } = req.params;
   const {
     apiId, firstName, lastName, comments,
   } = req.body;
-
-  // Shortest way we've found of getting the UUID, for some reason
-  const sessions = req.sessionStore.sessions;
-  let userId;
-
-  for (const [key, val] of Object.entries(sessions)) {
-    const uuid = JSON.parse(sessions[key]).uuid;
-    if (uuid) {
-      userId = authObj[uuid];
-    }
-  }
+  const userId = req.userId;
 
   promiseQuery(CHECK_BOOK({ apiId }))
     .then((bookIdObj) => {
@@ -189,43 +193,25 @@ app.post('/u/:userId/:category', (req, res) => {
       });
     })
     .catch((bookNotInDB) => {
-      insertQuery(ADD_REC_AND_BOOK(req.body))
+      insertQuery(ADD_REC_AND_BOOK({ ...req.body, userId }))
         .then(sqlResponse => res.json({ inserted: 'success' }))
         .catch(err => console.log(err));
     });
 });
 
-// ADD NEW RECOMMENDATION
-app.post('/u/:userId/:category/:bookId', (req, res) => {
-  const { userId, category, bookId } = req.params;
-  const {
-    id, firstName, lastName, comments,
-  } = req.body;
-  const recInfo = {
-    userId,
-    category,
-    id,
-    firstName,
-    lastName,
-    comments,
-  };
-  insertQuery(ADD_REC_TO_EXISTING_BOOK(recInfo))
-    .then(sqlResponse => res.json({ inserted: 'success' }))
-    .catch(err => console.log(err));
-});
-
 app.get('/auth', (req, res) => {
   if (req.session.uuid) {
-    res.send({ uuid: req.session.uuid });
+    res.send({ isAuthenticated: true });
   } else {
-    res.send('not logged in');
+    res.send({ isAuthenticated: false });
   }
 });
 
 // UPDATE STATUS & RATING FOR RECOMMENDATION
-app.put('/u/:userId/:category/:itemId', (req, res) => {
-  const { userId, category, itemId } = req.params;
+app.put('/u/:userId/:category/:itemId', getUserId, (req, res) => {
+  const { category, itemId } = req.params;
   const { status, rating } = req.body;
+  const { userId } = req;
 
   updateQuery(UPDATE_RECOMMENDATION({
     userId,
@@ -235,15 +221,15 @@ app.put('/u/:userId/:category/:itemId', (req, res) => {
     rating,
   }))
     .then((sqlRes) => {
-      console.log(sqlRes);
-      res.send('success');
+      res.send('recommendation successfully updated');
     })
     .catch(err => console.log('could not update'));
 });
 
 // DELETE RECOMMENDATIONS FOR A BOOK
-app.delete('/u/:userId/:category/:itemId', (req, res) => {
-  const { userId, category, itemId } = req.params;
+app.delete('/u/:userId/:category/:itemId', getUserId, (req, res) => {
+  const { category, itemId } = req.params;
+  const { userId } = req;
 
   deleteQuery(DELETE_BOOK({ userId, category, itemId }))
     .then(sqlRes => res.json({ deleted: itemId }))
