@@ -5,6 +5,8 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
 
+const movieDb = require('./movieDb');
+
 const authObj = {};
 
 const {
@@ -54,6 +56,15 @@ app.use(session({
 }));
 
 app.use(express.static(`${__dirname}/../client/dist`));
+
+// Movie DB
+app.post('/movie', (req, res) => {
+  movieDb.getMoviesByTitle(req.body.title, movies => {
+    res.json(movies);
+
+  });
+})
+
 
 // LOGIN
 app.post('/login', (req, res) => {
