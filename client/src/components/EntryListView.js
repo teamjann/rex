@@ -38,7 +38,7 @@ class EntryListView extends React.Component {
   handleResultSelect(e, data) {
     const params = {
       id: data.result.apiId,
-      key: 'GOODREADS_API_KEY_HERE',
+      key: '49Q50kykoyKt3upYv1Bc8A',
     };
     const self = this;
     // Proxify necessary for Goodreads CORS requests
@@ -105,7 +105,7 @@ class EntryListView extends React.Component {
     if (this.state.category === 'books') {
       const params = {
         q: data.value.replace(/\s+/g, '-'),
-        key: 'GOODREADS_API_KEY_HERE',
+        key: '49Q50kykoyKt3upYv1Bc8A',
       };
       // Proxified URL (for goodReads Cors requests)
       const url = proxify(
@@ -115,6 +115,7 @@ class EntryListView extends React.Component {
       const self = this;
 
       axios.get(url).then((res) => {
+        console.log(res.data.query);
         const resultItems = res.data.query.results.GoodreadsResponse.search.results.work;
         const books = resultItems.map(book => ({
           title: book.best_book.title,
