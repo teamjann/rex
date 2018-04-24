@@ -1,16 +1,9 @@
 import React from 'react';
 import { Rating, Header, Container, Image } from 'semantic-ui-react';
 
-const BookDetail = props => {
+const BookDetail = (props) => {
   const {
-    title,
-    authors,
-    rating,
-    imageUrl,
-    description,
-    yearPublished,
-    link,
-    apiId
+    title, authors, rating, imageUrl, description, yearPublished, link,
   } = props.result;
   return (
     <div>

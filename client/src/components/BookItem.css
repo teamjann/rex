@@ -40,3 +40,8 @@
   margin: 1em -0.5em;
   font-size: 18px;
 }
+
+.book-option:hover {
+  cursor: pointer;
+  color: rgb(53, 122, 201);
+}

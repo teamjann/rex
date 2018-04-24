@@ -1,9 +1,10 @@
-import React from "react";
-import BookDetail from "./BookDetail";
-import RecommendationEntry from "./RecommendationEntry";
-import NavBar from "../NavBar";
+import React from 'react';
 
-const EntryDetail = props => {
+import BookDetail from './BookDetail';
+import RecommendationEntry from './RecommendationEntry';
+import NavBar from '../NavBar';
+
+const EntryDetail = (props) => {
   const target = props.location.state.result;
   return (
     <div>

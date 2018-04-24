@@ -160,9 +160,11 @@ app.get('/u/:userId/:category', getUserId, (req, res) => {
 });
 
 // ADD RECOMMENDATION WHEN BOOKID KNOWN
-app.post("/r/:category/:bookId", getUserId, (req, res) => {
+app.post('/r/:category/:bookId', getUserId, (req, res) => {
   const { category, bookId } = req.params;
-  const { id, firstName, lastName, comments } = req.body;
+  const {
+    id, firstName, lastName, comments,
+  } = req.body;
   const { userId } = req;
   const recInfo = {
     userId,
@@ -170,13 +172,12 @@ app.post("/r/:category/:bookId", getUserId, (req, res) => {
     id,
     firstName,
     lastName,
-    comments
+    comments,
   };
   insertQuery(ADD_REC_TO_EXISTING_BOOK(recInfo))
-    .then(sqlResponse => res.json({ inserted: "success" }))
+    .then(sqlResponse => res.json({ inserted: 'success' }))
     .catch(err => console.log(err));
 });
-
 
 // ADD NEW RECOMMENDATION
 app.post('/u/:userId/:category/', getUserId, (req, res) => {
@@ -260,7 +261,8 @@ app.delete('/u/:userId/:category/:itemId', getUserId, (req, res) => {
 });
 
 // SERVE REACT INDEX.HTML FOR ALL UNHANDLED REQUESTS
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
+  console.log('trying to route');
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
