@@ -86,10 +86,10 @@ app.post('/signup', (req, res) => {
     username, password, firstName, lastName,
   } = req.body;
   promiseQuery(FIND_USER(username))
+    // .then(() => {
+    //   console.log(`signup validation err, username '${username}' already exists`);
+    // })
     .then(() => {
-      console.log(`signup validation err, username '${username}' already exists`);
-    })
-    .catch(() => {
       bcrypt.hash(password, 10, (err, hash) => {
         insertQuery(ADD_USER(username, hash, firstName, lastName)).then((sqlResponse) => {
           const { id } = sqlResponse[0][0];
