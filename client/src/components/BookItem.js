@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
-import BookDetail from './Entry/BookDetail';
+
 import './BookItem.css';
 
 const BookItemContainer = styled.div`
@@ -51,8 +51,18 @@ const BookItem = ({
           </div>
         </div>
         <div className="book-action-container">
-          <Icon name="check" onClick={() => markCompleted({ category, id })} size="big" />
-          <Icon name="trash" onClick={() => deleteBook({ category, id })} size="big" />
+          <Icon
+            name="check"
+            className="book-option"
+            onClick={() => markCompleted({ category, id })}
+            size="big"
+          />
+          <Icon
+            name="trash"
+            className="book-option"
+            onClick={() => deleteBook({ category, id })}
+            size="big"
+          />
         </div>
       </BookItemContainer>
     </li>

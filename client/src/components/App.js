@@ -1,18 +1,17 @@
+// React
 import React, { Component } from 'react';
 import { Route, Link, BrowserRouter, Switch } from 'react-router-dom';
+// Modules
+import { Dropdown, Menu, Button, Container } from 'semantic-ui-react';
+import axios from 'axios';
+import { Navbar } from 'react-bootstrap';
+// Components
 import Home from './Home';
 import EntryDetail from './Entry/EntryDetail';
 import BrowseDetail from './Browse/BrowseDetail';
-import { Button, Container } from 'semantic-ui-react';
-import { Dropdown, Menu } from 'semantic-ui-react';
-import axios from 'axios';
 import EntryListView from './EntryListView';
 import BrowseView from './BrowseView';
-import CssBaseline from 'material-ui/CssBaseline';
-import { Navbar } from 'react-bootstrap';
-import Auth from './Auth';
-
-const NewRecommendationButton = () => <Button>Enter New Recommendation </Button>;
+import Auth from './Authentication/Auth';
 
 class App extends Component {
   state = {
@@ -24,6 +23,7 @@ class App extends Component {
     this.setState({ isAuthenticated, username });
   }
 
+  // On Mount, gets authentication from server, sets state of isAuthenticated
   componentDidMount() {
     const self = this;
     axios
@@ -37,17 +37,18 @@ class App extends Component {
   }
 
   render() {
-    const username = this.state.username;
+    const { username, isAuthenticated } = this.state;
 
-    if (this.state.isAuthenticated) {
+    // If state authenticated, loads homepage, otherwise login / signup
+    if (isAuthenticated) {
       return (
-        <Switch>
+        <div>
           <Route exact path="/" render={() => <Home username={username} />} />
           <Route path="/browse/:bookId" component={BrowseDetail} />
           <Route path="/entry/:bookId" component={EntryDetail} />
           <Route exact path="/entry" component={EntryListView} />
           <Route exact path="/browse" component={BrowseView} />
-        </Switch>
+        </div>
       );
     } else {
       return <Auth handleAuth={this.handleAuth.bind(this)} />;
