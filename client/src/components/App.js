@@ -12,6 +12,7 @@ import BrowseDetail from './Browse/BrowseDetail';
 import EntryListView from './EntryListView';
 import BrowseView from './BrowseView';
 import Landing from './Landing';
+import Auth from './Authentication/Auth';
 
 class App extends Component {
   state = {
@@ -48,6 +49,7 @@ class App extends Component {
           <Route path="/entry/:bookId" component={EntryDetail} />
           <Route exact path="/entry" component={EntryListView} />
           <Route exact path="/browse" component={BrowseView} />
+          <Route exact path="/login" component={Auth} />
         </div>
       );
     } else {

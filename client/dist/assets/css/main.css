@@ -1,4 +1,3 @@
-@import url(font-awesome.min.css);
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic,800,800italic");
 
 /*
@@ -1893,9 +1892,9 @@ textarea:focus {
 .select-wrapper:before {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-family: FontAwesome;
+  /* font-family: FontAwesome;
   font-style: normal;
-  font-weight: normal;
+  font-weight: normal; */
   text-transform: none !important;
 }
 
@@ -1962,9 +1961,9 @@ input[type="checkbox"] + label:before,
 input[type="radio"] + label:before {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-family: FontAwesome;
+  /* font-family: FontAwesome;
   font-style: normal;
-  font-weight: normal;
+  font-weight: normal; */
   text-transform: none !important;
 }
 
@@ -2058,11 +2057,11 @@ input[type="radio"] + label:before {
 }
 
 .icon:before {
-  -moz-osx-font-smoothing: grayscale;
+  /* -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-family: FontAwesome;
   font-style: normal;
-  font-weight: normal;
+  font-weight: normal; */
   text-transform: none !important;
 }
 
@@ -3563,6 +3562,8 @@ body.is-menu-visible #menu {
   overflow: hidden;
   position: relative;
   text-align: center;
+  background-image: url("../../images/banner.jpg");
+  background-size: cover;
 }
 
 #banner h2 {
@@ -4017,5 +4018,25 @@ body.is-mobile.landing #footer {
 }
 
 p {
-  font-family: "Work Sans", sans;
+  font-family: "Work Sans", sans-serif;
+}
+
+.login {
+  margin-right: 30px;
+}
+
+.spotlight .image.image2 img {
+  width: auto;
+  float: right;
+}
+
+li.icon > h3 {
+  font-family: "Playfair Display", serif;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+li.icon > p {
+  font-family: "Work Sans", sans-serif;
+  font-weight: 400;
 }
