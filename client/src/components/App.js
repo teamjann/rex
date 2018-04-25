@@ -49,11 +49,10 @@ class App extends Component {
           <Route path="/entry/:bookId" component={EntryDetail} />
           <Route exact path="/entry" component={EntryListView} />
           <Route exact path="/browse" component={BrowseView} />
-          <Route exact path="/login" component={Auth} />
         </div>
       );
     } else {
-      return <Landing handleAuth={this.handleAuth.bind(this)} />;
+      return <Auth handleAuth={this.handleAuth.bind(this)} />;
     }
   }
 }

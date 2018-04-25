@@ -4040,3 +4040,14 @@ li.icon > p {
   font-family: "Work Sans", sans-serif;
   font-weight: 400;
 }
+
+.auth {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  align-items: center;
+}
+
+.auth > button {
+  margin: 30px;
+}

@@ -30,7 +30,7 @@ class Auth extends Component {
       return <Signup handleAuth={this.props.handleAuth} />;
     } else {
       return (
-        <div>
+        <div className="auth">
           <Button onClick={() => this.handleLoginClick()}>Login</Button>
           <Button onClick={() => this.handleSignupClick()}>Signup</Button>
         </div>

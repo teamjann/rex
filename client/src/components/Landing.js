@@ -184,6 +184,7 @@ class Landing extends Component {
                   eating, pooping, or crying - optimizing your Rex experience!
                 </p>
               </li>
+
               <li className="icon fab fa-hooli">
                 <h3>Make The World Better</h3>
                 <p>
