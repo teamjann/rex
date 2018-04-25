@@ -18,7 +18,7 @@ const keys = {
   }
 }
 
-let getMoviesByTitle = (title, CB) => {
+let getMoviesByTitle = (title) => {
   let options = {
     "async": true,
     "crossDomain": true,
@@ -27,30 +27,35 @@ let getMoviesByTitle = (title, CB) => {
     }
   };
 
-  request(options, function (err, res, body) {
-    if (err === null) {
-      CB(body);
-      console.log('MovieDB API Call Sucess!');
-    } else {
-      console.log('Error in MovieDB request:' + err);
-    }
-  });
+  return new Promise((resolve, reject) => {
+    request(options, function (err, res, body) {
+      if (err === null) {
+        console.log('MovieDB API Call Sucess!');
+        resolve(body);
+      } else {
+        console.log('Error in MovieDB request:' + err);
+        reject(err);
+      }
+    });
+  })
 }
 
-let getSongsByTitle = (title, CB) => {
+let getSongsByTitle = (title) => {
   let options = {
     url: `https://api.musixmatch.com/ws/1.1/track.search?format=jsonp&callback=callback&q_track=${title}&quorum_factor=1&apikey=${keys.musixAPI.APIKey}`,
   };
 
-  request(options, function (err, res, body) {
-    if (err === null) {
-      CB(body);
-      console.log('music DB API Call Sucess!');
-    } else {
-      console.log('Error in music DB request:' + err);
-    }
+  return new Promise((resolve, reject) => {
+    request(options, function (err, res, body) {
+      if (err === null) {
+        console.log('music DB API Call Sucess!');
+        resolve(body);
+      } else {
+        console.log('Error in music DB request:' + err);
+        reject(err);
+      }
+    });
   });
-
 }
 
 let getFoodByName = (food, CB) => {
