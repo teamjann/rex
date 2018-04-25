@@ -11,7 +11,7 @@ import EntryDetail from './Entry/EntryDetail';
 import BrowseDetail from './Browse/BrowseDetail';
 import EntryListView from './EntryListView';
 import BrowseView from './BrowseView';
-import Auth from './Authentication/Auth';
+import Landing from './Landing';
 
 class App extends Component {
   state = {
@@ -51,7 +51,7 @@ class App extends Component {
         </div>
       );
     } else {
-      return <Auth handleAuth={this.handleAuth.bind(this)} />;
+      return <Landing handleAuth={this.handleAuth.bind(this)} />;
     }
   }
 }
