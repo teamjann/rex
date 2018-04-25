@@ -1,6 +1,8 @@
 const request = require('request');
 const yelp = require('yelp-fusion');
 
+
+
 const keys = {
   movieAPI: {
     v3Auth: 'cb6f407ec46ef9ccfe352eca08e2a993',
@@ -12,7 +14,7 @@ const keys = {
 
   },
   musixAPI: {
-    APIKey: '27302d9695be1d0e6d5a44dc6f477905'
+    APIKey: '27302d9695be1d0e6d5a44dc6f477905',
   }
 }
 
@@ -37,19 +39,18 @@ let getMoviesByTitle = (title, CB) => {
 
 let getSongsByTitle = (title, CB) => {
   let options = {
-    url: `http://api.musixmatch.com/ws/1.1/track.search?api_key=${keys.musixAPI.APIKey}&q_track=${title}&page_size=3&page=1&s_track_rating=desc`,
-    headers: {
-    }
+    url: `https://api.musixmatch.com/ws/1.1/track.search?format=jsonp&callback=callback&q_track=${title}&quorum_factor=1&apikey=${keys.musixAPI.APIKey}`,
   };
 
   request(options, function (err, res, body) {
     if (err === null) {
       CB(body);
-      console.log('musix API Call Sucess!');
+      console.log('music DB API Call Sucess!');
     } else {
-      console.log('Error in musix request:' + err);
+      console.log('Error in music DB request:' + err);
     }
   });
+
 }
 
 let getFoodByName = (food, CB) => {

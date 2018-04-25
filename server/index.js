@@ -63,21 +63,21 @@ app.use(express.static(`${__dirname}/../client/dist`));
 // MovieDb API
 app.post('/movie', (req, res) => {
   apiHelpers.getMoviesByTitle(req.body.title, data => {
-    res.json(data);
+    res.send(data).sendStatus(201);
   });
 })
 
 // Musixmatch API
 app.post('/song', (req, res) => {
   apiHelpers.getSongsByTitle(req.body.song, data => {
-    res.json(data);
+    res.send(data);
   });
 })
 
 // YELP API
 app.post('/food', (req, res) => {
   apiHelpers.getFoodByName(req.body.food, data => {
-    res.json(data).end(201);
+    res.send(data).end(201);
   });
 })
 /* -------------------------------------------------------------------
