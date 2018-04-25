@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { Link } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 
 import Login from './Login';
@@ -33,6 +33,7 @@ class Auth extends Component {
         <div>
           <Button onClick={() => this.handleLoginClick()}>Login</Button>
           <Button onClick={() => this.handleSignupClick()}>Signup</Button>
+          <Link to="/auth/google">Auth With Google</Link>
         </div>
       );
     }

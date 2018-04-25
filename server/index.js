@@ -4,6 +4,8 @@ const path = require('path');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
+const authRoutes = require('./auth-routes.js');
+const passportSetup = require('./passport-setup.js');
 
 const authObj = {};
 
@@ -54,6 +56,7 @@ app.use(session({
 }));
 
 app.use(express.static(`${__dirname}/../client/dist`));
+app.use('/auth', authRoutes);
 
 // LOGIN
 app.post('/login', (req, res) => {
