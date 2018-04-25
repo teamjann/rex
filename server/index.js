@@ -5,7 +5,7 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
 
-const movieDb = require('./movieDb');
+const apiHelpers = require('./apiHelpers');
 
 const authObj = {};
 
@@ -57,13 +57,32 @@ app.use(session({
 
 app.use(express.static(`${__dirname}/../client/dist`));
 
-// Movie DB
-app.post('/movie', (req, res) => {
-  movieDb.getMoviesByTitle(req.body.title, movies => {
-    res.json(movies);
+/* -------------------------------------------------------------------
+--------------------------------------------------------------------*/
 
+// MovieDb API
+app.post('/movie', (req, res) => {
+  apiHelpers.getMoviesByTitle(req.body.title, data => {
+    res.json(data);
   });
 })
+
+// Musixmatch API
+app.post('/song', (req, res) => {
+  apiHelpers.getSongsByTitle(req.body.song, data => {
+    res.json(data);
+  });
+})
+
+// YELP API
+app.post('/food', (req, res) => {
+  apiHelpers.getFoodByName(req.body.food, data => {
+    res.json(data).end(201);
+  });
+})
+/* -------------------------------------------------------------------
+--------------------------------------------------------------------*/
+
 
 
 // LOGIN
