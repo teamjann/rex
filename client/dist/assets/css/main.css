@@ -4051,3 +4051,27 @@ li.icon > p {
 .auth > button {
   margin: 30px;
 }
+
+.login > button {
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+.login > button > i {
+  margin: auto;
+}
+
+.row.uniform {
+  padding: 20%;
+}
+
+.submit-button {
+  margin-top: 5%;
+}
+
+a.button {
+  font-family: "Work Sans", sans-serif;
+}
+
+a.subtle-link {
+  color: rgb(142, 136, 146);
+}

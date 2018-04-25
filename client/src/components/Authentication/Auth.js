@@ -32,7 +32,7 @@ class Auth extends Component {
       return (
         <div className="auth">
           <Button onClick={() => this.handleLoginClick()}>Login</Button>
-          <Button onClick={() => this.handleSignupClick()}>Signup</Button>
+          <Button onClick={() => this.handleSignupClick()}>Sign up</Button>
         </div>
       );
     }

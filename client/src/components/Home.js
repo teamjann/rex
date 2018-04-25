@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import './Home.css';
 import book from '../images/book.png';
 import music from '../images/music.png';

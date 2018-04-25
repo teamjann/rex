@@ -16,8 +16,8 @@ import Auth from './Authentication/Auth';
 
 class App extends Component {
   state = {
-    isAuthenticated: false,
-    username: '',
+    isAuthenticated: true,
+    username: 'test',
   };
 
   handleAuth({ isAuthenticated, username }) {
@@ -26,15 +26,15 @@ class App extends Component {
 
   // On Mount, gets authentication from server, sets state of isAuthenticated
   componentDidMount() {
-    const self = this;
-    axios
-      .get('/auth')
-      .then(res => {
-        self.handleAuth(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    // const self = this;
+    // axios
+    //   .get('/auth')
+    //   .then(res => {
+    //     self.handleAuth(res.data);
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //   });
   }
 
   render() {
