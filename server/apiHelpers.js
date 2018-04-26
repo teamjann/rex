@@ -2,7 +2,7 @@ const request = require('request');
 const yelp = require('yelp-fusion');
 
 
-
+// move keys to env file
 const keys = {
   movieAPI: {
     v3Auth: 'cb6f407ec46ef9ccfe352eca08e2a993',
@@ -69,7 +69,7 @@ let getFoodByName = (food, CB) => {
 
   client.search(searchRequest).then(response => {
     const firstResult = response.jsonBody.businesses.slice(0, 5);
-    const prettyJson = JSON.stringify(firstResult, null, 4);
+    const prettyJson = JSON.stringify(firstResult, null, 5);
     CB(prettyJson, null);
   }).catch(e => {
     CB(null, e);

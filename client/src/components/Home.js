@@ -8,6 +8,7 @@ import food from '../images/food.png';
 import NavBar from './NavBar';
 import { Route, Link, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import { Dropdown, Menu, Button, Container, Header, Icon } from 'semantic-ui-react';
+const axios = require('axios');
 
 import { Row, Col } from 'reactstrap';
 
@@ -37,6 +38,41 @@ class Home extends Component {
     this.setState({ imageStatus: 'failed to load' });
   }
 
+  ///////////////////////////////////////////////////////
+  getMovies(movie) {
+    axios.post('/movie', { title: 'star' })
+      .then(function (response) {
+        console.log(response.data.results.slice(0, 5));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  getSongs(song) {
+    axios.post('/song', { song: 'star' })
+      .then(function (response) {
+        console.log(response.data.results.slice(0, 5));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  getFood(food) {
+    axios.post('/food', { food: 'star' })
+      .then(function (response) {
+        console.log(response.data.results.slice(0, 5));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+
+  ///////////////////////////////////////////////////////
+
+
   render() {
     return (
       <div>
@@ -45,6 +81,10 @@ class Home extends Component {
 
         <div className="icon-list">
           <div>
+            <button onClick={this.getMovies}>Get Movies!</button>
+            <button onClick={this.getFood}>Get Food!</button>
+            <button onClick={this.getSongs}>Get Songs!</button>
+
             <Link to="/browse">
               <img
                 src={book}
