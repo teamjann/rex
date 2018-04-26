@@ -25,6 +25,14 @@ class EntryListView extends React.Component {
           text: 'movies',
           value: 'movies',
         },
+        {
+          text: 'songs',
+          value: 'songs',
+        },
+        {
+          text: 'foods',
+          value: 'foods',
+        },
       ],
       results: [],
     };
@@ -36,64 +44,83 @@ class EntryListView extends React.Component {
 
   // Brung up entryDetail when user selects book from search
   // detail view when list item from drop down is actively selected
-  handleResultSelect(e, data) {
-    const params = {
-      id: data.result.apiId,
-      key: '49Q50kykoyKt3upYv1Bc8A',
-    };
+  async handleResultSelect(e, data) {
     const self = this;
-    // Proxify necessary for Goodreads CORS requests
-    const url = proxify(
-      `https://www.goodreads.com/book/show.xml?id=${params.id}&key=${params.key}`,
-      { inputFormat: 'xml' },
-    );
+    if (this.state.category === 'books') {
 
-    axios
-      .get(url)
-      .then((res) => {
-        const { book } = res.data.query.results.GoodreadsResponse;
-        let authors;
+      const params = {
+        id: data.result.apiId,
+        key: '49Q50kykoyKt3upYv1Bc8A',
+      };
+      // Proxify necessary for Goodreads CORS requests
+      const url = proxify(
+        `https://www.goodreads.com/book/show.xml?id=${params.id}&key=${params.key}`,
+        { inputFormat: 'xml' },
+      );
 
-        // Goodreads sends array for multiple authors, object for single
-        if (Array.isArray(book.authors.author)) {
-          authors = book.authors.author
-            .map((author) => {
-              // Goodreads includes illustrators, etc as 'authors'
-              // Creates string of authors and their roles
-              if (author.role) {
-                return `${author.name} (${author.role})`;
-              }
-              return author.name;
-            })
-            .join(', ');
-        } else {
-          authors = book.authors.author.name;
-        }
+      axios
+        .get(url)
+        .then((res) => {
+          const { book } = res.data.query.results.GoodreadsResponse;
+          let authors;
 
-        self.setState({
-          resultDetail: {
-            title: book.title,
-            rating: book.average_rating,
-            apiId: book.id,
-            authors,
-            yearPublished: book.publication_year,
-            description: book.description
-              .split('<br /><br />')
-              .map(paragraph => paragraph.replace(/<.*?>/gm, '')),
-            imageUrl: book.image_url,
-            link: book.link,
-          },
+          // Goodreads sends array for multiple authors, object for single
+          if (Array.isArray(book.authors.author)) {
+            authors = book.authors.author
+              .map((author) => {
+                // Goodreads includes illustrators, etc as 'authors'
+                // Creates string of authors and their roles
+                if (author.role) {
+                  return `${author.name} (${author.role})`;
+                }
+                return author.name;
+              })
+              .join(', ');
+          } else {
+            authors = book.authors.author.name;
+          }
+
+          self.setState({
+            resultDetail: {
+              title: book.title,
+              rating: book.average_rating,
+              apiId: book.id,
+              authors,
+              yearPublished: book.publication_year,
+              description: book.description
+                .split('<br /><br />')
+                .map(paragraph => paragraph.replace(/<.*?>/gm, '')),
+              imageUrl: book.image_url,
+            },
+          });
+
+          // Reactrouting
+          self.props.history.push({
+            pathname: `/entry/${self.state.resultDetail.apiId}`,
+            state: { result: self.state.resultDetail },
+          });
+        })
+        .catch((err) => {
+          throw err;
         });
-
-        // Reactrouting
-        self.props.history.push({
-          pathname: `/entry/${self.state.resultDetail.apiId}`,
-          state: { result: self.state.resultDetail },
-        });
-      })
-      .catch((err) => {
-        throw err;
+    } else if (this.state.category === 'movies') {
+      let movie = data.result.all;
+      await self.setState({
+        resultDetail: {
+          title: movie.title,
+          rating: movie.vote_average,
+          apiId: movie.id,
+          yearPublished: movie.release_date,
+          description: [movie.overview],
+          imageUrl: `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`,
+          link: movie.link,
+        },
       });
+      self.props.history.push({
+        pathname: `/entry/${self.state.resultDetail.apiId}`,
+        state: { result: self.state.resultDetail },
+      });
+    }
   }
 
   search(e, data) {
@@ -105,7 +132,7 @@ class EntryListView extends React.Component {
 
     const self = this;
 
-    if (this.state.category === 'change me to books') {
+    if (this.state.category === 'books') {
       const params = {
         q: data.value.replace(/\s+/g, '-'),
         key: '49Q50kykoyKt3upYv1Bc8A',
@@ -129,8 +156,7 @@ class EntryListView extends React.Component {
         });
       });
 
-    } else if (this.state.category === 'change me to movies') {
-
+    } else if (this.state.category === 'movies') {
       axios.post('/movie', { title: data.value })
         .then((res) => {
           const resultItems = res.data.results.slice(0, 5);
@@ -140,7 +166,9 @@ class EntryListView extends React.Component {
             rating: movie.vote_average,
             apiId: movie.id,
             author: movie.release_date,
+            // image not rendering .... jpg not https?
             imageUrl: movie.poster_path,
+            all: movie
           }));
           self.setState({
             results: movies,
@@ -149,7 +177,8 @@ class EntryListView extends React.Component {
         .catch(function (error) {
           console.log(error);
         });
-    } else if (this.state.category === 'change me to songs') {
+      // cb from server? works fine on postman...
+    } else if (this.state.category === 'songs') {
       axios.post('/songs', { "song": data.value })
         .then((res) => {
           const resultItems = res.data;
@@ -168,7 +197,7 @@ class EntryListView extends React.Component {
         .catch(function (error) {
           console.log(error);
         });
-    } else {
+    } else if (this.state.category === 'foods') {
       axios.post('/food', { "food": data.value })
         .then((res) => {
           const resultItems = res.data;

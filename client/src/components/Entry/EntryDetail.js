@@ -6,6 +6,7 @@ import NavBar from '../NavBar';
 
 const EntryDetail = (props) => {
   const target = props.location.state.result;
+  console.log('entry detail fired', target)
   return (
     <div>
       <NavBar />
