@@ -138,6 +138,24 @@ class EntryListView extends React.Component {
         pathname: `/entry/${self.state.resultDetail.apiId}`,
         state: { result: self.state.resultDetail },
       });
+    } else if (this.state.category === 'songs') {
+      let song = data.result.all.track;
+      console.log('song called', song);
+      await self.setState({
+        resultDetail: {
+          title: song.track_name,
+          rating: song.rating,
+          apiId: song.track_id,
+          yearPublished: song.first_release_date,
+          description: [song.album_cover],
+          imageUrl: song.album_coverart_100x100,
+          link: song.track_share_url,
+        },
+      });
+      self.props.history.push({
+        pathname: `/entry/${self.state.resultDetail.apiId}`,
+        state: { result: self.state.resultDetail },
+      });
     }
   }
 
@@ -194,18 +212,19 @@ class EntryListView extends React.Component {
         .catch(function (error) {
           console.log(error);
         });
-      // cb from server? works fine on postman...
     } else if (this.state.category === 'songs') {
-      axios.post('/songs', { "song": data.value })
+      axios.post('/song', { "song": data.value })
         .then((res) => {
-          const resultItems = res.data;
-          console.log(resultItems)
+          const resultItems = res.data.body.track_list.slice(0, 5);
+          console.log('songs axios: ', resultItems[0].track);
           const songs = resultItems.map(song => ({
-            title: song.title,
-            rating: song.vote_average,
-            apiId: song.id,
-            author: song.release_date,
-            imageUrl: song.poster_path,
+            title: song.track.track_name,
+            rating: song.track.track_rating,
+            apiId: song.track.track_id,
+            author: song.track.artist_name,
+            imageUrl: song.track.album_coverart_100x100,
+            all: song
+            ,
           }));
           self.setState({
             results: songs,

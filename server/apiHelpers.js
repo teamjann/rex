@@ -42,20 +42,26 @@ let getMoviesByTitle = (title) => {
 
 let getSongsByTitle = (title) => {
   let options = {
-    url: `https://api.musixmatch.com/ws/1.1/track.search?format=jsonp&callback=callback&q_track=${title}&quorum_factor=1&apikey=${keys.musixAPI.APIKey}`,
+    headers: {
+      callback: "jsonp_callback",
+    },
+    url: `https://api.musixmatch.com/ws/1.1/track.search?format=jsonp&callback=getData&q_track=${title}&quorum_factor=1&apikey=${keys.musixAPI.APIKey}`,
   };
 
   return new Promise((resolve, reject) => {
     request(options, function (err, res, body) {
       if (err === null) {
         console.log('music DB API Call Sucess!');
-        resolve(body);
+        resolve(eval(body));
       } else {
         console.log('Error in music DB request:' + err);
         reject(err);
       }
     });
   });
+}
+let getData = (body) => {
+  return body.message;
 }
 
 let getFoodByName = (food, CB) => {
