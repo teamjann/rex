@@ -120,6 +120,24 @@ class EntryListView extends React.Component {
         pathname: `/entry/${self.state.resultDetail.apiId}`,
         state: { result: self.state.resultDetail },
       });
+    } else if (this.state.category === 'foods') {
+      let food = data.result.all;
+      console.log(food);
+      await self.setState({
+        resultDetail: {
+          title: food.name,
+          rating: food.rating,
+          apiId: food.id,
+          yearPublished: food.location.address1,
+          description: [food.categories.title],
+          imageUrl: food.image_url,
+          link: food.url,
+        },
+      });
+      self.props.history.push({
+        pathname: `/entry/${self.state.resultDetail.apiId}`,
+        state: { result: self.state.resultDetail },
+      });
     }
   }
 
@@ -166,8 +184,7 @@ class EntryListView extends React.Component {
             rating: movie.vote_average,
             apiId: movie.id,
             author: movie.release_date,
-            // image not rendering .... jpg not https?
-            imageUrl: movie.poster_path,
+            imageUrl: `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`,
             all: movie
           }));
           self.setState({
@@ -207,6 +224,7 @@ class EntryListView extends React.Component {
             apiId: food.id,
             author: food.location.address1,
             imageUrl: food.image_url,
+            all: food
           }));
           self.setState({
             results: foods,
