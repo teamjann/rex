@@ -24,6 +24,14 @@ class EntryListView extends React.Component {
           text: 'Movies',
           value: 'movies',
         },
+        {
+          text: 'songs',
+          value: 'songs',
+        },
+        {
+          text: 'foods',
+          value: 'foods',
+        },
       ],
       results: [],
     };
@@ -34,64 +42,120 @@ class EntryListView extends React.Component {
   }
 
   // Brung up entryDetail when user selects book from search
-  handleResultSelect(e, data) {
-    const params = {
-      id: data.result.apiId,
-      key: 'GOODREADS_API_KEY_HERE',
-    };
+  // detail view when list item from drop down is actively selected
+  async handleResultSelect(e, data) {
     const self = this;
-    // Proxify necessary for Goodreads CORS requests
-    const url = proxify(
-      `https://www.goodreads.com/book/show.xml?id=${params.id}&key=${params.key}`,
-      { inputFormat: 'xml' },
-    );
+    if (this.state.category === 'books') {
 
-    axios
-      .get(url)
-      .then((res) => {
-        const { book } = res.data.query.results.GoodreadsResponse;
-        let authors;
+      const params = {
+        id: data.result.apiId,
+        key: '49Q50kykoyKt3upYv1Bc8A',
+      };
+      // Proxify necessary for Goodreads CORS requests
+      const url = proxify(
+        `https://www.goodreads.com/book/show.xml?id=${params.id}&key=${params.key}`,
+        { inputFormat: 'xml' },
+      );
 
-        // Goodreads sends array for multiple authors, object for single
-        if (Array.isArray(book.authors.author)) {
-          authors = book.authors.author
-            .map((author) => {
-              // Goodreads includes illustrators, etc as 'authors'
-              // Creates string of authors and their roles
-              if (author.role) {
-                return `${author.name} (${author.role})`;
-              }
-              return author.name;
-            })
-            .join(', ');
-        } else {
-          authors = book.authors.author.name;
-        }
+      axios
+        .get(url)
+        .then((res) => {
+          const { book } = res.data.query.results.GoodreadsResponse;
+          let authors;
 
-        self.setState({
-          resultDetail: {
-            title: book.title,
-            rating: book.average_rating,
-            apiId: book.id,
-            authors,
-            yearPublished: book.publication_year,
-            description: book.description
-              .split('<br /><br />')
-              .map(paragraph => paragraph.replace(/<.*?>/gm, '')),
-            imageUrl: book.image_url,
-            link: book.link,
-          },
+          // Goodreads sends array for multiple authors, object for single
+          if (Array.isArray(book.authors.author)) {
+            authors = book.authors.author
+              .map((author) => {
+                // Goodreads includes illustrators, etc as 'authors'
+                // Creates string of authors and their roles
+                if (author.role) {
+                  return `${author.name} (${author.role})`;
+                }
+                return author.name;
+              })
+              .join(', ');
+          } else {
+            authors = book.authors.author.name;
+          }
+
+          self.setState({
+            resultDetail: {
+              title: book.title,
+              rating: book.average_rating,
+              apiId: book.id,
+              authors,
+              yearPublished: book.publication_year,
+              description: book.description
+                .split('<br /><br />')
+                .map(paragraph => paragraph.replace(/<.*?>/gm, '')),
+              imageUrl: book.image_url,
+            },
+          });
+
+          // Reactrouting
+          self.props.history.push({
+            pathname: `/entry/${self.state.resultDetail.apiId}`,
+            state: { result: self.state.resultDetail },
+          });
+        })
+        .catch((err) => {
+          throw err;
         });
-
-        // Reactrouting
-        self.props.history.push({
-          pathname: `/entry/${self.state.resultDetail.apiId}`,
-          state: { result: self.state.resultDetail },
-        });
-      })
-      .catch((err) => {
-        throw err;
+    } else if (this.state.category === 'movies') {
+      let movie = data.result.all;
+      await self.setState({
+        resultDetail: {
+          title: movie.title,
+          rating: movie.vote_average,
+          apiId: movie.id,
+          yearPublished: movie.release_date,
+          description: [movie.overview],
+          imageUrl: `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`,
+          link: movie.link,
+        },
       });
+      self.props.history.push({
+        pathname: `/entry/${self.state.resultDetail.apiId}`,
+        state: { result: self.state.resultDetail },
+      });
+    } else if (this.state.category === 'foods') {
+      let food = data.result.all;
+      console.log(food);
+      await self.setState({
+        resultDetail: {
+          title: food.name,
+          rating: food.rating,
+          apiId: food.id,
+          yearPublished: food.location.address1,
+          description: [food.categories.title],
+          imageUrl: food.image_url,
+          link: food.url,
+        },
+      });
+      self.props.history.push({
+        pathname: `/entry/${self.state.resultDetail.apiId}`,
+        state: { result: self.state.resultDetail },
+      });
+    } else if (this.state.category === 'songs') {
+      let song = data.result.all.track;
+      console.log('song called', song);
+      await self.setState({
+        resultDetail: {
+          title: song.track_name,
+          rating: song.rating,
+          apiId: song.track_id,
+          yearPublished: song.first_release_date,
+          description: [song.album_cover],
+          imageUrl: song.album_coverart_100x100,
+          link: song.track_share_url,
+        },
+      });
+      self.props.history.push({
+        pathname: `/entry/${self.state.resultDetail.apiId}`,
+        state: { result: self.state.resultDetail },
+      });
+    }
   }
 
   search(e, data) {
@@ -101,18 +165,18 @@ class EntryListView extends React.Component {
       results: [],
     });
 
+    const self = this;
+
     if (this.state.category === 'books') {
       const params = {
         q: data.value.replace(/\s+/g, '-'),
-        key: 'GOODREADS_API_KEY_HERE',
+        key: '49Q50kykoyKt3upYv1Bc8A',
       };
       // Proxified URL (for goodReads Cors requests)
       const url = proxify(
         `https://www.goodreads.com/search/index.xml?q=${params.q}&key=${params.key}`,
         { inputFormat: 'xml' },
       );
-      const self = this;
-
       axios.get(url).then((res) => {
         const resultItems = res.data.query.results.GoodreadsResponse.search.results.work;
         const books = resultItems.map(book => ({
@@ -122,26 +186,74 @@ class EntryListView extends React.Component {
           author: book.best_book.author.name,
           imageUrl: book.best_book.image_url,
         }));
-
         self.setState({
           results: books,
         });
       });
+
+    } else if (this.state.category === 'movies') {
+      axios.post('/movie', { title: data.value })
+        .then((res) => {
+          const resultItems = res.data.results.slice(0, 5);
+          console.log(resultItems[0])
+          const movies = resultItems.map(movie => ({
+            title: movie.title,
+            rating: movie.vote_average,
+            apiId: movie.id,
+            author: movie.release_date,
+            imageUrl: `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`,
+            all: movie
+          }));
+          self.setState({
+            results: movies,
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    } else if (this.state.category === 'songs') {
+      axios.post('/song', { "song": data.value })
+        .then((res) => {
+          const resultItems = res.data.body.track_list.slice(0, 5);
+          console.log('songs axios: ', resultItems[0].track);
+          const songs = resultItems.map(song => ({
+            title: song.track.track_name,
+            rating: song.track.track_rating,
+            apiId: song.track.track_id,
+            author: song.track.artist_name,
+            imageUrl: song.track.album_coverart_100x100,
+            all: song
+            ,
+          }));
+          self.setState({
+            results: songs,
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    } else if (this.state.category === 'foods') {
+      axios.post('/food', { "food": data.value })
+        .then((res) => {
+          const resultItems = res.data;
+          const foods = resultItems.map(food => ({
+            title: food.name,
+            rating: food.rating,
+            apiId: food.id,
+            author: food.location.address1,
+            imageUrl: food.image_url,
+            all: food
+          }));
+          self.setState({
+            results: foods,
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     }
   }
 
-  //   // Beginning of using movies API
-  //   else if (this.state.category === 'movies') {
-  //     const params = {
-  //       api_key: 'process.env.SOME_API_KEY_HERE',
-  //       query: data.value,
-  //     };
-  //     axios
-  //       .get('https://api.themoviedb.org/3/search/movie?', { params })
-  //       .then(res => console.log(res.data))
-  //       .catch(err => console.log(err));
-  //   }
-  // }
 
   handleDropDownChange(event, data) {
     this.setState({

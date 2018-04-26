@@ -5,6 +5,8 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
 
+const apiHelpers = require('./apiHelpers');
+
 const authObj = {};
 
 const {
@@ -54,6 +56,51 @@ app.use(session({
 }));
 
 app.use(express.static(`${__dirname}/../client/dist`));
+
+/* -------------------------------------------------------------------
+--------------------------------------------------------------------*/
+
+// MovieDb API
+app.post('/movie', (req, res) => {
+  apiHelpers.getMoviesByTitle(req.body.title)
+    .then(result => {
+      res.contentType('application/json')
+      res.send(result);
+    })
+    .catch(err => {
+      res.send(err);
+    });
+});
+
+// MusixMatch API
+app.post('/song', (req, res) => {
+  console.log(req.body)
+  apiHelpers.getSongsByTitle(req.body.song)
+    .then(result => {
+      //console.log('server', result)
+      res.contentType('application/json');
+      res.send(result);
+    })
+    .catch(err => {
+      res.send(err);
+    });
+});
+
+// YELP API
+app.post('/food', (req, res) => {
+  apiHelpers.getFoodByName(req.body.food, (data, err) => {
+    res.contentType('application/json');
+    if (err === null) {
+      res.send(data);
+    } else {
+      res.send(err);
+    }
+  })
+});
+/* -------------------------------------------------------------------
+--------------------------------------------------------------------*/
+
+
 
 // LOGIN
 app.post('/login', (req, res) => {
