@@ -4075,3 +4075,44 @@ a.button {
 a.subtle-link {
   color: rgb(142, 136, 146);
 }
+
+/* .icon-list > i {
+  width: 80px;
+  height: 80px;
+} */
+/* .icon-list > div {
+  position: relative;
+  text-align: center;
+}
+
+*/
+.image {
+  position: relative;
+}
+
+.top-left {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  width: 100%;
+}
+
+.top-left span {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px 10px 20px 40px;
+  margin-left: -1em;
+}
+
+.left-half {
+  display: grid;
+  width: 50%;
+  justify-content: right;
+  grid-gap: 1em;
+}
+
+.right-half {
+  display: grid;
+  width: 50%;
+  justify-content: left;
+  grid-gap: 1em;
+}

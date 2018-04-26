@@ -17,11 +17,11 @@ import Auth from './Authentication/Auth';
 class App extends Component {
   state = {
     isAuthenticated: true,
-    username: 'test',
+    firstName: 'Nick',
   };
 
-  handleAuth({ isAuthenticated, username }) {
-    this.setState({ isAuthenticated, username });
+  handleAuth({ isAuthenticated, firstName }) {
+    this.setState({ isAuthenticated, firstName });
   }
 
   // On Mount, gets authentication from server, sets state of isAuthenticated
@@ -38,13 +38,13 @@ class App extends Component {
   }
 
   render() {
-    const { username, isAuthenticated } = this.state;
+    const { firstName, isAuthenticated } = this.state;
 
     // If state authenticated, loads homepage, otherwise login / signup
     if (isAuthenticated) {
       return (
         <div>
-          <Route exact path="/" render={() => <Home username={username} />} />
+          <Route exact path="/" render={() => <Home firstName={firstName} />} />
           <Route path="/browse/:bookId" component={BrowseDetail} />
           <Route path="/entry/:bookId" component={EntryDetail} />
           <Route exact path="/entry" component={EntryListView} />

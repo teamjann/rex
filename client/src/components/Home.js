@@ -8,8 +8,6 @@ import NavBar from './NavBar';
 import { Route, Link, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import { Dropdown, Menu, Button, Container, Header, Icon } from 'semantic-ui-react';
 
-import { Row, Col } from 'reactstrap';
-
 import BookDetail from './Entry/BookDetail';
 
 const NewRecommendationButton = () => (
@@ -26,67 +24,51 @@ const NewRecommendationButton = () => (
 class Home extends Component {
   state = {
     category: '',
-    imageStatus: 'loading',
   };
-  handleImageLoaded() {
-    this.setState({ imageStatus: 'loaded' });
-  }
-
-  handleImageErrored() {
-    this.setState({ imageStatus: 'failed to load' });
-  }
 
   render() {
     return (
       <div>
         <NavBar />
-        <div className="userName">Welcome! {this.props.username}</div>
-
+        <div className="userName">Welcome! {this.props.firstName}</div>
+        <div className="newRec-button">
+          <NewRecommendationButton />
+        </div>
         <div className="icon-list">
-          <div>
-            <Link to="/browse">
-              <img
-                src={book}
-                width="80"
-                height="80"
-                onLoad={this.handleImageLoaded.bind(this)}
-                onError={this.handleImageErrored.bind(this)}
-              />
-            </Link>
+          <div className="left-half">
+            <div className="image">
+              <Link to="/browse" />
+              <img src="images/food.jpg" className alt="" />
+              <h3 className="top-left">
+                <span>Food</span>
+              </h3>
+            </div>
+            <div className="image">
+              <Link to="/browse" />
+              <img src="images/books.jpg" className alt="" />
+              <h3 className="top-left">
+                <span>Books</span>
+              </h3>
+            </div>
           </div>
-          <div>
-            <img
-              src={food}
-              width="80"
-              height="80"
-              onLoad={this.handleImageLoaded.bind(this)}
-              onError={this.handleImageErrored.bind(this)}
-            />
-          </div>
-          <div>
-            <img
-              src={music}
-              width="80"
-              height="80"
-              onLoad={this.handleImageLoaded.bind(this)}
-              onError={this.handleImageErrored.bind(this)}
-            />
-          </div>
-          <div>
-            <img
-              src={movie}
-              width="80"
-              height="80"
-              onLoad={this.handleImageLoaded.bind(this)}
-              onError={this.handleImageErrored.bind(this)}
-            />
+          <div className="right-half">
+            <div className="image top">
+              <Link to="/browse" />
+              <img src="images/music.jpg" className alt="" />
+              <h3 className="top-left">
+                <span>Music</span>
+              </h3>
+            </div>
+            <div className="image bottom">
+              <Link to="/browse" />
+              <img src="images/tv.jpg" className alt="" />
+              <h3 className="top-left">
+                <span>Movies</span>
+              </h3>
+            </div>
           </div>
         </div>
-        <div>
-          <div className="newRec-button">
-            <NewRecommendationButton />
-          </div>
-        </div>
+        <div />
       </div>
     );
   }
