@@ -6,17 +6,13 @@ import movie from '../images/movie.png';
 import food from '../images/food.png';
 import NavBar from './NavBar';
 import { Route, Link, BrowserRouter, Switch, Redirect } from 'react-router-dom';
-import { Dropdown, Menu, Button, Container, Header, Icon } from 'semantic-ui-react';
 
 import BookDetail from './Entry/BookDetail';
 
 const NewRecommendationButton = () => (
-  <div className="newRecButton">
+  <div className="rec-button">
     <Link to="/entry">
-      <Button size="massive" color="teal" borderRadius="30px">
-        New Recommendations
-        <Icon className="plus" name="plus" />
-      </Button>
+      <button className="button special big">Add Recommendation</button>
     </Link>
   </div>
 );
@@ -30,12 +26,14 @@ class Home extends Component {
     return (
       <div>
         <NavBar />
-        <div className="userName">Welcome! {this.props.firstName}</div>
-        <div className="newRec-button">
-          <NewRecommendationButton />
+        <div className="welcome">
+          <h2>
+            Welcome <span>{this.props.firstName}!</span>
+          </h2>
         </div>
+        <NewRecommendationButton />
         <div className="icon-list">
-          <div className="left-half">
+          <div className="half">
             <div className="image">
               <Link to="/browse" />
               <img src="images/food.jpg" className alt="" />
@@ -51,7 +49,7 @@ class Home extends Component {
               </h3>
             </div>
           </div>
-          <div className="right-half">
+          <div className="half">
             <div className="image top">
               <Link to="/browse" />
               <img src="images/music.jpg" className alt="" />
@@ -74,34 +72,34 @@ class Home extends Component {
   }
 }
 
-class FindRecommendationButton extends Component {
-  state = {
-    category: '',
-  };
+// class FindRecommendationButton extends Component {
+//   state = {
+//     category: '',
+//   };
 
-  render() {
-    return (
-      <div>
-        <Menu vertical>
-          <Dropdown text="Find Something from" pointing="left" className="link item">
-            <Dropdown.Menu>
-              <Dropdown.Item
-                onClick={() => {
-                  this.setState({ category: 'books' });
-                  //<Redirect to="/browse" />;
-                  //redirect is like component
-                }}
-              >
-                <Link to="/browse">Books</Link>
-              </Dropdown.Item>
-              <Dropdown.Item>Movies</Dropdown.Item>
-              <Dropdown.Item>Restaurants</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </Menu>
-      </div>
-    );
-  }
-}
+//   render() {
+//     return (
+//       <div>
+//         <Menu vertical>
+//           <Dropdown text="Find Something from" pointing="left" className="link item">
+//             <Dropdown.Menu>
+//               <Dropdown.Item
+//                 onClick={() => {
+//                   this.setState({ category: 'books' });
+//                   //<Redirect to="/browse" />;
+//                   //redirect is like component
+//                 }}
+//               >
+//                 <Link to="/browse">Books</Link>
+//               </Dropdown.Item>
+//               <Dropdown.Item>Movies</Dropdown.Item>
+//               <Dropdown.Item>Restaurants</Dropdown.Item>
+//             </Dropdown.Menu>
+//           </Dropdown>
+//         </Menu>
+//       </div>
+//     );
+//   }
+// }
 
 export default Home;

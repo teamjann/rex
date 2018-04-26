@@ -4076,18 +4076,32 @@ a.subtle-link {
   color: rgb(142, 136, 146);
 }
 
-/* .icon-list > i {
-  width: 80px;
-  height: 80px;
-} */
-/* .icon-list > div {
-  position: relative;
+.welcome {
+  margin: 5% auto;
+  width: 20%;
   text-align: center;
 }
 
-*/
+.welcome span {
+  font-family: "Sedgwick Ave Display", "Playfair Display", serif;
+  font-weight: 400;
+  font-size: 1.6em;
+}
+
+.icon-list {
+  margin: auto;
+  width: 70%;
+}
+
+.half {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .image {
   position: relative;
+  margin-right: 1em;
+  margin-bottom: 1em;
 }
 
 .top-left {
@@ -4103,16 +4117,13 @@ a.subtle-link {
   margin-left: -1em;
 }
 
-.left-half {
-  display: grid;
-  width: 50%;
-  justify-content: right;
-  grid-gap: 1em;
+.rec-button {
+  width: 30%;
+  margin: 5% auto;
 }
 
-.right-half {
-  display: grid;
-  width: 50%;
-  justify-content: left;
-  grid-gap: 1em;
+.rec-button button.big {
+  width: 100%;
+  font-size: 1.2em;
 }
+
