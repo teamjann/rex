@@ -73,7 +73,7 @@ app.post('/movie', (req, res) => {
 });
 
 // MusixMatch API
-app.post('/song', (req, res) => {
+app.post('/songs', (req, res) => {
   apiHelpers.getSongsByTitle(req.body.song)
     .then(result => {
       res.contentType('application/json');
