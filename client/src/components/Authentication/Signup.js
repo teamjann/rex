@@ -1,7 +1,6 @@
 // react
 import React, { Component } from 'react';
 // modules
-import { Form } from 'semantic-ui-react';
 import axios from 'axios';
 
 class Signup extends Component {
@@ -30,35 +29,54 @@ class Signup extends Component {
     const { username, password, firstName, lastName } = this.state;
 
     return (
-      <Form onSubmit={this.handleSubmit}>
-        <Form.Group>
-          <Form.Input
-            placeholder="First Name"
-            name="firstName"
-            value={firstName}
-            onChange={this.handleChange}
-          />
-          <Form.Input
-            placeholder="Last Name"
-            name="lastName"
-            value={lastName}
-            onChange={this.handleChange}
-          />
-          <Form.Input
-            placeholder="Username"
-            name="username"
-            value={this.state.username}
-            onChange={this.handleChange}
-          />
-          <Form.Input
-            placeholder="Password"
-            name="password"
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-          <Form.Button content="Submit" />
-        </Form.Group>
-      </Form>
+      <form className="login" onSubmit={this.handleSubmit}>
+        <div className="row uniform">
+          <div className="6u">
+            <input
+              type="text"
+              placeholder="First Name"
+              name="firstName"
+              value={firstName}
+              onChange={this.handleChange}
+            />
+          </div>
+          <div className="6u">
+            <input
+              type="text"
+              placeholder="Last Name"
+              name="lastName"
+              value={lastName}
+              onChange={this.handleChange}
+            />
+          </div>
+          <div className="6u signup-email">
+            <input
+              type="email"
+              placeholder="Username"
+              name="username"
+              value={this.state.username}
+              onChange={this.handleChange}
+            />
+          </div>
+          <div className="6u signup-pw">
+            <input
+              type="password"
+              placeholder="Password"
+              name="password"
+              value={this.state.password}
+              onChange={this.handleChange}
+            />
+          </div>
+          <div className="submit-button">
+            <a className="big button special" content="Submit">
+              Sign Up
+            </a>
+            <div>
+              <a className="subtle-link">Login instead</a>
+            </div>
+          </div>
+        </div>
+      </form>
     );
   }
 }

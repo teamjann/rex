@@ -11,19 +11,25 @@ import EntryDetail from './Entry/EntryDetail';
 import BrowseDetail from './Browse/BrowseDetail';
 import EntryListView from './EntryListView';
 import BrowseView from './BrowseView';
+import Landing from './Landing';
 import Auth from './Authentication/Auth';
 
 class App extends Component {
   state = {
     isAuthenticated: true,
+<<<<<<< HEAD
     username: '',
+=======
+    firstName: 'Nick',
+>>>>>>> 794aa70f9a910c07323e80d30fe1ee96d2d5793e
   };
 
-  handleAuth({ isAuthenticated, username }) {
-    this.setState({ isAuthenticated, username });
+  handleAuth({ isAuthenticated, firstName }) {
+    this.setState({ isAuthenticated, firstName });
   }
 
   // On Mount, gets authentication from server, sets state of isAuthenticated
+<<<<<<< HEAD
   // componentDidMount() {
   //   const self = this;
   //   axios
@@ -35,15 +41,28 @@ class App extends Component {
   //       console.log(err);
   //     });
   // }
+=======
+  componentDidMount() {
+    // const self = this;
+    // axios
+    //   .get('/auth')
+    //   .then(res => {
+    //     self.handleAuth(res.data);
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //   });
+  }
+>>>>>>> 794aa70f9a910c07323e80d30fe1ee96d2d5793e
 
   render() {
-    const { username, isAuthenticated } = this.state;
+    const { firstName, isAuthenticated } = this.state;
 
     // If state authenticated, loads homepage, otherwise login / signup
     if (isAuthenticated) {
       return (
         <div>
-          <Route exact path="/" render={() => <Home username={username} />} />
+          <Route exact path="/" render={() => <Home firstName={firstName} />} />
           <Route path="/browse/:bookId" component={BrowseDetail} />
           <Route path="/entry/:bookId" component={EntryDetail} />
           <Route exact path="/entry" component={EntryListView} />

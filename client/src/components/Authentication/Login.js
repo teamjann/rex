@@ -1,10 +1,8 @@
 // React
 import React, { Component } from 'react';
 // modules
-import { Form } from 'semantic-ui-react';
 import axios from 'axios';
 // components
-import './Login.css';
 
 class Login extends Component {
   state = {
@@ -32,23 +30,36 @@ class Login extends Component {
     const { name, email } = this.state;
 
     return (
-      <Form onSubmit={this.handleSubmit}>
-        <Form.Group>
-          <Form.Input
-            placeholder="Username"
-            name="username"
-            value={this.state.username}
-            onChange={this.handleChange}
-          />
-          <Form.Input
-            placeholder="Password"
-            name="password"
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-          <Form.Button content="Submit" />
-        </Form.Group>
-      </Form>
+      <form className="login" onSubmit={this.handleSubmit}>
+        <div className="row uniform">
+          <div className="6u signup-email">
+            <input
+              type="email"
+              placeholder="Username"
+              name="username"
+              value={this.state.username}
+              onChange={this.handleChange}
+            />
+          </div>
+          <div className="6u signup-pw">
+            <input
+              type="password"
+              placeholder="Password"
+              name="password"
+              value={this.state.password}
+              onChange={this.handleChange}
+            />
+          </div>
+          <div className="submit-button">
+            <a className="big button special" content="Submit">
+              Login
+            </a>
+            <div>
+              <a className="subtle-link">Sign up instead</a>
+            </div>
+          </div>
+        </div>
+      </form>
     );
   }
 }
