@@ -3,11 +3,10 @@ import React from 'react';
 // Modules
 import axios from 'axios';
 import proxify from 'proxify-url';
-import { Search, Dropdown, Rating, Container } from 'semantic-ui-react';
+import { Search, Rating } from 'semantic-ui-react';
 import _ from 'lodash';
 // Components
 import NavBar from './NavBar';
-import './EntryListView.css';
 
 // Category, searchbar, API results for adding recommendations
 class EntryListView extends React.Component {
@@ -18,11 +17,11 @@ class EntryListView extends React.Component {
       // Format necessary for semanti-ui search dropdown
       categoryOptions: [
         {
-          text: 'books',
+          text: 'Books',
           value: 'books',
         },
         {
-          text: 'movies',
+          text: 'Movies',
           value: 'movies',
         },
       ],
@@ -168,24 +167,31 @@ class EntryListView extends React.Component {
     return (
       <div>
         <NavBar />
-        <Container>
-          <div className="page-title">
+        <div className="container">
+          <div className="page-title welcome">
             <h1>Add New Recommendations</h1>
           </div>
-
-          <Dropdown
-            placeholder="Select Category"
-            selection
-            options={this.state.categoryOptions}
-            onChange={this.handleDropDownChange}
-          />
-          <Search
-            onSearchChange={throttledSearch}
-            results={this.state.results}
-            resultRenderer={this.renderResult}
-            onResultSelect={this.handleResultSelect}
-          />
-        </Container>
+          <div className="search-fields">
+            <div className="select">
+              <i className="fas fa-chevron-down" />
+              <select
+                className="cat-select"
+                placeholder="Select Category"
+                onChange={this.handleDropDownChange}
+              >
+                {this.state.categoryOptions.map(option => (
+                  <option value={option.text}>{option.text}</option>
+                ))}
+              </select>
+            </div>
+            <Search
+              onSearchChange={throttledSearch}
+              results={this.state.results}
+              resultRenderer={this.renderResult}
+              onResultSelect={this.handleResultSelect}
+            />
+          </div>
+        </div>
       </div>
     );
   }
