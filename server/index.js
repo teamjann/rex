@@ -47,6 +47,17 @@ const {
 //   }
 // };
 
+// Middleware to check if user logged in
+const isLoggedIn = (req, res, next) => {
+  if (!req.user) {
+    // if user is not logged in
+    res.redirect('/auth/login');
+  } else {
+    // if logged in
+    next();
+  }
+};
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -119,162 +130,162 @@ app.use('/auth', authRoutes);
 // });
 
 // GET BOOKS AND RECOMMENDATIONS FOR USER
-// app.get('/u/:userId/:category', getUserId, (req, res) => {
-//   const { category } = req.params;
-//   const { userId } = req;
+app.get('/u/:userId/:category', isLoggedIn, (req, res) => {
+  const { category } = req.params;
+  const { userId } = req;
 
-//   promiseQuery(FETCH_BOOKS(userId, category))
-//     .then((books) => {
-//       const parsedBooks = books.reduce((bookItems, recommendation) => {
-//         const {
-//           rec_id,
-//           recommender_id,
-//           user_id,
-//           recommender_name,
-//           comment,
-//           item_id,
-//           date_added,
-//           title,
-//           thumbnail_url,
-//           description,
-//           url,
-//           status,
-//           user_rating,
-//         } = recommendation;
+  promiseQuery(FETCH_BOOKS(userId, category))
+    .then((books) => {
+      const parsedBooks = books.reduce((bookItems, recommendation) => {
+        const {
+          rec_id,
+          recommender_id,
+          user_id,
+          recommender_name,
+          comment,
+          item_id,
+          date_added,
+          title,
+          thumbnail_url,
+          description,
+          url,
+          status,
+          user_rating,
+        } = recommendation;
 
-//         const recEntry = {
-//           recommender_id,
-//           recommender_name,
-//           comment,
-//           date_added,
-//         };
+        const recEntry = {
+          recommender_id,
+          recommender_name,
+          comment,
+          date_added,
+        };
 
-//         const book = {
-//           title,
-//           thumbnail_url,
-//           description,
-//           url,
-//           status,
-//           user_rating,
-//         };
+        const book = {
+          title,
+          thumbnail_url,
+          description,
+          url,
+          status,
+          user_rating,
+        };
 
-//         if (item_id in bookItems) {
-//           bookItems[item_id].recommendations.push(recEntry);
-//         } else {
-//           bookItems[item_id] = {
-//             book,
-//             recommendations: [recEntry],
-//           };
-//         }
+        if (item_id in bookItems) {
+          bookItems[item_id].recommendations.push(recEntry);
+        } else {
+          bookItems[item_id] = {
+            book,
+            recommendations: [recEntry],
+          };
+        }
 
-//         return bookItems;
-//       }, {});
-//       res.json(parsedBooks);
-//       res.end();
-//     })
-//     .catch(err => res.end('404', err));
-// });
+        return bookItems;
+      }, {});
+      res.json(parsedBooks);
+      res.end();
+    })
+    .catch(err => res.end('404', err));
+});
 
-// // ADD RECOMMENDATION WHEN BOOKID KNOWN
-// app.post('/r/:category/:bookId', getUserId, (req, res) => {
-//   const { category, bookId } = req.params;
-//   const {
-//     id, firstName, lastName, comments,
-//   } = req.body;
-//   const { userId } = req;
-//   const recInfo = {
-//     userId,
-//     category,
-//     id,
-//     firstName,
-//     lastName,
-//     comments,
-//   };
-//   insertQuery(ADD_REC_TO_EXISTING_BOOK(recInfo))
-//     .then(sqlResponse => res.json({ inserted: 'success' }))
-//     .catch(err => console.log(err));
-// });
+// ADD RECOMMENDATION WHEN BOOKID KNOWN
+app.post('/r/:category/:bookId', isLoggedIn, (req, res) => {
+  const { category, bookId } = req.params;
+  const {
+    id, firstName, lastName, comments,
+  } = req.body;
+  const { userId } = req;
+  const recInfo = {
+    userId,
+    category,
+    id,
+    firstName,
+    lastName,
+    comments,
+  };
+  insertQuery(ADD_REC_TO_EXISTING_BOOK(recInfo))
+    .then(sqlResponse => res.json({ inserted: 'success' }))
+    .catch(err => console.log(err));
+});
 
-// // ADD NEW RECOMMENDATION
-// app.post('/u/:userId/:category/', getUserId, (req, res) => {
-//   const { category } = req.params;
-//   const {
-//     apiId, firstName, lastName, comments,
-//   } = req.body;
+// ADD NEW RECOMMENDATION
+app.post('/u/:userId/:category/', isLoggedIn, (req, res) => {
+  const { category } = req.params;
+  const {
+    apiId, firstName, lastName, comments,
+  } = req.body;
 
-//   const { userId } = req;
+  const { userId } = req;
 
-//   console.log('adding recommendation');
+  console.log('adding recommendation');
 
-//   promiseQuery(CHECK_BOOK({ apiId }))
-//     .then((bookIdObj) => {
-//       const bookId = bookIdObj[0].id;
-//       console.log('book in db');
+  promiseQuery(CHECK_BOOK({ apiId }))
+    .then((bookIdObj) => {
+      const bookId = bookIdObj[0].id;
+      console.log('book in db');
 
-//       validateQuery(CHECK_EXISTING_REC({ userId, apiId })).then((exist) => {
-//         const recommendationsExist = exist[0][0].exists;
+      validateQuery(CHECK_EXISTING_REC({ userId, apiId })).then((exist) => {
+        const recommendationsExist = exist[0][0].exists;
 
-//         if (recommendationsExist) {
-//           res.status(404).send('Already exists');
-//         } else {
-//           const recommendationInfo = {
-//             firstName,
-//             lastName,
-//             comments,
-//             category,
-//             userId,
-//             bookId,
-//           };
+        if (recommendationsExist) {
+          res.status(404).send('Already exists');
+        } else {
+          const recommendationInfo = {
+            firstName,
+            lastName,
+            comments,
+            category,
+            userId,
+            bookId,
+          };
 
-//           insertQuery(ADD_REC(recommendationInfo))
-//             .then(sqlResponse => res.json({ inserted: 'success' }))
-//             .catch(err => console.log(err));
-//         }
-//       });
-//     })
-//     .catch((bookNotInDB) => {
-//       insertQuery(ADD_REC_AND_BOOK({ ...req.body, userId }))
-//         .then(sqlResponse => res.json({ inserted: 'success' }))
-//         .catch(err => console.log(err));
-//     });
-// });
+          insertQuery(ADD_REC(recommendationInfo))
+            .then(sqlResponse => res.json({ inserted: 'success' }))
+            .catch(err => console.log(err));
+        }
+      });
+    })
+    .catch((bookNotInDB) => {
+      insertQuery(ADD_REC_AND_BOOK({ ...req.body, userId }))
+        .then(sqlResponse => res.json({ inserted: 'success' }))
+        .catch(err => console.log(err));
+    });
+});
 
-// app.get('/auth', (req, res) => {
-//   if (req.session.uuid) {
-//     res.send({ isAuthenticated: true });
-//   } else {
-//     res.send({ isAuthenticated: false });
-//   }
-// });
+app.get('/auth', (req, res) => {
+  if (req.session.passport.user[0][0].google_id) {
+    res.send({ isAuthenticated: true });
+  } else {
+    res.send({ isAuthenticated: false });
+  }
+});
 
 // UPDATE STATUS & RATING FOR RECOMMENDATION
-// app.put('/u/:userId/:category/:itemId', getUserId, (req, res) => {
-//   const { category, itemId } = req.params;
-//   const { status, rating } = req.body;
-//   const { userId } = req;
+app.put('/u/:userId/:category/:itemId', isLoggedIn, (req, res) => {
+  const { category, itemId } = req.params;
+  const { status, rating } = req.body;
+  const { userId } = req;
 
-//   updateQuery(UPDATE_RECOMMENDATION({
-//     userId,
-//     category,
-//     itemId,
-//     status,
-//     rating,
-//   }))
-//     .then((sqlRes) => {
-//       res.send('recommendation successfully updated');
-//     })
-//     .catch(err => console.log('could not update'));
-// });
+  updateQuery(UPDATE_RECOMMENDATION({
+    userId,
+    category,
+    itemId,
+    status,
+    rating,
+  }))
+    .then((sqlRes) => {
+      res.send('recommendation successfully updated');
+    })
+    .catch(err => console.log('could not update'));
+});
 
 // DELETE RECOMMENDATIONS FOR A BOOK
-// app.delete('/u/:userId/:category/:itemId', getUserId, (req, res) => {
-//   const { category, itemId } = req.params;
-//   const { userId } = req;
+app.delete('/u/:userId/:category/:itemId', passport.session(), (req, res) => {
+  const { category, itemId } = req.params;
+  const { userId } = req;
 
-//   deleteQuery(DELETE_BOOK({ userId, category, itemId }))
-//     .then(sqlRes => res.json({ deleted: itemId }))
-//     .catch(err => console.log(err));
-// });
+  deleteQuery(DELETE_BOOK({ userId, category, itemId }))
+    .then(sqlRes => res.json({ deleted: itemId }))
+    .catch(err => console.log(err));
+});
 
 // SERVE REACT INDEX.HTML FOR ALL UNHANDLED REQUESTS
 app.get('/*', (req, res) => {

@@ -106,5 +106,5 @@ exports.ADD_USER = (username, passwordHash, firstName, lastName) => `
 
 exports.FIND_AUTH_USER = id => `SELECT * FROM auth_users WHERE user_id = '${id}';`;
 exports.FIND_GOOGLE_USER = googleId => `SELECT * FROM auth_users  WHERE google_id = '${googleId}';`;
-exports.ADD_GOOGLE_USER = (googleId, displayName) =>
-  `INSERT INTO auth_users (google_id, display_name) VALUES ('${googleId}', '${displayName}') RETURNING google_id;`;
+exports.ADD_GOOGLE_USER = (googleId, displayName, firstName) =>
+  `INSERT INTO auth_users (google_id, display_name, first_name) VALUES ('${googleId}', '${displayName}', '${firstName}') RETURNING google_id;`;
