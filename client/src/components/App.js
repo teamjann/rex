@@ -16,7 +16,7 @@ import Auth from './Authentication/Auth';
 
 class App extends Component {
   state = {
-    isAuthenticated: false,
+    isAuthenticated: true,
     firstName: 'Nick',
   };
 

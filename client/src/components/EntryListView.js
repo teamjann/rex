@@ -13,7 +13,7 @@ class EntryListView extends React.Component {
   constructor() {
     super();
     this.state = {
-      category: 'books',
+      category: '',
       // Format necessary for semanti-ui search dropdown
       categoryOptions: [
         {
@@ -46,7 +46,6 @@ class EntryListView extends React.Component {
   async handleResultSelect(e, data) {
     const self = this;
     if (this.state.category === 'books') {
-
       const params = {
         id: data.result.apiId,
         key: '49Q50kykoyKt3upYv1Bc8A',
@@ -103,7 +102,7 @@ class EntryListView extends React.Component {
           throw err;
         });
     } else if (this.state.category === 'movies') {
-      let movie = data.result.all;
+      const movie = data.result.all;
       await self.setState({
         resultDetail: {
           title: movie.title,
@@ -120,7 +119,7 @@ class EntryListView extends React.Component {
         state: { result: self.state.resultDetail },
       });
     } else if (this.state.category === 'foods') {
-      let food = data.result.all;
+      const food = data.result.all;
       console.log(food);
       await self.setState({
         resultDetail: {
@@ -138,7 +137,7 @@ class EntryListView extends React.Component {
         state: { result: self.state.resultDetail },
       });
     } else if (this.state.category === 'songs') {
-      let song = data.result.all.track;
+      const song = data.result.all.track;
       console.log('song called', song);
       await self.setState({
         resultDetail: {
@@ -190,29 +189,30 @@ class EntryListView extends React.Component {
           results: books,
         });
       });
-
     } else if (this.state.category === 'movies') {
-      axios.post('/movie', { title: data.value })
+      axios
+        .post('/movie', { title: data.value })
         .then((res) => {
           const resultItems = res.data.results.slice(0, 5);
-          console.log(resultItems[0])
+          console.log(resultItems[0]);
           const movies = resultItems.map(movie => ({
             title: movie.title,
             rating: movie.vote_average,
             apiId: movie.id,
             author: movie.release_date,
             imageUrl: `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`,
-            all: movie
+            all: movie,
           }));
           self.setState({
             results: movies,
           });
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         });
     } else if (this.state.category === 'songs') {
-      axios.post('/song', { "song": data.value })
+      axios
+        .post('/song', { song: data.value })
         .then((res) => {
           const resultItems = res.data.body.track_list.slice(0, 5);
           console.log('songs axios: ', resultItems[0].track);
@@ -222,18 +222,18 @@ class EntryListView extends React.Component {
             apiId: song.track.track_id,
             author: song.track.artist_name,
             imageUrl: song.track.album_coverart_100x100,
-            all: song
-            ,
+            all: song,
           }));
           self.setState({
             results: songs,
           });
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         });
     } else if (this.state.category === 'foods') {
-      axios.post('/food', { "food": data.value })
+      axios
+        .post('/food', { food: data.value })
         .then((res) => {
           const resultItems = res.data;
           const foods = resultItems.map(food => ({
@@ -242,22 +242,21 @@ class EntryListView extends React.Component {
             apiId: food.id,
             author: food.location.address1,
             imageUrl: food.image_url,
-            all: food
+            all: food,
           }));
           self.setState({
             results: foods,
           });
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         });
     }
   }
 
-
-  handleDropDownChange(event, data) {
+  handleDropDownChange(event) {
     this.setState({
-      category: data.value,
+      category: event.target.value,
     });
   }
 
@@ -290,9 +289,10 @@ class EntryListView extends React.Component {
                 className="cat-select"
                 placeholder="Select Category"
                 onChange={this.handleDropDownChange}
+                value={this.state.category}
               >
                 {this.state.categoryOptions.map(option => (
-                  <option value={option.text}>{option.text}</option>
+                  <option value={option.value}>{option.text}</option>
                 ))}
               </select>
             </div>

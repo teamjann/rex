@@ -4,14 +4,37 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 class Signup extends Component {
-  state = {
-    username: '',
-    password: '',
-    firstName: '',
-    lastName: '',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+    };
 
-  handleChange = (event, { name, value }) => this.setState({ [name]: value });
+    this.handleChangefirstName = this.handleChangefirstName.bind(this);
+    this.handleChangelastName = this.handleChangelastName.bind(this);
+    this.handleChangeUsername = this.handleChangeUsername.bind(this);
+    this.handleChangePassword = this.handleChangePassword.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChangefirstName(e) {
+    this.setState({ firstName: e.target.value });
+  }
+
+  handleChangelastName(e) {
+    this.setState({ lastName: e.target.value });
+  }
+
+  handleChangeUsername(e) {
+    this.setState({ username: e.target.value });
+  }
+
+  handleChangePassword(e) {
+    this.setState({ password: e.target.value });
+  }
 
   handleSubmit = event => {
     const self = this;
@@ -26,8 +49,6 @@ class Signup extends Component {
   };
 
   render() {
-    const { username, password, firstName, lastName } = this.state;
-
     return (
       <form className="login" onSubmit={this.handleSubmit}>
         <div className="row uniform">
@@ -36,8 +57,8 @@ class Signup extends Component {
               type="text"
               placeholder="First Name"
               name="firstName"
-              value={firstName}
-              onChange={this.handleChange}
+              value={this.state.firstName}
+              onChange={this.handleChangefirstName}
             />
           </div>
           <div className="6u">
@@ -45,8 +66,8 @@ class Signup extends Component {
               type="text"
               placeholder="Last Name"
               name="lastName"
-              value={lastName}
-              onChange={this.handleChange}
+              value={this.state.lastName}
+              onChange={this.handleChangelastName}
             />
           </div>
           <div className="6u signup-email">
@@ -55,7 +76,7 @@ class Signup extends Component {
               placeholder="Username"
               name="username"
               value={this.state.username}
-              onChange={this.handleChange}
+              onChange={this.handleChangeUsername}
             />
           </div>
           <div className="6u signup-pw">
@@ -64,7 +85,7 @@ class Signup extends Component {
               placeholder="Password"
               name="password"
               value={this.state.password}
-              onChange={this.handleChange}
+              onChange={this.handleChangePassword}
             />
           </div>
           <div className="submit-button">

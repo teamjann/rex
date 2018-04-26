@@ -1,57 +1,67 @@
 // React
 import React, { Component } from 'react';
 // modules
+import { Form } from 'semantic-ui-react';
 import axios from 'axios';
 // components
 
 class Login extends Component {
-  state = {
-    username: '',
-    password: '',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+      password: '',
+    };
 
-  handleChange = (event, { name, value }) => this.setState({ [name]: value });
+    this.handleChangeUsername = this.handleChangeUsername.bind(this);
+    this.handleChangePassword = this.handleChangePassword.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
-  handleSubmit = event => {
+  handleChangeUsername(e) {
+    this.setState({ username: e.target.value });
+  }
+
+  handleChangePassword(e) {
+    this.setState({ password: e.target.value });
+  }
+
+  handleSubmit(event) {
     const self = this;
     const state = this.state;
     axios
       .post('/login', this.state)
-      .then(res => {
+      .then((res) => {
         console.log('state being sent, ', state);
         self.props.handleAuth({ ...res.data, state });
       })
       .catch(err => console.log(err));
 
     this.setState({ username: '', password: '' });
-  };
+  }
 
   render() {
-    const { name, email } = this.state;
-
     return (
-      <form className="login" onSubmit={this.handleSubmit}>
+      <form className="login">
         <div className="row uniform">
           <div className="6u signup-email">
             <input
-              type="email"
+              type="text"
               placeholder="Username"
-              name="username"
               value={this.state.username}
-              onChange={this.handleChange}
+              onChange={this.handleChangeUsername}
             />
           </div>
           <div className="6u signup-pw">
             <input
               type="password"
               placeholder="Password"
-              name="password"
               value={this.state.password}
-              onChange={this.handleChange}
+              onChange={this.handleChangePassword}
             />
           </div>
           <div className="submit-button">
-            <a className="big button special" content="Submit">
+            <a className="big button special" content="Submit" onClick={this.handleSubmit}>
               Login
             </a>
             <div>
