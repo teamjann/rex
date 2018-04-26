@@ -35,6 +35,7 @@ class EntryListView extends React.Component {
   }
 
   // Brung up entryDetail when user selects book from search
+  // detail view when list item from drop down is actively selected
   handleResultSelect(e, data) {
     const params = {
       id: data.result.apiId,
@@ -102,7 +103,9 @@ class EntryListView extends React.Component {
       results: [],
     });
 
-    if (this.state.category === 'books') {
+    const self = this;
+
+    if (this.state.category === 'change me to books') {
       const params = {
         q: data.value.replace(/\s+/g, '-'),
         key: '49Q50kykoyKt3upYv1Bc8A',
@@ -112,8 +115,6 @@ class EntryListView extends React.Component {
         `https://www.goodreads.com/search/index.xml?q=${params.q}&key=${params.key}`,
         { inputFormat: 'xml' },
       );
-      const self = this;
-
       axios.get(url).then((res) => {
         const resultItems = res.data.query.results.GoodreadsResponse.search.results.work;
         const books = resultItems.map(book => ({
@@ -123,26 +124,71 @@ class EntryListView extends React.Component {
           author: book.best_book.author.name,
           imageUrl: book.best_book.image_url,
         }));
-
         self.setState({
           results: books,
         });
       });
+
+    } else if (this.state.category === 'change me to movies') {
+
+      axios.post('/movie', { title: data.value })
+        .then((res) => {
+          const resultItems = res.data.results.slice(0, 5);
+          console.log(resultItems[0])
+          const movies = resultItems.map(movie => ({
+            title: movie.title,
+            rating: movie.vote_average,
+            apiId: movie.id,
+            author: movie.release_date,
+            imageUrl: movie.poster_path,
+          }));
+          self.setState({
+            results: movies,
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    } else if (this.state.category === 'change me to songs') {
+      axios.post('/songs', { "song": data.value })
+        .then((res) => {
+          const resultItems = res.data;
+          console.log(resultItems)
+          const songs = resultItems.map(song => ({
+            title: song.title,
+            rating: song.vote_average,
+            apiId: song.id,
+            author: song.release_date,
+            imageUrl: song.poster_path,
+          }));
+          self.setState({
+            results: songs,
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    } else {
+      axios.post('/food', { "food": data.value })
+        .then((res) => {
+          const resultItems = res.data;
+          const foods = resultItems.map(food => ({
+            title: food.name,
+            rating: food.rating,
+            apiId: food.id,
+            author: food.location.address1,
+            imageUrl: food.image_url,
+          }));
+          self.setState({
+            results: foods,
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     }
   }
 
-  //   // Beginning of using movies API
-  //   else if (this.state.category === 'movies') {
-  //     const params = {
-  //       api_key: 'process.env.SOME_API_KEY_HERE',
-  //       query: data.value,
-  //     };
-  //     axios
-  //       .get('https://api.themoviedb.org/3/search/movie?', { params })
-  //       .then(res => console.log(res.data))
-  //       .catch(err => console.log(err));
-  //   }
-  // }
 
   handleDropDownChange(event, data) {
     this.setState({
