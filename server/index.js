@@ -72,10 +72,22 @@ app.post('/movie', (req, res) => {
     });
 });
 
-// MusixMatch API
-app.post('/song', (req, res) => {
-  console.log(req.body)
+// Music songs API
+app.post('/songs', (req, res) => {
   apiHelpers.getSongsByTitle(req.body.song)
+    .then(result => {
+      //console.log('server', result)
+      res.contentType('application/json');
+      res.send(result);
+    })
+    .catch(err => {
+      res.send(err);
+    });
+});
+
+// Music song API
+app.post('/song', (req, res) => {
+  apiHelpers.getSongDetailsById(req.body.song)
     .then(result => {
       //console.log('server', result)
       res.contentType('application/json');
