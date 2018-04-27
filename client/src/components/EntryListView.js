@@ -25,11 +25,11 @@ class EntryListView extends React.Component {
           value: 'movies',
         },
         {
-          text: 'songs',
+          text: 'Songs',
           value: 'songs',
         },
         {
-          text: 'foods',
+          text: 'Foods',
           value: 'foods',
         },
       ],
@@ -264,7 +264,7 @@ class EntryListView extends React.Component {
   // TODO: add handling for movies
   renderResult(result) {
     return (
-      <div>
+      <div class="search-block">
         <img className="book-image" src={result.imageUrl} alt="book thumbnail" />
         <h4>{result.title}</h4>
         <p>{result.author}</p>
