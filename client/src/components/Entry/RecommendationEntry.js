@@ -1,20 +1,13 @@
-import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
-import {
-  Form,
-  Input,
-  TextArea,
-  Button,
-  Container,
-  Divider
-} from "semantic-ui-react";
+import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
+import { Form, Input, TextArea, Button, Container, Divider } from 'semantic-ui-react';
 
 class RecommendationEntry extends Component {
   state = {
-    firstName: "",
-    lastName: "",
-    comments: "",
-    inserted: false
+    firstName: '',
+    lastName: '',
+    comments: '',
+    inserted: false,
   };
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
@@ -31,10 +24,10 @@ class RecommendationEntry extends Component {
       link,
       rating,
       yearPublished,
-      apiId
+      apiId,
     } = this.props.entry;
 
-    const category = "books";
+    const category = 'books';
     const userId = 3;
     const bookInfo = {
       title,
@@ -49,22 +42,22 @@ class RecommendationEntry extends Component {
       comments,
       category,
       userId,
-      apiId
+      apiId,
     };
 
     fetch(`/u/${userId}/${category}`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(bookInfo),
       headers: new Headers({
-        "Content-Type": "application/json"
-      })
+        'Content-Type': 'application/json',
+      }),
     })
       .then(res => {
         if (res.status === 404) {
           alert(`${title} already exists in your recommendations!`);
         } else {
           this.setState({
-            inserted: true
+            inserted: true,
           });
         }
       })
@@ -80,20 +73,21 @@ class RecommendationEntry extends Component {
       <Container>
         <Divider />
         <Form onSubmit={this.handleSubmit}>
-          <Form.Group widths="equal">
+          <Form.Group>
             <Form.Field
               required
               id="form-input-control-first-name"
+              className="rec-entry"
               control={Input}
-              label="Recommender's First name"
+              label="Recommender"
               placeholder="First name"
               name="firstName"
               onChange={this.handleChange}
             />
             <Form.Field
               id="form-input-control-last-name"
+              className="rec-entry"
               control={Input}
-              label="Recommender's Last name"
               placeholder="Last name"
               name="lastName"
               onChange={this.handleChange}
@@ -101,17 +95,14 @@ class RecommendationEntry extends Component {
           </Form.Group>
           <Form.Field
             id="form-textarea-control-opinion"
+            className="rec-entry"
             control={TextArea}
             label="Comments"
             placeholder="Comments"
             name="comments"
             onChange={this.handleChange}
           />
-          <Form.Field
-            id="form-button-control-public"
-            control={Button}
-            content="Save"
-          />
+          <Form.Field id="form-button-control-public" control={Button} content="Save" />
         </Form>
       </Container>
     );

@@ -268,7 +268,7 @@ class EntryListView extends React.Component {
   // TODO: add handling for movies
   renderResult(result) {
     return (
-      <div class="search-block">
+      <div className="search-block">
         <img className="book-image" src={result.imageUrl} alt="book thumbnail" />
         <h4>{result.title}</h4>
         <p>{result.author}</p>
@@ -284,7 +284,7 @@ class EntryListView extends React.Component {
         <NavBar />
         <div className="container">
           <div className="page-title welcome">
-            <h1>Add New Recommendations</h1>
+            <h1>Add New Recommendation</h1>
           </div>
           <div className="search-fields">
             <div className="select">
@@ -295,9 +295,16 @@ class EntryListView extends React.Component {
                 onChange={this.handleDropDownChange}
                 value={this.state.category}
               >
-                {this.state.categoryOptions.map(option => (
-                  <option value={option.value}>{option.text}</option>
-                ))}
+                {this.state.categoryOptions.map((option, i) =>
+                    (i === 0 ? (
+                      <option key={i} value={option.value} selected>
+                        {option.text}
+                      </option>
+                    ) : (
+                      <option key={i} value={option.value}>
+                        {option.text}
+                      </option>
+                    )))}
               </select>
             </div>
             <Search
