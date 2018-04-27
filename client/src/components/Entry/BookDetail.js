@@ -11,10 +11,17 @@ const BookDetail = (props) => {
         <h1>{title}</h1>
         <Header size="small">{authors}</Header>
         <Rating defaultRating={rating} icon="star" disabled maxRating={5} />
-        <span className="rating-span">{rating} / 5</span>
-        <Image as="a" href={link} src={imageUrl} size="small" floated="left" />
+        <span>{yearPublished}</span>
+        {/* <span className="rating-span">{rating} / 5</span> */}
+        <Image
+          as="a"
+          href={link}
+          src={imageUrl}
+          size="small"
+          floated="left"
+          className="detail-img"
+        />
         {description.map(paragraph => <p>{paragraph}</p>)}
-        <p>Year Published: {yearPublished}</p>
       </Container>
     </div>
   );
