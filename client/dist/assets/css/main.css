@@ -4123,7 +4123,6 @@ a.subtle-link {
 }
 
 .rec-button button.big {
-  width: 100%;
   font-size: 1.2em;
 }
 
@@ -4168,8 +4167,25 @@ a.subtle-link {
   padding-left: 2em;
 }
 
-.search-block img.book-image  {
+.search-block img.book-image {
   width: 7em;
   height: 7em;
-  border-radius: 20px;
+  border-radius: 10px;
+}
+
+.detail-container {
+  padding: 5%;
+}
+
+.rating-span {
+  font-size: 2.3em;
+}
+
+.rec-entry {
+  width: 50% !important;
+  padding-bottom: 1em;
+}
+
+#form-input-control-last-name {
+  width: 100%;
 }
