@@ -60,9 +60,29 @@ let getSongsByTitle = (title) => {
     });
   });
 }
-let getData = (body) => {
-  return body.message;
+
+let getSongDetailsById = (title) => {
+  let options = {
+    headers: {
+      callback: "jsonp_callback",
+    },
+    url: `http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${keys.musicAPI.APIKey}&mbid=${title}&format=json`,
+  };
+
+  return new Promise((resolve, reject) => {
+    request(options, function (err, res, body) {
+      if (err === null) {
+        console.log('music DB detail API Call Sucess!');
+        resolve(body);
+      } else {
+        console.log('Error in music DB detail request:' + err);
+        reject(err);
+      }
+    });
+  });
 }
+
+
 
 let getFoodByName = (food, CB) => {
   const searchRequest = {
@@ -85,4 +105,5 @@ let getFoodByName = (food, CB) => {
 
 module.exports.getMoviesByTitle = getMoviesByTitle;
 module.exports.getSongsByTitle = getSongsByTitle;
+module.exports.getSongDetailsById = getSongDetailsById;
 module.exports.getFoodByName = getFoodByName;

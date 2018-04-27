@@ -137,23 +137,30 @@ class EntryListView extends React.Component {
         state: { result: self.state.resultDetail },
       });
     } else if (this.state.category === 'songs') {
-      const song = data.result.all.track;
-      console.log('song called', song);
-      await self.setState({
-        resultDetail: {
-          title: song.track_name,
-          rating: song.rating,
-          apiId: song.track_id,
-          yearPublished: song.first_release_date,
-          description: [song.album_cover],
-          imageUrl: song.album_coverart_100x100,
-          link: song.track_share_url,
-        },
-      });
-      self.props.history.push({
-        pathname: `/entry/${self.state.resultDetail.apiId}`,
-        state: { result: self.state.resultDetail },
-      });
+      const song = data.result.all;
+      axios.post('/song', {
+        song: song.mbid,
+      })
+        .then(function (response) {
+          console.log('detail res', response);
+          self.setState({
+            resultDetail: {
+              title: response.data.track.name,
+              yearPublished: response.data.track.wiki.published || 'unavailable',
+              description: [response.data.track.wiki.summary],
+              imageUrl: response.data.track.album.image[2]['#text'],
+              link: song.url,
+            },
+          });
+          self.props.history.push({
+            pathname: `/entry/${self.state.resultDetail.apiId}`,
+            state: { result: self.state.resultDetail },
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
     }
   }
 
@@ -210,8 +217,7 @@ class EntryListView extends React.Component {
           console.log(error);
         });
     } else if (this.state.category === 'songs') {
-      axios
-        .post('/song', { song: data.value })
+      axios.post('/songs', { song: data.value })
         .then((res) => {
           const resultItems = res.data.results.trackmatches.track.slice(0, 5);
           const songs = resultItems.map(song => ({
