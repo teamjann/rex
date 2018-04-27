@@ -232,10 +232,10 @@ class EntryListView extends React.Component {
           console.log(error);
         });
     } else if (this.state.category === 'foods') {
-      axios
-        .post('/food', { food: data.value })
+      axios.post('/food', { food: data.value })
         .then((res) => {
           const resultItems = res.data;
+          console.log(resultItems);
           const foods = resultItems.map(food => ({
             title: food.name,
             rating: food.rating,
