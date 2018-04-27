@@ -4141,23 +4141,6 @@ a.subtle-link {
   width: 25%;
 }
 
-/* .cat-select:before {
-  -moz-pointer-events: none;
-  -webkit-pointer-events: none;
-  -ms-pointer-events: none;
-  pointer-events: none;
-  color: #fff;
-  content: "\f078";
-  display: block;
-  height: 2.75em;
-  line-height: 2.75em;
-  position: absolute;
-  right: 0;
-  text-align: center;
-  top: 0;
-  width: 2.75em;
-  font
-} */
 .select {
   height: 2.75em;
   margin-bottom: 3em;
@@ -4172,4 +4155,21 @@ a.subtle-link {
 
 .select option {
   color: #2e3842;
+}
+
+.search-block {
+  display: flex;
+  flex-direction: row;
+  margin: 1em 0;
+}
+
+.search-block h4 {
+  width: 55%;
+  padding-left: 2em;
+}
+
+.search-block img.book-image  {
+  width: 7em;
+  height: 7em;
+  border-radius: 20px;
 }
