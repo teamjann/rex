@@ -13,8 +13,8 @@ const keys = {
     APIKey: 'p_gqjfEcWcLc6FKunJJ6DdnEP2AI5Ra2OqQ-9klwUwwNT_3WXRYrR2tAtR3fyZHswTFpBz6diVu7cVshEI0-GRr_xOsoZXo9DyyL7qmVJ9NY5JxF3LXXxFl-5brfWnYx'
 
   },
-  musixAPI: {
-    APIKey: '27302d9695be1d0e6d5a44dc6f477905',
+  musicAPI: {
+    APIKey: 'b5349bfc1def0e3eb50f189ed52ea876',
   }
 }
 
@@ -45,14 +45,14 @@ let getSongsByTitle = (title) => {
     headers: {
       callback: "jsonp_callback",
     },
-    url: `https://api.musixmatch.com/ws/1.1/track.search?format=jsonp&callback=getData&q_track=${title}&quorum_factor=1&apikey=${keys.musixAPI.APIKey}`,
+    url: `http://ws.audioscrobbler.com/2.0/?method=track.search&track=${title}&api_key=${keys.musicAPI.APIKey}&format=json`,
   };
 
   return new Promise((resolve, reject) => {
     request(options, function (err, res, body) {
       if (err === null) {
         console.log('music DB API Call Sucess!');
-        resolve(eval(body));
+        resolve(body);
       } else {
         console.log('Error in music DB request:' + err);
         reject(err);

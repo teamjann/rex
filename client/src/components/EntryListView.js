@@ -213,13 +213,13 @@ class EntryListView extends React.Component {
       axios
         .post('/song', { song: data.value })
         .then((res) => {
-          const resultItems = res.data.body.track_list.slice(0, 5);
+          const resultItems = res.data.results.trackmatches.track.slice(0, 5);
           const songs = resultItems.map(song => ({
-            title: song.track.track_name,
-            rating: song.track.track_rating,
-            apiId: song.track.track_id,
-            author: song.track.artist_name,
-            imageUrl: song.track.album_coverart_100x100,
+            title: song.name,
+            //rating: song.trac,
+            apiId: song.mbid,
+            author: song.artist,
+            imageUrl: song.image[1]['#text'],
             all: song,
           }));
           self.setState({
