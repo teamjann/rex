@@ -33,7 +33,6 @@ class Auth extends Component {
         <div className="auth">
           <Button onClick={() => this.handleLoginClick()}>Login</Button>
           <Button onClick={() => this.handleSignupClick()}>Sign up</Button>
-          <Link to="/auth/google">Auth With Google</Link>
         </div>
       );
     }

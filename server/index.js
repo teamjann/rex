@@ -53,7 +53,7 @@ const {
 const isLoggedIn = (req, res, next) => {
   if (!req.user) {
     // if user is not logged in
-    res.redirect('/auth/login');
+    res.redirect('/');
   } else {
     // if logged in
     next();
@@ -179,7 +179,7 @@ app.post('/food', (req, res) => {
 // GET BOOKS AND RECOMMENDATIONS FOR USER
 app.get('/u/:userId/:category', isLoggedIn, (req, res) => {
   const { category } = req.params;
-  const { userId } = req;
+  const { userId } = req.session.passport.user[0][0].google_id;
 
   promiseQuery(FETCH_BOOKS(userId, category))
     .then((books) => {
@@ -239,7 +239,7 @@ app.post('/r/:category/:bookId', isLoggedIn, (req, res) => {
   const {
     id, firstName, lastName, comments,
   } = req.body;
-  const { userId } = req;
+  const { userId } = req.session.passport.user[0][0].google_id;
   const recInfo = {
     userId,
     category,
@@ -260,7 +260,7 @@ app.post('/u/:userId/:category/', isLoggedIn, (req, res) => {
     apiId, firstName, lastName, comments,
   } = req.body;
 
-  const { userId } = req;
+  const { userId } = req.session.passport.user[0][0].google_id;
 
   console.log('adding recommendation');
 
@@ -297,13 +297,17 @@ app.post('/u/:userId/:category/', isLoggedIn, (req, res) => {
     });
 });
 
-app.get('/auth', (req, res) => {
-  if (req.session.passport.user[0][0].google_id) {
-    res.send({ isAuthenticated: true });
-  } else {
-    res.send({ isAuthenticated: false });
-  }
+app.get('/auth', isLoggedIn, (req, res) => {
+  res.status(200).send(req.user.firstName);
 });
+
+// app.get('/auth', (req, res) => {
+//   if (req.session.passport.user[0][0].google_id) {
+//     res.send({ isAuthenticated: true });
+//   } else {
+//     res.send({ isAuthenticated: false });
+//   }
+// });
 
 // UPDATE STATUS & RATING FOR RECOMMENDATION
 app.put('/u/:userId/:category/:itemId', isLoggedIn, (req, res) => {
@@ -336,7 +340,6 @@ app.delete('/u/:userId/:category/:itemId', passport.session(), (req, res) => {
 
 // SERVE REACT INDEX.HTML FOR ALL UNHANDLED REQUESTS
 app.get('/*', (req, res) => {
-  console.log('trying to route');
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
