@@ -10,6 +10,8 @@ const passport = require('passport');
 const authRoutes = require('./auth-routes.js');
 require('dotenv').config();
 
+const apiHelpers = require('./apiHelpers');
+
 const authObj = {};
 
 const {
@@ -81,6 +83,51 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/auth', authRoutes);
+
+/* -------------------------------------------------------------------
+--------------------------------------------------------------------*/
+
+// MovieDb API
+app.post('/movie', (req, res) => {
+  apiHelpers.getMoviesByTitle(req.body.title)
+    .then(result => {
+      res.contentType('application/json')
+      res.send(result);
+    })
+    .catch(err => {
+      res.send(err);
+    });
+});
+
+// MusixMatch API
+app.post('/song', (req, res) => {
+  console.log(req.body)
+  apiHelpers.getSongsByTitle(req.body.song)
+    .then(result => {
+      //console.log('server', result)
+      res.contentType('application/json');
+      res.send(result);
+    })
+    .catch(err => {
+      res.send(err);
+    });
+});
+
+// YELP API
+app.post('/food', (req, res) => {
+  apiHelpers.getFoodByName(req.body.food, (data, err) => {
+    res.contentType('application/json');
+    if (err === null) {
+      res.send(data);
+    } else {
+      res.send(err);
+    }
+  })
+});
+/* -------------------------------------------------------------------
+--------------------------------------------------------------------*/
+
+
 
 // LOGIN
 // app.post('/login', (req, res) => {

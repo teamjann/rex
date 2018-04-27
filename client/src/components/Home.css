@@ -1,4 +1,4 @@
-h1:first-child,
+/* h1:first-child,
 h2:first-child,
 h3:first-child,
 h4:first-child,
@@ -10,7 +10,7 @@ h5:first-child {
 
 body {
   padding: 50;
-  font-family: "Open Sans Condensed", sans-serif;
+  font-family: "Playfair Display", serif;
   background: url("../images/wood.png") no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -84,4 +84,4 @@ i.icon.plus:before {
 
 .homeMenuIcon :hover {
   cursor: pointer;
-}
+} */
