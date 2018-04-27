@@ -190,11 +190,10 @@ class EntryListView extends React.Component {
         });
       });
     } else if (this.state.category === 'movies') {
-      axios
-        .post('/movie', { title: data.value })
+      axios.post('/movie', { title: data.value })
         .then((res) => {
           const resultItems = res.data.results.slice(0, 5);
-          console.log(resultItems[0]);
+          console.log(resultItems);
           const movies = resultItems.map(movie => ({
             title: movie.title,
             rating: movie.vote_average,
@@ -215,7 +214,6 @@ class EntryListView extends React.Component {
         .post('/song', { song: data.value })
         .then((res) => {
           const resultItems = res.data.body.track_list.slice(0, 5);
-          console.log('songs axios: ', resultItems[0].track);
           const songs = resultItems.map(song => ({
             title: song.track.track_name,
             rating: song.track.track_rating,
