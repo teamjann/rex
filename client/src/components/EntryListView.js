@@ -142,7 +142,7 @@ class EntryListView extends React.Component {
         song: song.mbid,
       })
         .then(function (response) {
-          console.log('detail res', response);
+          //console.log('detail res', response);
           self.setState({
             resultDetail: {
               title: response.data.track.name,
@@ -184,7 +184,7 @@ class EntryListView extends React.Component {
         { inputFormat: 'xml' },
       );
       axios.get(url).then((res) => {
-        const resultItems = res.data.query.results.GoodreadsResponse.search.results.work;
+        const resultItems = res.data.query.results.GoodreadsResponse.search.results.work.slice(0, 5);
         const books = resultItems.map(book => ({
           title: book.best_book.title,
           rating: Number(book.average_rating),
