@@ -6,7 +6,6 @@ const yelp = require('yelp-fusion');
 const keys = {
   movieAPI: {
     v3Auth: 'cb6f407ec46ef9ccfe352eca08e2a993',
-    v4Auth: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjYjZmNDA3ZWM0NmVmOWNjZmUzNTJlY2EwOGUyYTk5MyIsInN1YiI6IjVhZGY5Mjg3YzNhMzY4M2Q5NDAwNGE3ZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.dLCA1wIxvT8idO3JgLpMLbIR1m5nS9MM4RrMpsl35wU'
   },
   yelpAPI: {
     clientID: 'eHPRlMklu15cUFLo2lfqpQ',
