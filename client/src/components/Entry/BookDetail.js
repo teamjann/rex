@@ -8,7 +8,7 @@ const BookDetail = (props) => {
   return (
     <div>
       <Container>
-        <h1>{title}</h1>
+        <h1 className="item-title">{title}</h1>
         <Header size="small">{authors}</Header>
         <Rating defaultRating={rating} icon="star" disabled maxRating={5} />
         <span>{yearPublished}</span>

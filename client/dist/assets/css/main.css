@@ -4190,6 +4190,10 @@ a.subtle-link {
   width: 100%;
 }
 
+.item-title {
+  font-size: 2em;
+}
+
 .detail-img {
   margin-bottom: 1em !important;
 }
