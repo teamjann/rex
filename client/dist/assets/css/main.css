@@ -4098,7 +4098,7 @@ a.subtle-link {
   justify-content: space-evenly;
 }
 
-.image {
+.home-image {
   position: relative;
   margin-right: 1em;
   margin-bottom: 1em;
@@ -4174,7 +4174,7 @@ a.subtle-link {
 }
 
 .detail-container {
-  padding: 5%;
+  padding: 2em 5em;
 }
 
 .rating-span {
@@ -4188,4 +4188,16 @@ a.subtle-link {
 
 #form-input-control-last-name {
   width: 100%;
+}
+
+.item-title {
+  font-size: 2em;
+}
+
+.detail-img {
+  margin-bottom: 1em !important;
+}
+
+.detail-img img {
+  height: 10em;
 }
