@@ -91,7 +91,7 @@ let getFoodByName = (food, CB) => {
     url: `https://api.yelp.com/v3/businesses/search`
   };
 
-  const client = yelp.client(keys.yelpAPI.APIKey)
+  const client = yelp.client(keys.yelpAPI.APIKey);
 
   client.search(searchRequest).then(response => {
     const firstResult = response.jsonBody.businesses.slice(0, 5);
@@ -102,8 +102,20 @@ let getFoodByName = (food, CB) => {
   });
 
 }
+let getReviewById = (name, CB) => {
+
+  const client = yelp.client(keys.yelpAPI.APIKey);
+
+  client.reviews(name).then(response => {
+    let reviews = response.jsonBody.reviews;
+    CB(reviews, null)
+  }).catch(err => {
+    CB(null, err)
+  });
+}
 
 module.exports.getMoviesByTitle = getMoviesByTitle;
 module.exports.getSongsByTitle = getSongsByTitle;
 module.exports.getSongDetailsById = getSongDetailsById;
 module.exports.getFoodByName = getFoodByName;
+module.exports.getReviewById = getReviewById;
