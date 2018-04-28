@@ -136,6 +136,18 @@ app.post('/food', (req, res) => {
     }
   })
 });
+
+// YELP API
+app.post('/review', (req, res) => {
+  apiHelpers.getReviewById(req.body.name, (data, err) => {
+    res.contentType('application/json');
+    if (err === null) {
+      res.send(data);
+    } else {
+      res.send(err);
+    }
+  })
+});
 /* -------------------------------------------------------------------
 --------------------------------------------------------------------*/
 

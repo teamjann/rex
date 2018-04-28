@@ -120,21 +120,32 @@ class EntryListView extends React.Component {
       });
     } else if (this.state.category === 'foods') {
       const food = data.result.all;
-      await self.setState({
-        resultDetail: {
-          title: food.name,
-          rating: food.rating,
-          apiId: food.id,
-          yearPublished: food.location.address1,
-          description: [food.transactions],
-          imageUrl: food.image_url,
-          link: food.url,
-        },
-      });
-      self.props.history.push({
-        pathname: `/entry/${self.state.resultDetail.apiId}`,
-        state: { result: self.state.resultDetail },
-      });
+      axios.post('/review', {
+        name: food.alias
+      })
+        .then(function (response) {
+          self.setState({
+            resultDetail: {
+              title: food.name,
+              rating: food.rating,
+              apiId: food.id,
+              yearPublished: food.location.address1,
+              description: [response.data.map(review => review.text)],
+              imageUrl: food.image_url,
+              link: food.url,
+            },
+          });
+          self.props.history.push({
+            pathname: `/entry/${self.state.resultDetail.apiId}`,
+            state: { result: self.state.resultDetail },
+          });
+
+
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
     } else if (this.state.category === 'songs') {
       const song = data.result.all;
       console.log(song);
@@ -201,7 +212,6 @@ class EntryListView extends React.Component {
       axios.post('/movie', { title: data.value })
         .then((res) => {
           const resultItems = res.data.results.slice(0, 5);
-          console.log(resultItems);
           const movies = resultItems.map(movie => ({
             title: movie.title,
             rating: movie.vote_average,
@@ -223,7 +233,6 @@ class EntryListView extends React.Component {
           const resultItems = res.data.results.trackmatches.track.slice(0, 5);
           const songs = resultItems.map(song => ({
             title: song.name,
-            //rating: song.trac,
             apiId: song.mbid,
             author: song.artist,
             imageUrl: song.image[1]['#text'],
@@ -240,7 +249,6 @@ class EntryListView extends React.Component {
       axios.post('/food', { food: data.value })
         .then((res) => {
           const resultItems = res.data;
-          console.log(resultItems);
           const foods = resultItems.map(food => ({
             title: food.name,
             rating: food.rating,
