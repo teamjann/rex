@@ -146,7 +146,7 @@ class EntryListView extends React.Component {
           self.setState({
             resultDetail: {
               title: response.data.track.name,
-              yearPublished: response.data.track.wiki.published || 'unavailable',
+              yearPublished: response.data.track.wiki.published.slice(7, 11) || '',
               description: [summary.slice(0, summary.indexOf('<'))],
               imageUrl: response.data.track.album.image[2]['#text'],
               link: song.url,
