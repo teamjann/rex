@@ -41,24 +41,12 @@ class EntryListView extends React.Component {
     this.renderResult = this.renderResult.bind(this);
   }
 
-  // Brung up entryDetail when user selects book from search
-  // detail view when list item from drop down is actively selected
   async handleResultSelect(e, data) {
     const self = this;
     if (this.state.category === 'books') {
-      const params = {
-        id: data.result.apiId,
-        key: process.env.bookAPIKey,
-      };
-      // Proxify necessary for Goodreads CORS requests
-      const url = proxify(
-        `https://www.goodreads.com/book/show.xml?id=${params.id}&key=${params.key}`,
-        { inputFormat: 'xml' },
-      );
-
-      axios
-        .get(url)
+      axios.post('/book', { id: data.result.apiId })
         .then((res) => {
+          console.log(res);
           const { book } = res.data.query.results.GoodreadsResponse;
           let authors;
 

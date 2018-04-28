@@ -44,6 +44,28 @@ let getBooksByTitle = (title) => {
   })
 }
 
+let getBookById = (id) => {
+  let options = {
+    "async": true,
+    "crossDomain": true,
+    url: proxify(`https://www.goodreads.com/book/show.xml?id=${id}&key=${keys.bookAPI.APIKey}`,
+      { inputFormat: 'xml' },
+    )
+  };
+
+  return new Promise((resolve, reject) => {
+    request(options, function (err, res, body) {
+      if (err === null) {
+        console.log('GoodReads API Call Sucess single book!');
+        resolve(body);
+      } else {
+        console.log('Error in GoodReads request single book:' + err);
+        reject(err);
+      }
+    });
+  })
+}
+
 let getMoviesByTitle = (title) => {
   let options = {
     "async": true,
@@ -139,6 +161,7 @@ let getReviewById = (name, CB) => {
 }
 
 module.exports.getBooksByTitle = getBooksByTitle;
+module.exports.getBookById = getBookById;
 module.exports.getMoviesByTitle = getMoviesByTitle;
 module.exports.getSongsByTitle = getSongsByTitle;
 module.exports.getSongDetailsById = getSongDetailsById;

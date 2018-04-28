@@ -99,6 +99,17 @@ app.post('/books', (req, res) => {
     });
 });
 
+app.post('/book', (req, res) => {
+  apiHelpers.getBookById(req.body.id)
+    .then(result => {
+      res.contentType('application/json')
+      res.send(result);
+    })
+    .catch(err => {
+      res.send(err);
+    });
+});
+
 // MovieDb API
 app.post('/movie', (req, res) => {
   apiHelpers.getMoviesByTitle(req.body.title)
