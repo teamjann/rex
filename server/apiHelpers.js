@@ -5,15 +5,15 @@ const yelp = require('yelp-fusion');
 // move keys to env file
 const keys = {
   movieAPI: {
-    v3Auth: 'cb6f407ec46ef9ccfe352eca08e2a993',
+    v3Auth: process.env.v3Auth,
   },
   yelpAPI: {
-    clientID: 'eHPRlMklu15cUFLo2lfqpQ',
-    APIKey: 'p_gqjfEcWcLc6FKunJJ6DdnEP2AI5Ra2OqQ-9klwUwwNT_3WXRYrR2tAtR3fyZHswTFpBz6diVu7cVshEI0-GRr_xOsoZXo9DyyL7qmVJ9NY5JxF3LXXxFl-5brfWnYx'
+    clientID: process.env.yelpClientId,
+    APIKey: process.env.yelpAPIKey
 
   },
   musicAPI: {
-    APIKey: 'b5349bfc1def0e3eb50f189ed52ea876',
+    APIKey: process.env.musicAPIKey,
   }
 }
 
