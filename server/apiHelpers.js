@@ -1,69 +1,21 @@
 const request = require('request');
 const yelp = require('yelp-fusion');
-const proxify = require('proxify-url');
 
 
 // move keys to env file
 const keys = {
   movieAPI: {
-    v3Auth: process.env.v3Auth,
+    v3Auth: 'cb6f407ec46ef9ccfe352eca08e2a993',
+    v4Auth: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjYjZmNDA3ZWM0NmVmOWNjZmUzNTJlY2EwOGUyYTk5MyIsInN1YiI6IjVhZGY5Mjg3YzNhMzY4M2Q5NDAwNGE3ZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.dLCA1wIxvT8idO3JgLpMLbIR1m5nS9MM4RrMpsl35wU'
   },
   yelpAPI: {
-    clientID: process.env.yelpClientId,
-    APIKey: process.env.yelpAPIKey
+    clientID: 'eHPRlMklu15cUFLo2lfqpQ',
+    APIKey: 'p_gqjfEcWcLc6FKunJJ6DdnEP2AI5Ra2OqQ-9klwUwwNT_3WXRYrR2tAtR3fyZHswTFpBz6diVu7cVshEI0-GRr_xOsoZXo9DyyL7qmVJ9NY5JxF3LXXxFl-5brfWnYx'
 
   },
   musicAPI: {
-    APIKey: process.env.musicAPIKey,
-  },
-  bookAPI: {
-    APIKey: process.env.bookAPIKey
+    APIKey: 'b5349bfc1def0e3eb50f189ed52ea876',
   }
-}
-
-let getBooksByTitle = (title) => {
-  let formatedTitle = title.replace(/\s+/g, '-');
-  let options = {
-    "async": true,
-    "crossDomain": true,
-    url: proxify(`https://www.goodreads.com/search/index.xml?q=${formatedTitle}&key=${keys.bookAPI.APIKey}`,
-      { inputFormat: 'xml' },
-    )
-  };
-
-  return new Promise((resolve, reject) => {
-    request(options, function (err, res, body) {
-      if (err === null) {
-        console.log('GoodReads API Call Sucess!');
-        resolve(body);
-      } else {
-        console.log('Error in GoodReads request:' + err);
-        reject(err);
-      }
-    });
-  })
-}
-
-let getBookById = (id) => {
-  let options = {
-    "async": true,
-    "crossDomain": true,
-    url: proxify(`https://www.goodreads.com/book/show.xml?id=${id}&key=${keys.bookAPI.APIKey}`,
-      { inputFormat: 'xml' },
-    )
-  };
-
-  return new Promise((resolve, reject) => {
-    request(options, function (err, res, body) {
-      if (err === null) {
-        console.log('GoodReads API Call Sucess single book!');
-        resolve(body);
-      } else {
-        console.log('Error in GoodReads request single book:' + err);
-        reject(err);
-      }
-    });
-  })
 }
 
 let getMoviesByTitle = (title) => {
@@ -71,6 +23,8 @@ let getMoviesByTitle = (title) => {
     "async": true,
     "crossDomain": true,
     url: `https://api.themoviedb.org/3/search/movie?api_key=${keys.movieAPI.v3Auth}&query=${title}`,
+    headers: {
+    }
   };
 
   return new Promise((resolve, reject) => {
@@ -160,8 +114,6 @@ let getReviewById = (name, CB) => {
   });
 }
 
-module.exports.getBooksByTitle = getBooksByTitle;
-module.exports.getBookById = getBookById;
 module.exports.getMoviesByTitle = getMoviesByTitle;
 module.exports.getSongsByTitle = getSongsByTitle;
 module.exports.getSongDetailsById = getSongDetailsById;

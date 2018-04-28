@@ -42,12 +42,24 @@ class EntryListView extends React.Component {
     this.renderResult = this.renderResult.bind(this);
   }
 
+  // Brung up entryDetail when user selects book from search
+  // detail view when list item from drop down is actively selected
   async handleResultSelect(e, data) {
     const self = this;
     if (this.state.category === 'books') {
-      axios.post('/book', { id: data.result.apiId })
+      const params = {
+        id: data.result.apiId,
+        key: '49Q50kykoyKt3upYv1Bc8A',
+      };
+      // Proxify necessary for Goodreads CORS requests
+      const url = proxify(
+        `https://www.goodreads.com/book/show.xml?id=${params.id}&key=${params.key}`,
+        { inputFormat: 'xml' },
+      );
+
+      axios
+        .get(url)
         .then((res) => {
-          console.log(res);
           const { book } = res.data.query.results.GoodreadsResponse;
           let authors;
 
@@ -178,20 +190,28 @@ class EntryListView extends React.Component {
     const self = this;
 
     if (this.state.category === 'books') {
-      axios.post('/books', { title: data.value })
-        .then((res) => {
-          const resultItems = res.data.query.results.GoodreadsResponse.search.results.work.slice(0, 5);
-          const books = resultItems.map(book => ({
-            title: book.best_book.title,
-            rating: Number(book.average_rating),
-            apiId: Number(book.best_book.id.content),
-            author: book.best_book.author.name,
-            imageUrl: book.best_book.image_url,
-          }));
-          self.setState({
-            results: books,
-          });
+      const params = {
+        q: data.value.replace(/\s+/g, '-'),
+        key: '49Q50kykoyKt3upYv1Bc8A',
+      };
+      // Proxified URL (for goodReads Cors requests)
+      const url = proxify(
+        `https://www.goodreads.com/search/index.xml?q=${params.q}&key=${params.key}`,
+        { inputFormat: 'xml' },
+      );
+      axios.get(url).then((res) => {
+        const resultItems = res.data.query.results.GoodreadsResponse.search.results.work.slice(0, 5);
+        const books = resultItems.map(book => ({
+          title: book.best_book.title,
+          rating: Number(book.average_rating),
+          apiId: Number(book.best_book.id.content),
+          author: book.best_book.author.name,
+          imageUrl: book.best_book.image_url,
+        }));
+        self.setState({
+          results: books,
         });
+      });
     } else if (this.state.category === 'movies') {
       axios.post('/movie', { title: data.value })
         .then((res) => {
