@@ -116,7 +116,6 @@ app.post('/songs', (req, res) => {
 app.post('/song', (req, res) => {
   apiHelpers.getSongDetailsById(req.body.song)
     .then(result => {
-      //console.log('server', result)
       res.contentType('application/json');
       res.send(result);
     })

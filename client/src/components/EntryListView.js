@@ -13,7 +13,7 @@ class EntryListView extends React.Component {
   constructor() {
     super();
     this.state = {
-      category: '',
+      category: 'books',
       // Format necessary for semanti-ui search dropdown
       categoryOptions: [
         {
