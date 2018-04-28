@@ -11,7 +11,7 @@ const EntryDetail = (props) => {
       <NavBar />
       <div className="detail-container">
         <BookDetail result={target} />
-        <RecommendationEntry entry={target} />
+        <RecommendationEntry entry={target} userId={props.location.state.result.userId} />
       </div>
     </div>
   );

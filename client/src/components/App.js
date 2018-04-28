@@ -17,10 +17,14 @@ import Auth from './Authentication/Auth';
 class App extends Component {
   state = {
     firstName: '',
+    userId: '',
   };
 
-  handleAuth({ firstName }) {
-    this.setState({ firstName });
+  handleAuth(data) {
+    this.setState({
+      firstName: data.firstName,
+      userId: data.userId,
+    });
   }
 
   // On Mount, gets authentication from server, sets state of isAuthenticated
@@ -50,11 +54,14 @@ class App extends Component {
               path="/"
               render={() => <Landing handleAuth={this.handleAuth.bind(this)} />}
             />
-            <Route path="/home" render={() => <Home firstName={this.state.firstName} />} />
-            <Route path="/browse/:bookId" component={BrowseDetail} />
-            <Route path="/entry/:bookId" component={EntryDetail} />
-            <Route exact path="/entry" component={EntryListView} />
-            <Route exact path="/browse" component={BrowseView} />
+            <Route
+              path="/home"
+              render={() => <Home firstName={this.state.firstName} userId={this.state.userId} />}
+            />
+            <Route path="/browse/:bookId" component={BrowseDetail} userId={this.state.userId} />
+            <Route path="/entry/:bookId" component={EntryDetail} userId={this.state.userId} />
+            <Route exact path="/entry" component={EntryListView} userId={this.state.userId} />
+            <Route exact path="/browse" component={BrowseView} userId={this.state.userId} />
           </Switch>
         </Router>
       </div>

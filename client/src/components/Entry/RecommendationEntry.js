@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Form, Input, TextArea, Button, Container, Divider } from 'semantic-ui-react';
+import axios from 'axios';
 
 class RecommendationEntry extends Component {
   state = {
+    userId: this.props.userId,
     firstName: '',
     lastName: '',
     comments: '',
@@ -14,7 +16,7 @@ class RecommendationEntry extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { firstName, lastName, comments } = this.state;
+    const { userId, firstName, lastName, comments } = this.state;
     // send our data to server and server will save to the db
     const {
       title,
@@ -28,7 +30,7 @@ class RecommendationEntry extends Component {
     } = this.props.entry;
 
     const category = 'books';
-    const userId = 3;
+
     const bookInfo = {
       title,
       imageUrl,
@@ -45,14 +47,12 @@ class RecommendationEntry extends Component {
       apiId,
     };
 
-    fetch(`/u/${userId}/${category}`, {
-      method: 'POST',
-      body: JSON.stringify(bookInfo),
-      headers: new Headers({
-        'Content-Type': 'application/json',
-      }),
-    })
+    axios
+      .post(`/u/${userId}/${category}`, {
+        bookInfo: JSON.stringify(bookInfo),
+      })
       .then(res => {
+        console.log('made it in fetch');
         if (res.status === 404) {
           alert(`${title} already exists in your recommendations!`);
         } else {
@@ -68,7 +68,7 @@ class RecommendationEntry extends Component {
 
   render() {
     return this.state.inserted ? (
-      <Redirect to="/browse" />
+      <Redirect to={{ pathname: '/browse', state: { userId: this.state.userId } }} />
     ) : (
       <Container>
         <Divider />
