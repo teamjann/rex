@@ -108,7 +108,7 @@ class EntryListView extends React.Component {
           title: movie.title,
           rating: movie.vote_average,
           apiId: movie.id,
-          yearPublished: movie.release_date,
+          yearPublished: movie.release_date.slice(0, 4),
           description: [movie.overview],
           imageUrl: `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`,
           link: movie.link,
@@ -120,14 +120,13 @@ class EntryListView extends React.Component {
       });
     } else if (this.state.category === 'foods') {
       const food = data.result.all;
-      console.log(food);
       await self.setState({
         resultDetail: {
           title: food.name,
           rating: food.rating,
           apiId: food.id,
           yearPublished: food.location.address1,
-          description: [food.categories.title],
+          description: [food.transactions],
           imageUrl: food.image_url,
           link: food.url,
         },
@@ -142,12 +141,12 @@ class EntryListView extends React.Component {
         song: song.mbid,
       })
         .then(function (response) {
-          //console.log('detail res', response);
+          let summary = response.data.track.wiki.summary;
           self.setState({
             resultDetail: {
               title: response.data.track.name,
-              yearPublished: response.data.track.wiki.published || 'unavailable',
-              description: [response.data.track.wiki.summary],
+              yearPublished: response.data.track.wiki.published.slice(7, 11) || '',
+              description: [summary.slice(0, summary.indexOf('<'))],
               imageUrl: response.data.track.album.image[2]['#text'],
               link: song.url,
             },
@@ -264,8 +263,6 @@ class EntryListView extends React.Component {
     });
   }
 
-  // Renders search results from API under searchBar
-  // TODO: add handling for movies
   renderResult(result) {
     return (
       <div className="search-block">
@@ -296,11 +293,11 @@ class EntryListView extends React.Component {
                 value={this.state.category}
               >
                 {this.state.categoryOptions.map((option, i) =>
-                    (i === 0 ? (
-                      <option key={i} value={option.value} selected>
-                        {option.text}
-                      </option>
-                    ) : (
+                  (i === 0 ? (
+                    <option key={i} value={option.value} selected>
+                      {option.text}
+                    </option>
+                  ) : (
                       <option key={i} value={option.value}>
                         {option.text}
                       </option>
