@@ -11,7 +11,11 @@ const EntryDetail = (props) => {
       <NavBar />
       <div className="detail-container">
         <BookDetail result={target} />
-        <RecommendationEntry entry={target} userId={props.location.state.result.userId} />
+        <RecommendationEntry
+          entry={target}
+          userId={props.location.state.result.userId}
+          category={props.location.state.category}
+        />
       </div>
     </div>
   );

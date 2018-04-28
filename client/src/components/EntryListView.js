@@ -12,9 +12,9 @@ import NavBar from './NavBar';
 class EntryListView extends React.Component {
   constructor(props) {
     super(props);
-    console.log('user', this.props.location.state.userId);
     this.state = {
       category: 'books',
+      userId: this.props.location.state.userId,
       // Format necessary for semanti-ui search dropdown
       categoryOptions: [
         {
@@ -81,7 +81,7 @@ class EntryListView extends React.Component {
 
           self.setState({
             resultDetail: {
-              userId: this.props.location.state.userId,
+              userId: self.state.userId,
               title: book.title,
               rating: book.average_rating,
               apiId: book.id,
@@ -97,7 +97,7 @@ class EntryListView extends React.Component {
           // Reactrouting
           self.props.history.push({
             pathname: `/entry/${self.state.resultDetail.apiId}`,
-            state: { result: self.state.resultDetail },
+            state: { result: self.state.resultDetail, category: self.state.category },
           });
         })
         .catch((err) => {
@@ -107,7 +107,7 @@ class EntryListView extends React.Component {
       const movie = data.result.all;
       await self.setState({
         resultDetail: {
-          userId: this.props.location.state.userId,
+          userId: self.state.userId,
           title: movie.title,
           rating: movie.vote_average,
           apiId: movie.id,
@@ -119,7 +119,7 @@ class EntryListView extends React.Component {
       });
       self.props.history.push({
         pathname: `/entry/${self.state.resultDetail.apiId}`,
-        state: { result: self.state.resultDetail },
+        state: { result: self.state.resultDetail, category: self.state.category },
       });
     } else if (this.state.category === 'foods') {
       const food = data.result.all;
@@ -129,7 +129,7 @@ class EntryListView extends React.Component {
         .then(function (response) {
           self.setState({
             resultDetail: {
-              userId: this.props.location.state.userId,
+              userId: self.state.userId,
               title: food.name,
               rating: food.rating,
               apiId: food.id,
@@ -141,7 +141,7 @@ class EntryListView extends React.Component {
           });
           self.props.history.push({
             pathname: `/entry/${self.state.resultDetail.apiId}`,
-            state: { result: self.state.resultDetail },
+            state: { result: self.state.resultDetail, category: self.state.category },
           });
 
 
@@ -159,8 +159,9 @@ class EntryListView extends React.Component {
           let summary = response.data.track.wiki.summary;
           self.setState({
             resultDetail: {
-              userId: this.props.location.state.userId,
+              userId: self.state.userId,
               title: response.data.track.name,
+              rating: 0,
               yearPublished: response.data.track.wiki.published.slice(7, 11) || '',
               description: [summary.slice(0, summary.indexOf('<'))],
               imageUrl: response.data.track.album.image[2]['#text'],
@@ -170,7 +171,7 @@ class EntryListView extends React.Component {
           });
           self.props.history.push({
             pathname: `/entry/${self.state.resultDetail.apiId}`,
-            state: { result: self.state.resultDetail },
+            state: { result: self.state.resultDetail, category: self.state.category  },
           });
         })
         .catch(function (error) {

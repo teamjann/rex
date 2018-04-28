@@ -28,12 +28,14 @@ class BrowseView extends Component {
     clickedBook: {},
     clickedRecommendations: [],
     detailedView: false,
+    category: this.props.location.state.category,
   };
 
   populateBooks() {
-    const category = 'books';
+    const category = this.state.category;
     const userId = this.state.userId;
-    console.log(this.state.userId);
+
+    console.log('category', category);
     // Use 'category' and 'categoryItems' to eventually add other categories
     // For now, category and sort is hard-coded to books
 
@@ -43,7 +45,7 @@ class BrowseView extends Component {
       .then(categoryItems => {
         console.log(categoryItems.data);
         this.setState({
-          [category]: categoryItems.data,
+          books: categoryItems.data,
           bookOrder: Object.entries(categoryItems.data).map(([key, val]) => key),
         });
       })
@@ -202,7 +204,7 @@ class BrowseView extends Component {
 
         <Container>
           <Header as="h1" icon textAlign="center">
-            <Header.Content className="browse-title">Books</Header.Content>
+            <Header.Content className="browse-title">{this.state.category}</Header.Content>
           </Header>
 
           <SortMenu

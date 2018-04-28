@@ -204,6 +204,7 @@ app.post('/review', (req, res) => {
 
 // GET BOOKS AND RECOMMENDATIONS FOR USER
 app.get('/u/:userId/:category', isLoggedIn, (req, res) => {
+  console.log('params on get', req.params)
   const category = req.params.category;
   const userId = req.params.userId;
 
@@ -282,7 +283,6 @@ app.post('/u/:userId/:category/', isLoggedIn, (req, res) => {
   const category = req.params.category;
   const userId = req.params.userId;
 
-  console.log(req.params);
   const bookInfo = JSON.parse(req.body.bookInfo);
   const { apiId, firstName, lastName, comments } = JSON.parse(req.body.bookInfo);
 
