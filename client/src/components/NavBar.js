@@ -18,9 +18,9 @@ const NavBar = () => (
     <h1 className="nav-title">
       <Link to="/home">Rex</Link>
     </h1>
-    <span className="nav-item">
+    {/* <span className="nav-item">
       <Link to="/browse">My Recommendations</Link>
-    </span>
+    </span> */}
     <nav id="nav">
       <ul>
         <li className="login">

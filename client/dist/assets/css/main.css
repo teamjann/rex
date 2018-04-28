@@ -4217,3 +4217,19 @@ a.subtle-link {
 .detail-img img {
   height: 10em;
 }
+
+.browse-title {
+  font-size: 2em;
+  text-align: center;
+  padding-top: 2em;
+}
+
+.browse-menu {
+  width: 60%;
+}
+
+.browse-menu-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
