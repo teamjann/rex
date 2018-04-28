@@ -148,7 +148,6 @@ class EntryListView extends React.Component {
 
     } else if (this.state.category === 'songs') {
       const song = data.result.all;
-      console.log(song);
       axios.post('/song', {
         song: song.mbid,
       })
