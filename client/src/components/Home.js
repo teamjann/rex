@@ -36,14 +36,14 @@ class Home extends Component {
           <div className="half">
             <div className="image">
               <Link to="/browse" />
-              <img src="images/food.jpg" className alt="" />
+              <img className="home-image" src="images/food.jpg" alt="" />
               <h3 className="top-left">
                 <span>My Food</span>
               </h3>
             </div>
             <div className="image">
               <Link to="/browse" />
-              <img src="images/books.jpg" className alt="" />
+              <img className="home-image" src="images/books.jpg" alt="" />
               <h3 className="top-left">
                 <span>My Books</span>
               </h3>
@@ -52,14 +52,14 @@ class Home extends Component {
           <div className="half">
             <div className="image top">
               <Link to="/browse" />
-              <img src="images/music.jpg" className alt="" />
+              <img className="home-image" src="images/music.jpg" alt="" />
               <h3 className="top-left">
                 <span>My Music</span>
               </h3>
             </div>
             <div className="image bottom">
               <Link to="/browse" />
-              <img src="images/tv.jpg" className alt="" />
+              <img className="home-image" src="images/tv.jpg" alt="" />
               <h3 className="top-left">
                 <span>My Movies</span>
               </h3>
