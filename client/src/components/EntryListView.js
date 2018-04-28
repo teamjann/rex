@@ -48,7 +48,7 @@ class EntryListView extends React.Component {
     if (this.state.category === 'books') {
       const params = {
         id: data.result.apiId,
-        key: process.env.bookAPIKey,
+        key: '49Q50kykoyKt3upYv1Bc8A',
       };
       // Proxify necessary for Goodreads CORS requests
       const url = proxify(
@@ -187,7 +187,7 @@ class EntryListView extends React.Component {
     if (this.state.category === 'books') {
       const params = {
         q: data.value.replace(/\s+/g, '-'),
-        key: process.env.bookAPIKey,
+        key: '49Q50kykoyKt3upYv1Bc8A',
       };
       // Proxified URL (for goodReads Cors requests)
       const url = proxify(
