@@ -86,6 +86,18 @@ app.use('/auth', authRoutes);
 
 /* -------------------------------------------------------------------
 --------------------------------------------------------------------*/
+// GoodReads API
+
+app.post('/books', (req, res) => {
+  apiHelpers.getBooksByTitle(req.body.title)
+    .then(result => {
+      res.contentType('application/json')
+      res.send(result);
+    })
+    .catch(err => {
+      res.send(err);
+    });
+});
 
 // MovieDb API
 app.post('/movie', (req, res) => {

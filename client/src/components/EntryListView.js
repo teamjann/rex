@@ -185,28 +185,20 @@ class EntryListView extends React.Component {
     const self = this;
 
     if (this.state.category === 'books') {
-      const params = {
-        q: data.value.replace(/\s+/g, '-'),
-        key: process.env.bookAPIKey,
-      };
-      // Proxified URL (for goodReads Cors requests)
-      const url = proxify(
-        `https://www.goodreads.com/search/index.xml?q=${params.q}&key=${params.key}`,
-        { inputFormat: 'xml' },
-      );
-      axios.get(url).then((res) => {
-        const resultItems = res.data.query.results.GoodreadsResponse.search.results.work.slice(0, 5);
-        const books = resultItems.map(book => ({
-          title: book.best_book.title,
-          rating: Number(book.average_rating),
-          apiId: Number(book.best_book.id.content),
-          author: book.best_book.author.name,
-          imageUrl: book.best_book.image_url,
-        }));
-        self.setState({
-          results: books,
+      axios.post('/books', { title: data.value })
+        .then((res) => {
+          const resultItems = res.data.query.results.GoodreadsResponse.search.results.work.slice(0, 5);
+          const books = resultItems.map(book => ({
+            title: book.best_book.title,
+            rating: Number(book.average_rating),
+            apiId: Number(book.best_book.id.content),
+            author: book.best_book.author.name,
+            imageUrl: book.best_book.image_url,
+          }));
+          self.setState({
+            results: books,
+          });
         });
-      });
     } else if (this.state.category === 'movies') {
       axios.post('/movie', { title: data.value })
         .then((res) => {
