@@ -1,9 +1,14 @@
 const express = require('express');
+const passportSetup = require('./passport-setup.js');
 const bodyParser = require('body-parser');
 const path = require('path');
-const session = require('express-session');
+// const session = require('express-session');
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
+const authRoutes = require('./auth-routes.js');
+require('dotenv').config();
 
 const apiHelpers = require('./apiHelpers');
 
@@ -32,15 +37,26 @@ const {
 } = require('../database/queries');
 
 // Middleware to retrieve userId from request
-const getUserId = (req, res, next) => {
-  const { sessions } = req.sessionStore;
+// const getUserId = (req, res, next) => {
+//   const { sessions } = req.sessionStore;
 
-  for (const [key, val] of Object.entries(sessions)) {
-    const uuid = JSON.parse(sessions[key]).uuid;
-    if (uuid) {
-      req.userId = authObj[uuid];
-      next();
-    }
+//   for (const [key, val] of Object.entries(sessions)) {
+//     const uuid = JSON.parse(sessions[key]).uuid;
+//     if (uuid) {
+//       req.userId = authObj[uuid];
+//       next();
+//     }
+//   }
+// };
+
+// Middleware to check if user logged in
+const isLoggedIn = (req, res, next) => {
+  if (!req.user) {
+    // if user is not logged in
+    res.redirect('/');
+  } else {
+    // if logged in
+    next();
   }
 };
 
@@ -48,14 +64,25 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({
-  secret: 'keyboard cat',
-  cookie: { maxAge: 24 * 60 * 60 * 1000 },
-  resave: true,
-  saveUninitialized: false,
+// app.use(session({
+//   secret: 'keyboard cat',
+//   cookie: { maxAge: 24 * 60 * 60 * 1000 },
+//   resave: true,
+//   saveUninitialized: false,
+// }));
+app.use(express.static(`${__dirname}/../client/dist`));
+
+// Use cookie session for auth
+app.use(cookieSession({
+  maxAge: 24 * 60 * 60 * 1000,
+  keys: ['hellothisisrandom'],
 }));
 
-app.use(express.static(`${__dirname}/../client/dist`));
+// Initialize passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/auth', authRoutes);
 
 /* -------------------------------------------------------------------
 --------------------------------------------------------------------*/
@@ -115,56 +142,56 @@ app.post('/food', (req, res) => {
 
 
 // LOGIN
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  promiseQuery(FIND_USER(username))
-    .then((sqlResponse) => {
-      const { id, password: hash } = sqlResponse[0];
-      bcrypt.compare(password, hash, (err, doesMatch) => {
-        if (err) {
-          console.error(err);
-        } else if (doesMatch) {
-          const key = uuidv4();
-          authObj[key] = id;
-          req.session.uuid = key;
-          res.send({ isAuthenticated: true, username });
-        } else {
-          res.send({ isAuthenticated: false });
-        }
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      // send 'invalid username' message;
-    });
-});
+// app.post('/login', (req, res) => {
+//   const { username, password } = req.body;
+//   promiseQuery(FIND_USER(username))
+//     .then((sqlResponse) => {
+//       const { id, password: hash } = sqlResponse[0];
+//       bcrypt.compare(password, hash, (err, doesMatch) => {
+//         if (err) {
+//           console.error(err);
+//         } else if (doesMatch) {
+//           const key = uuidv4();
+//           authObj[key] = id;
+//           req.session.uuid = key;
+//           res.send({ isAuthenticated: true, username });
+//         } else {
+//           res.send({ isAuthenticated: false });
+//         }
+//       });
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//       // send 'invalid username' message;
+//     });
+// });
 
 // SIGNUP
-app.post('/signup', (req, res) => {
-  const {
-    username, password, firstName, lastName,
-  } = req.body;
-  promiseQuery(FIND_USER(username))
-    // .then(() => {
-    //   console.log(`signup validation err, username '${username}' already exists`);
-    // })
-    .then(() => {
-      bcrypt.hash(password, 10, (err, hash) => {
-        insertQuery(ADD_USER(username, hash, firstName, lastName)).then((sqlResponse) => {
-          const { id } = sqlResponse[0][0];
-          const key = uuidv4();
-          authObj[key] = id;
-          req.session.uuid = key;
-          res.send({ isAuthenticated: true, username });
-        });
-      });
-    });
-});
+// app.post('/signup', (req, res) => {
+//   const {
+//     username, password, firstName, lastName,
+//   } = req.body;
+//   promiseQuery(FIND_USER(username))
+//     // .then(() => {
+//     //   console.log(`signup validation err, username '${username}' already exists`);
+//     // })
+//     .then(() => {
+//       bcrypt.hash(password, 10, (err, hash) => {
+//         insertQuery(ADD_USER(username, hash, firstName, lastName)).then((sqlResponse) => {
+//           const { id } = sqlResponse[0][0];
+//           const key = uuidv4();
+//           authObj[key] = id;
+//           req.session.uuid = key;
+//           res.send({ isAuthenticated: true, username });
+//         });
+//       });
+//     });
+// });
 
 // GET BOOKS AND RECOMMENDATIONS FOR USER
-app.get('/u/:userId/:category', getUserId, (req, res) => {
+app.get('/u/:userId/:category', isLoggedIn, (req, res) => {
   const { category } = req.params;
-  const { userId } = req;
+  const { userId } = req.session.passport.user[0][0].google_id;
 
   promiseQuery(FETCH_BOOKS(userId, category))
     .then((books) => {
@@ -219,12 +246,12 @@ app.get('/u/:userId/:category', getUserId, (req, res) => {
 });
 
 // ADD RECOMMENDATION WHEN BOOKID KNOWN
-app.post('/r/:category/:bookId', getUserId, (req, res) => {
+app.post('/r/:category/:bookId', isLoggedIn, (req, res) => {
   const { category, bookId } = req.params;
   const {
     id, firstName, lastName, comments,
   } = req.body;
-  const { userId } = req;
+  const { userId } = req.session.passport.user[0][0].google_id;
   const recInfo = {
     userId,
     category,
@@ -239,13 +266,13 @@ app.post('/r/:category/:bookId', getUserId, (req, res) => {
 });
 
 // ADD NEW RECOMMENDATION
-app.post('/u/:userId/:category/', getUserId, (req, res) => {
+app.post('/u/:userId/:category/', isLoggedIn, (req, res) => {
   const { category } = req.params;
   const {
     apiId, firstName, lastName, comments,
   } = req.body;
 
-  const { userId } = req;
+  const { userId } = req.session.passport.user[0][0].google_id;
 
   console.log('adding recommendation');
 
@@ -282,16 +309,20 @@ app.post('/u/:userId/:category/', getUserId, (req, res) => {
     });
 });
 
-app.get('/auth', (req, res) => {
-  if (req.session.uuid) {
-    res.send({ isAuthenticated: true });
-  } else {
-    res.send({ isAuthenticated: false });
-  }
+app.get('/auth', isLoggedIn, (req, res) => {
+  res.status(200).send(req.user.firstName);
 });
 
+// app.get('/auth', (req, res) => {
+//   if (req.session.passport.user[0][0].google_id) {
+//     res.send({ isAuthenticated: true });
+//   } else {
+//     res.send({ isAuthenticated: false });
+//   }
+// });
+
 // UPDATE STATUS & RATING FOR RECOMMENDATION
-app.put('/u/:userId/:category/:itemId', getUserId, (req, res) => {
+app.put('/u/:userId/:category/:itemId', isLoggedIn, (req, res) => {
   const { category, itemId } = req.params;
   const { status, rating } = req.body;
   const { userId } = req;
@@ -310,7 +341,7 @@ app.put('/u/:userId/:category/:itemId', getUserId, (req, res) => {
 });
 
 // DELETE RECOMMENDATIONS FOR A BOOK
-app.delete('/u/:userId/:category/:itemId', getUserId, (req, res) => {
+app.delete('/u/:userId/:category/:itemId', passport.session(), (req, res) => {
   const { category, itemId } = req.params;
   const { userId } = req;
 
@@ -321,7 +352,6 @@ app.delete('/u/:userId/:category/:itemId', getUserId, (req, res) => {
 
 // SERVE REACT INDEX.HTML FOR ALL UNHANDLED REQUESTS
 app.get('/*', (req, res) => {
-  console.log('trying to route');
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
