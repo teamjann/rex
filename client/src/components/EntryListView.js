@@ -195,6 +195,7 @@ class EntryListView extends React.Component {
         { inputFormat: 'xml' },
       );
       axios.get(url).then((res) => {
+        console.log(res)
         const resultItems = res.data.query.results.GoodreadsResponse.search.results.work.slice(0, 5);
         const books = resultItems.map(book => ({
           title: book.best_book.title,
