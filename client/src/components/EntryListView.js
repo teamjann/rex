@@ -137,6 +137,7 @@ class EntryListView extends React.Component {
       });
     } else if (this.state.category === 'songs') {
       const song = data.result.all;
+      console.log(song);
       axios.post('/song', {
         song: song.mbid,
       })
@@ -149,6 +150,7 @@ class EntryListView extends React.Component {
               description: [summary.slice(0, summary.indexOf('<'))],
               imageUrl: response.data.track.album.image[2]['#text'],
               link: song.url,
+              apiId: song.mbid
             },
           });
           self.props.history.push({
