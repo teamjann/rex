@@ -26,7 +26,7 @@ class Landing extends Component {
             <ul>
               <li className="login">
                 <span>
-                  <Link to="/auth/google">Login</Link>
+                  <a href="/auth/google">Login</a>
                 </span>
               </li>
             </ul>
@@ -40,7 +40,7 @@ class Landing extends Component {
             <p>The Ultimate List App</p>
             <ul className="actions">
               <li>
-                <a href="#" className="button special">
+                <a href="/auth/google" className="button special">
                   Sign Up
                 </a>
               </li>
@@ -209,9 +209,9 @@ class Landing extends Component {
             </header>
             <ul className="actions vertical">
               <li>
-                <Link to="/signup" className="button fit special">
+                <a href="/auth/google" className="button fit special">
                   Sign Up
-                </Link>
+                </a>
               </li>
               <li>
                 <a href="#" className="button fit">
