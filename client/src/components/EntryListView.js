@@ -142,12 +142,12 @@ class EntryListView extends React.Component {
         song: song.mbid,
       })
         .then(function (response) {
-          //console.log('detail res', response);
+          let summary = response.data.track.wiki.summary;
           self.setState({
             resultDetail: {
               title: response.data.track.name,
               yearPublished: response.data.track.wiki.published || 'unavailable',
-              description: [response.data.track.wiki.summary],
+              description: [summary.slice(0, summary.indexOf('<'))],
               imageUrl: response.data.track.album.image[2]['#text'],
               link: song.url,
             },
@@ -296,11 +296,11 @@ class EntryListView extends React.Component {
                 value={this.state.category}
               >
                 {this.state.categoryOptions.map((option, i) =>
-                    (i === 0 ? (
-                      <option key={i} value={option.value} selected>
-                        {option.text}
-                      </option>
-                    ) : (
+                  (i === 0 ? (
+                    <option key={i} value={option.value} selected>
+                      {option.text}
+                    </option>
+                  ) : (
                       <option key={i} value={option.value}>
                         {option.text}
                       </option>
