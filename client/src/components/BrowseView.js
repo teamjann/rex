@@ -10,6 +10,7 @@ import NavBar from './NavBar';
 import SortMenu from './SortMenu';
 import BookItem from './BookItem';
 import BrowseDetail from './Browse/BrowseDetail';
+import axios from 'axios';
 
 const BookList = styled.ul`
   width: 100%;
@@ -19,7 +20,7 @@ const BookList = styled.ul`
 
 class BrowseView extends Component {
   state = {
-    userId: 3,
+    userId: this.props.location.state.userId,
     activeItem: 'Recommendations',
     books: {},
     bookOrder: [],
@@ -31,16 +32,19 @@ class BrowseView extends Component {
 
   populateBooks() {
     const category = 'books';
-    const { userId } = this.state;
+    const userId = this.state.userId;
+    console.log(this.state.userId);
     // Use 'category' and 'categoryItems' to eventually add other categories
     // For now, category and sort is hard-coded to books
 
-    fetch(`/u/${userId}/${category}`)
-      .then(res => res.json())
+    axios
+      .get(`/u/${userId}/${category}`)
+      // .then(res => res.json())
       .then(categoryItems => {
+        console.log(categoryItems.data);
         this.setState({
-          [category]: categoryItems,
-          bookOrder: Object.entries(categoryItems).map(([key, val]) => key),
+          [category]: categoryItems.data,
+          bookOrder: Object.entries(categoryItems.data).map(([key, val]) => key),
         });
       })
       .catch(err => {
@@ -226,6 +230,7 @@ class BrowseView extends Component {
                       deleteBook={deletedInfo => this.deleteBook(deletedInfo)}
                       markCompleted={this.markCompleted}
                       category={category}
+                      userId={this.props.userId}
                     />
                   );
                 }

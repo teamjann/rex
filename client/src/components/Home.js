@@ -9,9 +9,9 @@ import { Route, Link, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 
 import BookDetail from './Entry/BookDetail';
 
-const NewRecommendationButton = () => (
+const NewRecommendationButton = props => (
   <div className="rec-button">
-    <Link to="/entry">
+    <Link to={{ pathname: '/entry', state: { userId: props.userId } }}>
       <button className="button special big">Add Recommendation</button>
     </Link>
   </div>
@@ -31,7 +31,7 @@ class Home extends Component {
             Welcome <span>{this.props.firstName}!</span>
           </h2>
         </div>
-        <NewRecommendationButton />
+        <NewRecommendationButton userId={this.props.userId} />
         <div className="icon-list">
           <div className="half">
             <div className="image">
