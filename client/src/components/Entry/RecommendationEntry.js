@@ -10,6 +10,7 @@ class RecommendationEntry extends Component {
     lastName: '',
     comments: '',
     inserted: false,
+    category: this.props.category,
   };
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
@@ -29,7 +30,7 @@ class RecommendationEntry extends Component {
       apiId,
     } = this.props.entry;
 
-    const category = 'books';
+    const category = this.state.category;
 
     const bookInfo = {
       title,
@@ -68,7 +69,12 @@ class RecommendationEntry extends Component {
 
   render() {
     return this.state.inserted ? (
-      <Redirect to={{ pathname: '/browse', state: { userId: this.state.userId } }} />
+      <Redirect
+        to={{
+          pathname: '/browse',
+          state: { userId: this.state.userId, category: this.state.category },
+        }}
+      />
     ) : (
       <Container>
         <Divider />

@@ -35,7 +35,12 @@ class Home extends Component {
         <div className="icon-list">
           <div className="half">
             <div className="image">
-              <Link to="/browse">
+              <Link
+                to={{
+                  pathname: '/browse',
+                  state: { userId: this.props.userId, category: 'foods' },
+                }}
+              >
                 <img className="home-image" src="images/food.jpg" alt="" />
                 <h3 className="top-left">
                   <span>My Food</span>
@@ -43,7 +48,12 @@ class Home extends Component {
               </Link>
             </div>
             <div className="image">
-              <Link to="/browse">
+              <Link
+                to={{
+                  pathname: '/browse',
+                  state: { userId: this.props.userId, category: 'books' },
+                }}
+              >
                 <img className="home-image" src="images/books.jpg" alt="" />
                 <h3 className="top-left">
                   <span>My Books</span>
@@ -53,7 +63,12 @@ class Home extends Component {
           </div>
           <div className="half">
             <div className="image top">
-              <Link to="/browse">
+              <Link
+                to={{
+                  pathname: '/browse',
+                  state: { userId: this.props.userId, category: 'songs' },
+                }}
+              >
                 <img className="home-image" src="images/music.jpg" alt="" />
                 <h3 className="top-left">
                   <span>My Music</span>
@@ -61,7 +76,12 @@ class Home extends Component {
               </Link>
             </div>
             <div className="image bottom">
-              <Link to="/browse">
+              <Link
+                to={{
+                  pathname: '/browse',
+                  state: { userId: this.props.userId, category: 'movies' },
+                }}
+              >
                 <img className="home-image" src="images/tv.jpg" alt="" />
                 <h3 className="top-left">
                   <span>My Movies</span>
