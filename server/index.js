@@ -73,10 +73,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(`${__dirname}/../client/dist`));
 
 // Use cookie session for auth
-app.use(cookieSession({
-  maxAge: 24 * 60 * 60 * 1000,
-  keys: ['hellothisisrandom'],
-}));
+app.use(
+  cookieSession({
+    maxAge: 24 * 60 * 60 * 1000,
+    keys: ['hellothisisrandom'],
+  }),
+);
 
 // Initialize passport
 app.use(passport.initialize());
@@ -89,9 +91,10 @@ app.use('/auth', authRoutes);
 
 // MovieDb API
 app.post('/movie', (req, res) => {
-  apiHelpers.getMoviesByTitle(req.body.title)
+  apiHelpers
+    .getMoviesByTitle(req.body.title)
     .then(result => {
-      res.contentType('application/json')
+      res.contentType('application/json');
       res.send(result);
     })
     .catch(err => {
@@ -101,7 +104,8 @@ app.post('/movie', (req, res) => {
 
 // Music songs API
 app.post('/songs', (req, res) => {
-  apiHelpers.getSongsByTitle(req.body.song)
+  apiHelpers
+    .getSongsByTitle(req.body.song)
     .then(result => {
       //console.log('server', result)
       res.contentType('application/json');
@@ -114,7 +118,8 @@ app.post('/songs', (req, res) => {
 
 // Music song API
 app.post('/song', (req, res) => {
-  apiHelpers.getSongDetailsById(req.body.song)
+  apiHelpers
+    .getSongDetailsById(req.body.song)
     .then(result => {
       //console.log('server', result)
       res.contentType('application/json');
@@ -134,12 +139,10 @@ app.post('/food', (req, res) => {
     } else {
       res.send(err);
     }
-  })
+  });
 });
 /* -------------------------------------------------------------------
 --------------------------------------------------------------------*/
-
-
 
 // LOGIN
 // app.post('/login', (req, res) => {
@@ -190,11 +193,11 @@ app.post('/food', (req, res) => {
 
 // GET BOOKS AND RECOMMENDATIONS FOR USER
 app.get('/u/:userId/:category', isLoggedIn, (req, res) => {
-  const { category } = req.params;
-  const { userId } = req.session.passport.user[0][0].google_id;
+  const category = req.params.category;
+  const userId = req.params.userId;
 
   promiseQuery(FETCH_BOOKS(userId, category))
-    .then((books) => {
+    .then(books => {
       const parsedBooks = books.reduce((bookItems, recommendation) => {
         const {
           rec_id,
@@ -248,10 +251,8 @@ app.get('/u/:userId/:category', isLoggedIn, (req, res) => {
 // ADD RECOMMENDATION WHEN BOOKID KNOWN
 app.post('/r/:category/:bookId', isLoggedIn, (req, res) => {
   const { category, bookId } = req.params;
-  const {
-    id, firstName, lastName, comments,
-  } = req.body;
-  const { userId } = req.session.passport.user[0][0].google_id;
+  const { id, firstName, lastName, comments } = req.body;
+  const { userId } = req;
   const recInfo = {
     userId,
     category,
@@ -267,21 +268,21 @@ app.post('/r/:category/:bookId', isLoggedIn, (req, res) => {
 
 // ADD NEW RECOMMENDATION
 app.post('/u/:userId/:category/', isLoggedIn, (req, res) => {
-  const { category } = req.params;
-  const {
-    apiId, firstName, lastName, comments,
-  } = req.body;
+  const category = req.params.category;
+  const userId = req.params.userId;
 
-  const { userId } = req.session.passport.user[0][0].google_id;
+  console.log(req.params);
+  const bookInfo = JSON.parse(req.body.bookInfo);
+  const { apiId, firstName, lastName, comments } = JSON.parse(req.body.bookInfo);
 
   console.log('adding recommendation');
 
   promiseQuery(CHECK_BOOK({ apiId }))
-    .then((bookIdObj) => {
+    .then(bookIdObj => {
       const bookId = bookIdObj[0].id;
       console.log('book in db');
 
-      validateQuery(CHECK_EXISTING_REC({ userId, apiId })).then((exist) => {
+      validateQuery(CHECK_EXISTING_REC({ userId, apiId })).then(exist => {
         const recommendationsExist = exist[0][0].exists;
 
         if (recommendationsExist) {
@@ -295,22 +296,27 @@ app.post('/u/:userId/:category/', isLoggedIn, (req, res) => {
             userId,
             bookId,
           };
-
+          console.log('ADD REC', recommendationInfo);
           insertQuery(ADD_REC(recommendationInfo))
             .then(sqlResponse => res.json({ inserted: 'success' }))
             .catch(err => console.log(err));
         }
       });
     })
-    .catch((bookNotInDB) => {
-      insertQuery(ADD_REC_AND_BOOK({ ...req.body, userId }))
+    .catch(bookNotInDB => {
+      insertQuery(ADD_REC_AND_BOOK({ ...bookInfo, userId }))
         .then(sqlResponse => res.json({ inserted: 'success' }))
         .catch(err => console.log(err));
     });
 });
 
 app.get('/auth', isLoggedIn, (req, res) => {
-  res.status(200).send(req.user.firstName);
+  const userObj = {
+    firstName: req.user[0].first_name,
+    userId: req.user[0].user_id,
+  };
+
+  res.status(200).send(userObj);
 });
 
 // app.get('/auth', (req, res) => {
@@ -327,14 +333,16 @@ app.put('/u/:userId/:category/:itemId', isLoggedIn, (req, res) => {
   const { status, rating } = req.body;
   const { userId } = req;
 
-  updateQuery(UPDATE_RECOMMENDATION({
-    userId,
-    category,
-    itemId,
-    status,
-    rating,
-  }))
-    .then((sqlRes) => {
+  updateQuery(
+    UPDATE_RECOMMENDATION({
+      userId,
+      category,
+      itemId,
+      status,
+      rating,
+    }),
+  )
+    .then(sqlRes => {
       res.send('recommendation successfully updated');
     })
     .catch(err => console.log('could not update'));

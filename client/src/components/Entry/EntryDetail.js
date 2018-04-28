@@ -6,13 +6,12 @@ import NavBar from '../NavBar';
 
 const EntryDetail = (props) => {
   const target = props.location.state.result;
-  console.log('entry detail fired', target);
   return (
     <div>
       <NavBar />
       <div className="detail-container">
         <BookDetail result={target} />
-        <RecommendationEntry entry={target} />
+        <RecommendationEntry entry={target} userId={props.location.state.result.userId} />
       </div>
     </div>
   );
