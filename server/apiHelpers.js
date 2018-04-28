@@ -17,7 +17,7 @@ const keys = {
     APIKey: process.env.musicAPIKey,
   },
   bookAPI: {
-    APIKey: 'SnU8Ldjru8Za5mCLel3kg'
+    APIKey: process.env.bookAPIKey
   }
 }
 
