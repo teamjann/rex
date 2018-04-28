@@ -121,7 +121,6 @@ app.post('/song', (req, res) => {
   apiHelpers
     .getSongDetailsById(req.body.song)
     .then(result => {
-      //console.log('server', result)
       res.contentType('application/json');
       res.send(result);
     })
@@ -140,6 +139,18 @@ app.post('/food', (req, res) => {
       res.send(err);
     }
   });
+});
+
+// YELP API
+app.post('/review', (req, res) => {
+  apiHelpers.getReviewById(req.body.name, (data, err) => {
+    res.contentType('application/json');
+    if (err === null) {
+      res.send(data);
+    } else {
+      res.send(err);
+    }
+  })
 });
 /* -------------------------------------------------------------------
 --------------------------------------------------------------------*/

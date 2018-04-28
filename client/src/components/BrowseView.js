@@ -202,8 +202,7 @@ class BrowseView extends Component {
 
         <Container>
           <Header as="h1" icon textAlign="center">
-            <Icon name="book" circular />
-            <Header.Content>Books</Header.Content>
+            <Header.Content className="browse-title">Books</Header.Content>
           </Header>
 
           <SortMenu

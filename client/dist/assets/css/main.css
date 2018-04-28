@@ -4025,6 +4025,22 @@ p {
   margin-right: 30px;
 }
 
+.login a {
+  border-bottom: none;
+}
+
+/* h1.nav-title {
+  font-size: 1.3em;
+} */
+
+span.nav-item {
+  margin-left: 10%;
+}
+
+.nav-item a {
+  border-bottom: none;
+}
+
 .spotlight .image.image2 img {
   width: auto;
   float: right;
@@ -4200,4 +4216,20 @@ a.subtle-link {
 
 .detail-img img {
   height: 10em;
+}
+
+.browse-title {
+  font-size: 2em;
+  text-align: center;
+  padding-top: 2em;
+}
+
+.browse-menu {
+  width: 60%;
+}
+
+.browse-menu-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
