@@ -25,8 +25,9 @@ class Landing extends Component {
           <nav id="nav">
             <ul>
               <li className="login">
-                <Link to="/login" />
-                <span>Login </span>
+                <span>
+                  <Link to="/auth/google">Login</Link>
+                </span>
               </li>
             </ul>
           </nav>
