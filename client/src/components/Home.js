@@ -37,36 +37,36 @@ class Home extends Component {
             <div className="image">
               <Link to="/browse">
                 <img className="home-image" src="images/food.jpg" alt="" />
+                <h3 className="top-left">
+                  <span>My Food</span>
+                </h3>
               </Link>
-              <h3 className="top-left">
-                <span>My Food</span>
-              </h3>
             </div>
             <div className="image">
               <Link to="/browse">
                 <img className="home-image" src="images/books.jpg" alt="" />
+                <h3 className="top-left">
+                  <span>My Books</span>
+                </h3>
               </Link>
-              <h3 className="top-left">
-                <span>My Books</span>
-              </h3>
             </div>
           </div>
           <div className="half">
             <div className="image top">
               <Link to="/browse">
                 <img className="home-image" src="images/music.jpg" alt="" />
+                <h3 className="top-left">
+                  <span>My Music</span>
+                </h3>
               </Link>
-              <h3 className="top-left">
-                <span>My Music</span>
-              </h3>
             </div>
             <div className="image bottom">
               <Link to="/browse">
                 <img className="home-image" src="images/tv.jpg" alt="" />
+                <h3 className="top-left">
+                  <span>My Movies</span>
+                </h3>
               </Link>
-              <h3 className="top-left">
-                <span>My Movies</span>
-              </h3>
             </div>
           </div>
         </div>
