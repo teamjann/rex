@@ -123,10 +123,11 @@ class EntryListView extends React.Component {
       });
     } else if (this.state.category === 'foods') {
       const food = data.result.all;
-      axios.post('/review', {
-        name: food.alias
-      })
-        .then(function (response) {
+      axios
+        .post('/review', {
+          name: food.alias,
+        })
+        .then((response) => {
           self.setState({
             resultDetail: {
               userId: self.state.userId,
@@ -143,20 +144,18 @@ class EntryListView extends React.Component {
             pathname: `/entry/${self.state.resultDetail.apiId}`,
             state: { result: self.state.resultDetail, category: self.state.category },
           });
-
-
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         });
-
     } else if (this.state.category === 'songs') {
       const song = data.result.all;
-      axios.post('/song', {
-        song: song.mbid,
-      })
-        .then(function (response) {
-          let summary = response.data.track.wiki.summary;
+      axios
+        .post('/song', {
+          song: song.mbid,
+        })
+        .then((response) => {
+          const summary = response.data.track.wiki.summary;
           self.setState({
             resultDetail: {
               userId: self.state.userId,
@@ -166,7 +165,7 @@ class EntryListView extends React.Component {
               description: [summary.slice(0, summary.indexOf('<'))],
               imageUrl: response.data.track.album.image[2]['#text'],
               link: song.url,
-              apiId: song.mbid
+              apiId: song.mbid,
             },
           });
           self.props.history.push({
@@ -174,10 +173,9 @@ class EntryListView extends React.Component {
             state: { result: self.state.resultDetail, category: self.state.category  },
           });
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         });
-
     }
   }
 
@@ -201,7 +199,10 @@ class EntryListView extends React.Component {
         { inputFormat: 'xml' },
       );
       axios.get(url).then((res) => {
-        const resultItems = res.data.query.results.GoodreadsResponse.search.results.work.slice(0, 5);
+        const resultItems = res.data.query.results.GoodreadsResponse.search.results.work.slice(
+          0,
+          5,
+        );
         const books = resultItems.map(book => ({
           title: book.best_book.title,
           rating: Number(book.average_rating),
@@ -214,7 +215,8 @@ class EntryListView extends React.Component {
         });
       });
     } else if (this.state.category === 'movies') {
-      axios.post('/movie', { title: data.value })
+      axios
+        .post('/movie', { title: data.value })
         .then((res) => {
           const resultItems = res.data.results.slice(0, 5);
           const movies = resultItems.map(movie => ({
@@ -233,7 +235,8 @@ class EntryListView extends React.Component {
           console.log(error);
         });
     } else if (this.state.category === 'songs') {
-      axios.post('/songs', { song: data.value })
+      axios
+        .post('/songs', { song: data.value })
         .then((res) => {
           const resultItems = res.data.results.trackmatches.track.slice(0, 5);
           const songs = resultItems.map(song => ({
@@ -251,7 +254,8 @@ class EntryListView extends React.Component {
           console.log(error);
         });
     } else if (this.state.category === 'foods') {
-      axios.post('/food', { food: data.value })
+      axios
+        .post('/food', { food: data.value })
         .then((res) => {
           const resultItems = res.data;
           const foods = resultItems.map(food => ({
@@ -308,11 +312,11 @@ class EntryListView extends React.Component {
                 value={this.state.category}
               >
                 {this.state.categoryOptions.map((option, i) =>
-                  (i === 0 ? (
-                    <option key={i} value={option.value} selected>
-                      {option.text}
-                    </option>
-                  ) : (
+                    (i === 0 ? (
+                      <option key={i} value={option.value} selected>
+                        {option.text}
+                      </option>
+                    ) : (
                       <option key={i} value={option.value}>
                         {option.text}
                       </option>
@@ -324,6 +328,7 @@ class EntryListView extends React.Component {
               results={this.state.results}
               resultRenderer={this.renderResult}
               onResultSelect={this.handleResultSelect}
+              placeholder="Search"
             />
           </div>
         </div>
