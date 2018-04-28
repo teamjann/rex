@@ -10,8 +10,9 @@ import NavBar from './NavBar';
 
 // Category, searchbar, API results for adding recommendations
 class EntryListView extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    console.log('user', this.props.location.state.userId);
     this.state = {
       category: 'books',
       // Format necessary for semanti-ui search dropdown
@@ -68,6 +69,7 @@ class EntryListView extends React.Component {
 
           self.setState({
             resultDetail: {
+              userId: this.props.location.state.userId,
               title: book.title,
               rating: book.average_rating,
               apiId: book.id,
@@ -93,6 +95,7 @@ class EntryListView extends React.Component {
       const movie = data.result.all;
       await self.setState({
         resultDetail: {
+          userId: this.props.location.state.userId,
           title: movie.title,
           rating: movie.vote_average,
           apiId: movie.id,
@@ -114,6 +117,7 @@ class EntryListView extends React.Component {
         .then(function (response) {
           self.setState({
             resultDetail: {
+              userId: this.props.location.state.userId,
               title: food.name,
               rating: food.rating,
               apiId: food.id,
@@ -143,6 +147,7 @@ class EntryListView extends React.Component {
           let summary = response.data.track.wiki.summary;
           self.setState({
             resultDetail: {
+              userId: this.props.location.state.userId,
               title: response.data.track.name,
               yearPublished: response.data.track.wiki.published.slice(7, 11) || '',
               description: [summary.slice(0, summary.indexOf('<'))],
